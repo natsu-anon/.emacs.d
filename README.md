@@ -1,4 +1,4 @@
-### Windows only
+## Windows Setup
 1. [download](https://www.gnu.org/software/emacs/download.html#nonfree) (or use MSYS2 for the 64-bit goodness? wow.)
 2. Set wherever you clone this repo to as the `$HOME` environment variable, traditionally in `C:\Users\Your Username\`
   - best way:
@@ -8,6 +8,8 @@
 4. Create a shortcuts to launch emacs as a daemon, set it's target to `"Drive:\path\to\emacs\bin\runemacs.exe" --daemon`
 5. Create a shortcuts to launch the emacs client, set it's target to `"Drive:\path\to\emacs\bin\emacsclientw.exe" -n -c`
 6. After that you can do sexiness like adding it to your contextual open menu (use the client, it's fast af)
+
+## `~/.emacs.d/init.el`
 
 ``` emacs-lisp
 (load-file "~/.emacs.d/config.el")
@@ -125,9 +127,8 @@ add the following to your `.gitignore` to ignore all the emacs backups and such:
 
 ``` emacs-lisp
 ((js-mode . ((eval . (progn
-				  (make-local-variable 'exec-path) ;; if it's still not working try commenting this out
+				  (make-local-variable 'exec-path)
 				  (add-to-list 'exec-path "/path/to/repo/node_modules/.bin/"))))))
 ```
-
 idk why but I haven't gotten it to work well when emacs is started in i3 (not the client, but emacs itself)
-try starting the server in a different DE/WM then going into i3
+try starting the server in a different DE/WM session then going into i3
