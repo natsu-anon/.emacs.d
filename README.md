@@ -8,6 +8,7 @@
 4. Create a shortcuts to launch emacs as a daemon, set it's target to `"Drive:\path\to\emacs\bin\runemacs.exe" --daemon`
 5. Create a shortcuts to launch the emacs client, set it's target to `"Drive:\path\to\emacs\bin\emacsclientw.exe" -n -c`
 6. After that you can do sexiness like adding it to your contextual open menu (use the client, it's fast af)
+7. run `all-the-icons-install-fonts` inside emacs, then install the fonts manually (how it is).
 
 ## `~/.emacs.d/init.el`
 
