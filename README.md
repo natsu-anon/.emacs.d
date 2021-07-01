@@ -1,6 +1,9 @@
 ### Windows only
 1. [download](https://www.gnu.org/software/emacs/download.html#nonfree) (or use MSYS2 for the 64-bit goodness? wow.)
 2. Set wherever you clone this repo to as the `$HOME` environment variable, traditionally in `C:\Users\Your Username\`
+  - best way:
+    i. run cmd as administrator
+	ii. run `setx home "C:\Users\Your Username"`
 3. Add the emacs bin to your `$PATH` if you want to be able to use it from the command line (mb yes, mb no)
 4. Create a shortcuts to launch emacs as a daemon, set it's target to `"Drive:\path\to\emacs\bin\runemacs.exe" --daemon`
 5. Create a shortcuts to launch the emacs client, set it's target to `"Drive:\path\to\emacs\bin\emacsclientw.exe" -n -c`
