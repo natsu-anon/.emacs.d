@@ -14,7 +14,7 @@
 Which will load `config.el`, the actual config, and `local.el`, local settings (which I use for looks).
 Why like this?  It lets all the custom-set-variables and such accumulate in the init file and it doesn't get shared in the repo (anymore).
 
-In order to get icons working you _MUST_ run `all-the-icons-install-fonts`
+In order to get icons working you _MUST_ run `all-the-icons-install-fonts`, if you're on windows it just downloads the fonts so you have to manually install them.
 
 ### example `local.el`
 
@@ -27,6 +27,18 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`
 ;; maximize initial frame
 ;; (add-hook 'window-setup-hook 'toggle-frame-maximized t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; works for clients as well
+```
+
+### `.gitignore`
+
+add the following to your `.gitignore` to ignore all the emacs backups and such:
+
+```
+# emacs stuff
+\#*\#
+.\#*
+*~
+.dir-locals.el
 ```
 
 ### making flycheck play with node well
@@ -93,7 +105,7 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`
 	}
 }
 ```
-- finally create `.babelrc` with the following:
+- create `.babelrc` with the following:
 
 ``` json
 {
@@ -106,3 +118,13 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`
 }
 
 ```
+- finally create `.dir-locals.el` with the following:
+
+``` emacs-lisp
+((js-mode . ((eval . (progn
+				  (make-local-variable 'exec-path) ;; if it's still not working try commenting this out
+				  (add-to-list 'exec-path "/path/to/repo/node_modules/.bin/"))))))
+```
+
+idk why but I haven't gotten it to work well when emacs is started in i3 (not the client, but emacs itself)
+try starting the server in a different DE/WM then going into i3
