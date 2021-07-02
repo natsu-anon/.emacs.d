@@ -26,9 +26,6 @@
 ;; NO PROMPT IS WARRANTS MORE THAN 1 CHARACTER
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; machine specific A E S T H E T I C S
-(load-file "~/.emacs.d/local.el")
-
 ;; only show trailing white space when programming
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 
