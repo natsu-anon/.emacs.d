@@ -34,7 +34,6 @@
   (interactive)
   (desktop-read desktop-dirname))
 
-(global-set-key [f5] 'revert-buffer)
 (global-set-key [f6] 'desktop-save-in-desktop-dir)
 
 ;; enable folding while in prog-mode
@@ -297,13 +296,24 @@
   (setq dashboard-set-footer nil)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
+  (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
   (setq dashboard-items '((projects . 5)
 						  (bookmarks . 5)
 						  (recents . 5)))
+  (add-to-list 'dashboard-items '(agenda) t)
   (dashboard-setup-startup-hook))
 
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-;; (setq initial-buffer-choice (my/dashboard))
+(defun my/refresh-revert ()
+  "refresh the dashboard or revert the current buffer."
+  (interactive)
+  (if (string= (buffer-name) "*dashboard*")
+	  (progn
+		(dashboard-refresh-buffer)
+		(message "%s refreshed!" (buffer-name)))
+	(revert-buffer)))
+
+(global-set-key [f5] 'my/refresh-revert)
 
 (use-package ivy
   :ensure t
@@ -414,6 +424,7 @@
 	"SPC l" 'org-metaright
 	"SPC H" 'org-shiftmetaleft
 	"SPC RET" 'org-meta-return
+	"SPC t" 'org-todo
 	"SPC L" 'org-shiftmetaright)
   (evil-leader/set-key-for-mode 'js-mode
 	"<backtab>" 'js2-indent-bounce-backward
