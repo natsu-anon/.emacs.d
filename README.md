@@ -35,6 +35,14 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`, if y
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; works for clients as well
 ```
 
+### UPDATING PACKAGES
+
+Don't do it automatically, packages change.
+HOWTO:
+1. `<M-x> package-list-packages` any packages available to upgrade will be shown.
+2. Mark pacakges to update with `U`
+3. Execute the upgrade with `x`
+
 ### Project `.gitignore`
 
 add the following to your projects' `.gitignore` to ignore all the emacs backups and such:
@@ -47,7 +55,7 @@ add the following to your projects' `.gitignore` to ignore all the emacs backups
 .dir-locals.el
 ```
 
-### making flycheck play with node well
+### making flycheck play with node well:
 
 - Go to root directory of project and run `npm instal install eslint --save-dev`
   + If you're also using @babel stuff (you are if you copy the `.eslintrc.json` from below) you might also have to run `npm install @babel/core @babel/eslint-parser @babel/preset-env --save-dev`
