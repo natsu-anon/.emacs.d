@@ -35,9 +35,9 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`, if y
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; works for clients as well
 ```
 
-### `.gitignore`
+### Project `.gitignore`
 
-add the following to your `.gitignore` to ignore all the emacs backups and such:
+add the following to your projects' `.gitignore` to ignore all the emacs backups and such:
 
 ```
 # emacs stuff
