@@ -112,6 +112,7 @@
   :ensure t
   :bind ("<f7>" . auto-complete-mode)
   :diminish auto-complete-mode
+  :hook (prog-mode . auto-complete-mode)
   :config
   (ac-config-default))
 
@@ -187,7 +188,7 @@
 (use-package flycheck
   :ensure t
   :bind ("<f8>" . flycheck-mode)
-  :config (global-flycheck-mode))
+  :hook (prog-mode . flycheck-mode))
 
 (use-package ws-butler
   :ensure t
