@@ -312,9 +312,18 @@
 	  (progn
 		(dashboard-refresh-buffer)
 		(message "%s refreshed!" (buffer-name)))
-	(revert-buffer)))
+	(if (string-match "magit:.+" (buffer-name))
+		(progn
+		  (magit-refresh)
+		  (message "%s refreshed!" (buffer-name)))
+	  (if (string-match "\*.+?\*" (buffer-name))
+		  (message "cannot revert %s!" (buffer-name))
+		(progn
+		  (revert-buffer t t t)
+		  (message "%s reverted!" (buffer-name)))))))
 
 (global-set-key [f5] 'my/refresh-revert)
+;; (global-set-key [f9] '(lambda () (interactive) (message "%s" (buffer-name))))
 
 (use-package ivy
   :ensure t
