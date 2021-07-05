@@ -323,7 +323,6 @@
 		  (message "%s reverted!" (buffer-name)))))))
 
 (global-set-key [f5] 'my/refresh-revert)
-;; (global-set-key [f9] '(lambda () (interactive) (message "%s" (buffer-name))))
 
 (use-package ivy
   :ensure t
