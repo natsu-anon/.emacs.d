@@ -330,20 +330,24 @@
   :diminish ivy-mode
   :bind
   (("C-s" . swiper)
+   :map evil-normal-state-map
+   ("\\ s" . swiper)
+   :map evil-visual-state-map
+   ("\\ s" . swiper)
    :map ivy-minibuffer-map
    ("TAB" . ivy-alt-done)
-   ("C-l" . ivy-alt-done)
-   ("C-j" . ivy-next-line)
-   ("C-k" . ivy-previous-line)
+   ("M-l" . ivy-alt-done)
+   ("M-j" . ivy-next-line)
+   ("M-k" . ivy-previous-line)
    :map ivy-switch-buffer-map
-   ("C-j" . ivy-next-line)
-   ("C-k" . ivy-previous-line)
-   ("C-l" . ivy-done)
-   ("C-d" . ivy-switch-buffer-kill)
+   ("M-j" . ivy-next-line)
+   ("M-k" . ivy-previous-line)
+   ("M-l" . ivy-done)
+   ("M-d" . ivy-switch-buffer-kill)
    :map ivy-reverse-i-search-map
-   ("C-j" . ivy-next-line)
-   ("C-k" . ivy-previous-line)
-   ("C-d" . ivy-reverse-i-search-kill))
+   ("M-j" . ivy-next-line)
+   ("M-k" . ivy-previous-line)
+   ("M-d" . ivy-reverse-i-search-kill))
   :config
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
@@ -398,7 +402,7 @@
   :diminish global-evil-leader-mode
   :after evil-nerd-commenter
   :config
-  (global-evil-leader-mode)
+  (global-Mvil-leader-mode)
   (evil-leader/set-leader "SPC")
   (evil-leader/set-key
 	"<up>" 'flycheck-previous-error
