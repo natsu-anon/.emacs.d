@@ -336,18 +336,18 @@
    ("\\ s" . swiper)
    :map ivy-minibuffer-map
    ("TAB" . ivy-alt-done)
-   ("M-l" . ivy-alt-done)
-   ("M-j" . ivy-next-line)
-   ("M-k" . ivy-previous-line)
+   ("C-l" . ivy-alt-done)
+   ("C-j" . ivy-next-line)
+   ("C-k" . ivy-previous-line)
    :map ivy-switch-buffer-map
-   ("M-j" . ivy-next-line)
-   ("M-k" . ivy-previous-line)
-   ("M-l" . ivy-done)
-   ("M-d" . ivy-switch-buffer-kill)
+   ("C-j" . ivy-next-line)
+   ("C-k" . ivy-previous-line)
+   ("C-l" . ivy-done)
+   ("C-d" . ivy-switch-buffer-kill)
    :map ivy-reverse-i-search-map
-   ("M-j" . ivy-next-line)
-   ("M-k" . ivy-previous-line)
-   ("M-d" . ivy-reverse-i-search-kill))
+   ("C-j" . ivy-next-line)
+   ("C-k" . ivy-previous-line)
+   ("C-d" . ivy-reverse-i-search-kill))
   :config
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) ")
