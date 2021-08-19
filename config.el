@@ -402,7 +402,7 @@
   :diminish global-evil-leader-mode
   :after evil-nerd-commenter
   :config
-  (global-Mvil-leader-mode)
+  (global-evil-leader-mode)
   (evil-leader/set-leader "SPC")
   (evil-leader/set-key
 	"<up>" 'flycheck-previous-error
