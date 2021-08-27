@@ -89,8 +89,11 @@
 
 (setq-default tab-width 4)
 
-(setq c-default-style "linux"
-	  c-basic-offset 4)
+;; (setq c-default-style "linux"
+;; 	  c-basic-offset 4)
+
+;; IT JUST WORKS
+(setq c-basic-offset 4)
 
 ;; setup use-package
 ;; NOTE: see `https://github.com./jweiegley/use-package' for usage
