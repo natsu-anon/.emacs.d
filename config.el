@@ -1,4 +1,5 @@
 ;; TODO ggtags
+;; oh fug
 ;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
