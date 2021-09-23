@@ -90,8 +90,11 @@
 
 (setq-default tab-width 4)
 
-(setq c-default-style "linux"
-	  c-basic-offset 4)
+;; (setq c-default-style "linux"
+;; 	  c-basic-offset 4)
+
+;; IT JUST WORKS
+(setq c-basic-offset 4)
 
 ;; setup use-package
 ;; NOTE: see `https://github.com./jweiegley/use-package' for usage
@@ -403,7 +406,7 @@
   :diminish global-evil-leader-mode
   :after evil-nerd-commenter
   :config
-  (global-Mvil-leader-mode)
+  (global-evil-leader-mode)
   (evil-leader/set-leader "SPC")
   (evil-leader/set-key
 	"<up>" 'flycheck-previous-error
