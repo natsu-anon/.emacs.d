@@ -101,6 +101,16 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+;; install auctex for the memes
+;; (unless (package-installed-p 'auctex)
+;;   (package-refresh-contents)
+;;   (package-install 'auctex))
+
+;; DO NOT LIKE
+;; (use-package latex-preview-pane
+;;   :ensure t
+;;   :init (latex-preview-pane-enable))
+
 (eval-when-compile
   (require 'use-package))
 (setq use-package-always-ensure t)
@@ -282,13 +292,23 @@
   :after evil
   :init
   (setq projectile-completion-system 'ivy)
+  (defun my/context-ag ()
+	"Use projectile-ag if in a project, otherwise regular ag."
+	(interactive)
+	(if (projectile-project-p)
+		(ag-project (read-string "search-string (use ag-project-files to limit search to a given filetype):"))
+	  (ag (read-string "search-string (use ag-files to limit search to a given filetype):") (file-name-directory buffer-file-name))))
   :bind
   ;; ("s-p" . projectile-command-map)
   (("C-c p" . projectile-command-map)
    :map evil-normal-state-map
    ("\\ p" . projectile-switch-project)
    :map evil-visual-state-map
-   ("\\ p" . projectile-switch-project))
+   ("\\ p" . projectile-switch-project)
+   :map evil-normal-state-map
+   ("\\ a" . my/context-ag)
+   :map evil-visual-state-map
+   ("\\ a" . my/context-ag))
   :config (projectile-mode 1))
 
 
