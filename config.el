@@ -198,6 +198,17 @@
 (use-package json-mode
   :ensure t)
 
+(use-package tree-sitter
+  :ensure t)
+
+(use-package tree-sitter-langs
+  :ensure t)
+
+(use-package csharp-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" .chsarp-tree-sitter-mode)))
+
 (use-package flycheck
   :ensure t
   :bind ("<f8>" . flycheck-mode)
@@ -235,6 +246,12 @@
   (setq-default neo-show-hidden-files t)
   (setq neo-window-fixed-size nil)
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  ;; latex support
+  ;; (add-to-list 'neo-hidden-regexp-list "*?/.aux$")
+  ;; (add-to-list 'neo-hidden-regexp-list "*?/.toc$")
+  ;; (add-to-list 'neo-hidden-regexp-list "*?/.doc$")
+  ;; (add-to-list 'neo-hidden-regexp-list "*?/.pdf$")
+  ;; (add-to-list 'neo-hidden-regexp-list '("*~", "*.aux"))
   :bind
   (:map evil-normal-state-map
 		("\\ d" . my/desktop-read)
@@ -502,5 +519,22 @@
   (setq doom-modeline-buffer-state-icon t)
   (setq doom-modeline-icon t)
   (setq doom-modeline-modal-icon t))
+
+;; RSS nonsense
+;; (use-package elfeed
+;;   :ensure t
+;;   :config
+;;   (setq elfeed-db-directory (expand-file-name "elfeed" user-emacs-directory)
+;; 	elfeed-show-entry-switch 'display-buffer)
+;;   :bind
+;;   ("C-c r" . elfeed)
+;; )
+
+;; (use-package elfeed-org
+;;   :ensure t
+;;   :config
+;;   (setq elfeed-show-entry-switch 'display-buffer)
+;;   (setq rmh-elfeed-org-files (list "elfeed.org"))
+;; )
 
 (setq gc-cons-threshod (* 2 1000 1000))
