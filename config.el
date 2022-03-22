@@ -8,6 +8,9 @@
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
 
+;; enable local variables PLEASE
+(setq enable-local-variables t)
+
 (setq inhibit-startup-message t)
 (tool-bar-mode -1)
 (tooltip-mode -1)
@@ -63,6 +66,20 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 
+;; manually load some packages
+;; (add-to-list 'load-path "~/.emacs.d/lisp")
+
+;; add undo-browse so it's EASY to replay changes
+;; this shit's kinda fucky tbh
+;;(load "undo-browse")
+
+;; (defun replay-buffer ()
+;;   ;; replays a buffer using undo-browse's movie
+;;   (interactive)
+;;   (ub-movie-history)
+;;   (read-only-mode -1)
+;;   (ub-mode))
+
 ;; turn on line numbers
 (column-number-mode)
 (global-display-line-numbers-mode t)
@@ -81,6 +98,12 @@
 (defun relative-linums ()
   "set relative line numbers."
   (setq display-line-numbers 'relative))
+
+
+(defun obs-1080p ()
+  "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
+  (interactive)
+  (set-frame-size (selected-frame) 1900 1080 t))
 
 ;; but disable for some modes
 (dolist (mode '(term-mode-hook
@@ -323,6 +346,10 @@
    :map evil-visual-state-map
    ("\\ p" . projectile-switch-project)
    :map evil-normal-state-map
+   ("\\ h" . projectile-find-other-file)
+   :map evil-visual-state-map
+   ("\\ h" . projectile-find-other-file)
+   :map evil-normal-state-map
    ("\\ a" . my/context-ag)
    :map evil-visual-state-map
    ("\\ a" . my/context-ag))
@@ -488,6 +515,10 @@
 
 (use-package vmd-mode ;; enable to begin previewing markdown
   :ensure t)
+
+;; apparently this isn't in the public packages
+;; (use-package undo-browse
+;;   :ensure t)
 
 ;; AESTHETICS ;;
 
