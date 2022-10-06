@@ -1,4 +1,4 @@
-;; TODO ggtags
+; TODO ggtags
 ;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
@@ -84,6 +84,9 @@
 (column-number-mode)
 (global-display-line-numbers-mode t)
 
+;; hide the async shell command buffer
+(add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
+
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
   (interactive)
@@ -166,7 +169,7 @@
 
 (use-package origami
   :ensure t
-  :hook (prog-mode. origami-mode))
+  :hook (prog-mode . origami-mode))
 
 (use-package evil
   :ensure t
@@ -203,6 +206,20 @@
 (use-package evil-nerd-commenter
   :ensure t)
 
+;; see `https://github.com/Fuco1/smartparens/wiki'
+(use-package smartparens
+  :ensure t
+  :diminish smartparens-mode
+  :bind
+  ("C-l" . sp-forward-sexp)
+  ("C-k" . sp-backward-sexp)
+  :hook
+  (prog-mode . smartparens-mode)
+  :config
+  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'emacs-lisp-mode "`" "'")
+  (setq sp-highlight-pair-overlay nil))
+
 ;; TODO STOP EMBARASSING YOURSELF
 ;; naw-- just add node_modules/.bin/ to the exec-path
 ;; (use-package add-node-modules-path
@@ -221,40 +238,34 @@
 (use-package json-mode
   :ensure t)
 
-(use-package tree-sitter
-  :ensure t)
+;; (use-package tree-sitter
+;;   :ensure t)
 
-(use-package tree-sitter-langs
-  :ensure t)
+;; (use-package tree-sitter-langs
+;;   :ensure t)
+
+;; (use-package tree-sitter-indent
+;;   :ensure t)
 
 (use-package csharp-mode
   :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.cs\\'" .chsarp-tree-sitter-mode)))
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
 (use-package flycheck
   :ensure t
+  :config
+  (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
   :bind ("<f8>" . flycheck-mode)
-  :hook (prog-mode . flycheck-mode))
+  :hook
+  (json-mode . flycheck-mode)
+  (prog-mode . flycheck-mode)
+  (LaTeX-mode . flycheck-mode))
 
 (use-package ws-butler
   :ensure t
   :diminish ws-butler-mode
   :hook (prog-mode . ws-butler-mode))
-
-;; see `https://github.com/Fuco1/smartparens/wiki'
-(use-package smartparens
-  :ensure t
-  :diminish smartparens-mode
-  :bind
-  ("C-l" . sp-forward-sexp)
-  ("C-k" . sp-backward-sexp)
-  :hook
-  (prog-mode . smartparens-mode)
-  :config
-  (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  (sp-local-pair 'emacs-lisp-mode "`" "'")
-  (setq sp-highlight-pair-overlay nil))
 
 (use-package all-the-icons ;; you HAVE to install the fonts for windows (run all-the-icons-install-fonts)
   :ensure t)
