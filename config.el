@@ -276,6 +276,7 @@
   :ensure t
   :init
   (setq neo-smart-open t)
+  (setq neo-autorefresh t)
   (setq projectile-switch-project-action 'neotree-projectile-action)
   (setq-default neo-show-hidden-files t)
   (setq neo-window-fixed-size nil)
