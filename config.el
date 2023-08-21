@@ -1,5 +1,5 @@
 ; TODO ggtags
-;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
+; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
 ;; remember -- you _MUST_ run `all-the-icons-install-fonts' then install the fonts to get that working
@@ -102,11 +102,15 @@
   "set relative line numbers."
   (setq display-line-numbers 'relative))
 
-
 (defun obs-1080p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
   (set-frame-size (selected-frame) 1900 1080 t))
+
+(defun ymd-date ()
+  "lol lmao"
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
 
 ;; but disable for some modes
 (dolist (mode '(term-mode-hook
@@ -579,5 +583,7 @@
 ;;   (setq elfeed-show-entry-switch 'display-buffer)
 ;;   (setq rmh-elfeed-org-files (list "elfeed.org"))
 ;; )
+
+
 
 (setq gc-cons-threshod (* 2 1000 1000))
