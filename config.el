@@ -31,6 +31,7 @@
 
 ;; only show trailing white space when programming
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
+;; (add-hook 'prog-mode-hook (electric-indent-mode 0))
 
 (defun my/desktop-read ()
   "Save current desktop into the desktop directory."
@@ -55,18 +56,46 @@
 (require 'paren)
 (set-face-background 'show-paren-match (face-background 'default))
 
-
 ;; make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escapequit)
 
+;; make dired
+
+;; shell settings
+(setq eshell-scroll-to-bottom-on-input t) ;; NOTE eshell only q.q
+;; make file paths clickable?
+(add-hook 'shell-mode-hook 'compilation-shell-minor-mode)
+;; (add-hook 'eshell-mode-hook 'compilation-shell-minor-mode) ;; it just don't work
+
+;; (setq quick-insert-str "change inserted string by (seq-local quick-insert-str \"foo\") ")
+
+;; enable recent file tracking
+(recentf-mode 1)
+;; prevent using UI dialogs for prompts
+(setq use-dialog-box nil)
+;; global auto revert files
+(global-auto-revert-mode 1)
+
+(defun qinsert-func ()
+  "inserts the `qinsert' string. Or encourages user to assign it"
+  (interactive)
+  (if (boundp 'qinsert)
+	  (progn
+		(insert qinsert)
+		(evil-append 0 0))
+	(message "No quick insert string!  Eval (setq-local qinsert VALUE)")))
+	;; (message "No quick insert string!  Use (setq-local qinsert \"foo\") then `eval-last-sexp'")))
+(global-set-key (kbd "M-i") 'quick-insert-func)
+
 (require 'package)
+(add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (setq package-enable-at-startup nil)
 (package-initialize)
 
-;; manually load some packages
+;; manually load some packages\p
 ;; (add-to-list 'load-path "~/.emacs.d/lisp")
 
 ;; add undo-browse so it's EASY to replay changes
@@ -86,6 +115,9 @@
 
 ;; hide the async shell command buffer
 (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
+
+;; allow remembering risky commands
+(advice-add 'risky-local-variable-p :override #'ignore)
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
@@ -117,12 +149,9 @@
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
-(setq-default tab-width 4)
-
-(setq c-default-style "linux"
-	  c-basic-offset 4)
-
 ;; IT JUST WORKS
+(setq-default tab-width 4)
+(setq c-default-style "bsd")
 (setq c-basic-offset 4)
 
 ;; setup use-package
@@ -151,6 +180,15 @@
   ;; (setq org-list-use-circular-motion t)
   (setq org-M-RET-may-split-line nil))
 
+;; language server
+;; (use-package eglot
+;;   :ensure t)
+  ;; :init
+  ;; (setq eglot-server-programs ((c++-mode c-mode) "clangd")))
+  ;; :hook
+  ;; (c-mode . eglot-ensure)
+  ;; (c++-mode . eglot-ensure))
+
 (use-package auto-complete
   :ensure t
   :bind ("<f7>" . auto-complete-mode)
@@ -158,6 +196,25 @@
   :hook (prog-mode . auto-complete-mode)
   :config
   (ac-config-default))
+
+;; see https://company-mode.github.io/
+;; used for auto completion
+;; (use-package company
+;;   :ensure t
+;;   :bind
+;;   ("<f7>" . company-mode)
+;;   (:map evil-insert-state-map
+;;    ("<tab>" . company-indent-or-complete-common))
+;;   ;; :diminish company-mode
+;;   :hook
+;;   (prog-mode . company-mode)
+;;   (shell-mode . company-mode))
+
+;; (use-package company-ctags
+;;   :ensure t
+;;   :after company
+;;   :init
+;;   (company-ctags-auto-setup))
 
 (defun my/vsplit-then-move-right ()
   "Split the current window right, then move into the new window."
@@ -171,6 +228,14 @@
   (split-window-below)
   (windmove-down))
 
+(use-package yasnippet
+ :ensure t
+ ;; :bind
+ ;; ("<tab>" . yas-insert-snippet)
+ :init
+ (setq yas-indent-line 'fixed)
+ (yas-global-mode 1))
+
 (use-package origami
   :ensure t
   :hook (prog-mode . origami-mode))
@@ -183,9 +248,12 @@
 		("C-w S" . my/split-then-move-down)
 		("g t" . next-buffer)
 		("g T" . previous-buffer)
+		("g s" . shell)
+		("\\ x" . eval-last-sexp)
 		:map evil-visual-state-map
 		("C-w V" . my/vsplit-then-move-right)
-		("C-w S" . my/split-then-move-down))
+		("C-w S" . my/split-then-move-down)
+		("\\ x" . eval-region))
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -282,16 +350,13 @@
   (setq neo-smart-open t)
   (setq neo-autorefresh t)
   (setq projectile-switch-project-action 'neotree-projectile-action)
-  (setq-default neo-show-hidden-files t)
+  (setq-default neo-show-updir-line t)
+  (setq-default neo-show-slash-for-folder t)
+  (setq-default neo-show-hidden-files nil)
   (setq neo-window-fixed-size nil)
   (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
-  ;; latex support
-  ;; (add-to-list 'neo-hidden-regexp-list "*?/.aux$")
-  ;; (add-to-list 'neo-hidden-regexp-list "*?/.toc$")
-  ;; (add-to-list 'neo-hidden-regexp-list "*?/.doc$")
-  ;; (add-to-list 'neo-hidden-regexp-list "*?/.pdf$")
-  ;; (add-to-list 'neo-hidden-regexp-list '("*~", "*.aux"))
   :bind
+  ("<f10>" . neotree-hidden-file-toggle)
   (:map evil-normal-state-map
 		("\\ d" . my/desktop-read)
 		("\\ t" . neotree-toggle)
@@ -314,6 +379,7 @@
 		:map evil-visual-state-map
 		("\\ u" . undo-tree-visualize))
   :config
+  (append neo-hidden-regexp-list '("\\.aux$" "\\.bak$" "\\.toc$")) ;; latex ignores
   (global-undo-tree-mode))
 
 (use-package which-key
@@ -354,6 +420,10 @@
 	(if (projectile-project-p)
 		(ag-project (read-string "search-string (use ag-project-files to limit search to a given filetype):"))
 	  (ag (read-string "search-string (use ag-files to limit search to a given filetype):") (file-name-directory buffer-file-name))))
+  (defun my/projectile-find-other-file ()
+		"projectile-find-other-file but with flex-matching enabled by default"
+		(interactive)
+		(projectile-find-other-file t))
   :bind
   ;; ("s-p" . projectile-command-map)
   (("C-c p" . projectile-command-map)
@@ -363,12 +433,18 @@
    ("\\ p" . projectile-switch-project)
    :map evil-normal-state-map
    ("\\ h" . projectile-find-other-file)
+   ("\\ H" . my/projectile-find-other-file)
    :map evil-visual-state-map
    ("\\ h" . projectile-find-other-file)
+   ("\\ H" . my/projectile-find-other-file)
    :map evil-normal-state-map
    ("\\ a" . my/context-ag)
    :map evil-visual-state-map
-   ("\\ a" . my/context-ag))
+   ("\\ a" . my/context-ag)
+   :map evil-normal-state-map
+   ("\\ i" . counsel-imenu)
+   :map evil-visual-state-map
+   ("\\ i" . counsel-imenu))
   :config (projectile-mode 1))
 
 
@@ -458,6 +534,8 @@
    ("\\ m" . counsel-bookmark)
    ("\\ f" . counsel-find-file)
    ("\\ b" . counsel-ibuffer)
+   :map dired-mode-map
+   ("c" . counsel-find-file)
    :map minibuffer-local-map
    ("C-r" . 'counsel-minibuffer-history)))
 
@@ -490,6 +568,7 @@
   (evil-leader/set-key
 	"<up>" 'flycheck-previous-error
 	"<down>" 'flycheck-next-error
+	;; "i" 'quick-insert-func
 	"l" 'toggle-linums
     "ci" 'evilnc-comment-or-uncomment-lines
     "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
@@ -555,17 +634,25 @@
 
 (use-package doom-modeline
   :ensure t
-  :hook
-  (after-init . doom-modeline-mode)
+  :init
+  (doom-modeline-mode 1)
+  ;; :hook
+  ;; (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 20)
   (setq doom-modeline-bar-width 4)
   (setq doom-modeline-window-width-limit fill-column)
   (setq doom-modeline-project-detection 'project)
-  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project)
+  (setq doom-modeline-buffer-file-name-style 'file-name)
   (setq doom-modeline-buffer-state-icon t)
   (setq doom-modeline-icon t)
   (setq doom-modeline-modal-icon t))
+
+(add-to-list 'load-path "~/.emacs.d/unreal-engine-mode")
+(use-package unreal-engine-mode
+  :ensure nil ;; nil because it's a local file
+  :config
+  (unreal-engine--register-keywords)) ;; PERMANENTLY add unreal keywords to c-mode cause FUCK IT WE BALL
 
 ;; RSS nonsense
 ;; (use-package elfeed
