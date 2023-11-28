@@ -1,9 +1,10 @@
-; TODO ggtags
 ; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
 ;; remember -- you _MUST_ run `all-the-icons-install-fonts' then install the fonts to get that working
+;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
 ;; see `https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
+;; NOTE sometimes you gotta run package-refresh-contents
 
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
@@ -24,6 +25,7 @@
 (setq visible-bell t)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
+(setq warning-minimum-level :error)
 
 
 ;; NO PROMPT IS WARRANTS MORE THAN 1 CHARACTER
@@ -153,6 +155,23 @@
 (setq-default tab-width 4)
 (setq c-default-style "bsd")
 (setq c-basic-offset 4)
+
+;; bootstrap straight.el
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+        "straight/repos/straight.el/bootstrap.el"
+        (or (bound-and-true-p straight-base-dir)
+            user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 ;; setup use-package
 ;; NOTE: see `https://github.com./jweiegley/use-package' for usage
@@ -354,7 +373,7 @@
   (setq-default neo-show-slash-for-folder t)
   (setq-default neo-show-hidden-files nil)
   (setq neo-window-fixed-size nil)
-  (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+  (setq neo-theme (if (display-graphic-p) 'classic 'arrow))
   :bind
   ("<f10>" . neotree-hidden-file-toggle)
   (:map evil-normal-state-map
@@ -643,16 +662,10 @@
   (setq doom-modeline-bar-width 4)
   (setq doom-modeline-window-width-limit fill-column)
   (setq doom-modeline-project-detection 'project)
-  (setq doom-modeline-buffer-file-name-style 'file-name)
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project)
   (setq doom-modeline-buffer-state-icon t)
   (setq doom-modeline-icon t)
   (setq doom-modeline-modal-icon t))
-
-(add-to-list 'load-path "~/.emacs.d/unreal-engine-mode")
-(use-package unreal-engine-mode
-  :ensure nil ;; nil because it's a local file
-  :config
-  (unreal-engine--register-keywords)) ;; PERMANENTLY add unreal keywords to c-mode cause FUCK IT WE BALL
 
 ;; RSS nonsense
 ;; (use-package elfeed
