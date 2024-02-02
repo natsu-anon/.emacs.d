@@ -520,7 +520,7 @@
   :config
   (setq dashboard-set-navigator t)
   (setq dashboard-startup-banner "~/.emacs.d/ascii-art.txt")
-  (setq dashboard-set-footer nil)
+  (setq dashboard-set-footer t)
   (setq dashboard-set-heading-icons t)
   (setq dashboard-set-file-icons t)
   (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
