@@ -8,3 +8,7 @@
 !README.md
 !snippets/
 !snippets/**
+snippets/*~
+!unreal-engine-mode/
+!unreal-engine-mode/**
+unreal-engine-mode/*~
