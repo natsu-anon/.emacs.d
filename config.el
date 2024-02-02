@@ -1,7 +1,7 @@
 ; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
-;; remember -- you _MUST_ run `all-the-icons-install-fonts' then install the fonts to get that working
+;; remember -- you _MUST_ run `all-the-icons-install-fonts' AND `nerd-icons-install-fonts' then install the fonts to get that working
 ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
 ;; see `https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
 ;; NOTE sometimes you gotta run package-refresh-contents
@@ -28,19 +28,19 @@
 (setq warning-minimum-level :error)
 
 
-;; NO PROMPT IS WARRANTS MORE THAN 1 CHARACTER
+;; NO PROMPT WARRANTS MORE THAN 1 CHARACTER
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; only show trailing white space when programming
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
 ;; (add-hook 'prog-mode-hook (electric-indent-mode 0))
 
-(defun my/desktop-read ()
-  "Save current desktop into the desktop directory."
-  (interactive)
-  (desktop-read desktop-dirname))
+;; (defun my/desktop-read ()
+;;   "Save current desktop into the desktop directory."
+;;   (interactive)
+;;   (desktop-read desktop-dirname))
 
-(global-set-key [f6] 'desktop-save-in-desktop-dir)
+;; (global-set-key [f6] 'desktop-save-in-desktop-dir)
 
 ;; enable folding while in prog-mode
 (add-hook 'prog-mode-hook (lambda ()
@@ -79,7 +79,7 @@
 (global-auto-revert-mode 1)
 
 (defun qinsert-func ()
-  "inserts the `qinsert' string. Or encourages user to assign it"
+  "Inserts the `qinsert' string. Or encourages user to assign it."
   (interactive)
   (if (boundp 'qinsert)
 	  (progn
@@ -111,15 +111,17 @@
 ;;   (read-only-mode -1)
 ;;   (ub-mode))
 
-;; turn on line numbers
-(column-number-mode)
-(global-display-line-numbers-mode t)
-
 ;; hide the async shell command buffer
 (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
 
 ;; allow remembering risky commands
+
+;; turn on line numbers
+(column-number-mode)
+(global-display-line-numbers-mode t)
+(setq display-line-numbers 'relative)
 (advice-add 'risky-local-variable-p :override #'ignore)
+
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
@@ -140,6 +142,11 @@
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
   (set-frame-size (selected-frame) 1900 1080 t))
+
+(defun obs-720p ()
+  "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
+  (interactive)
+  (set-frame-size (selected-frame) 1260 720 t))
 
 (defun ymd-date ()
   "lol lmao"
@@ -173,11 +180,14 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; install use-package with straight
+(straight-use-package 'use-package)
+
 ;; setup use-package
 ;; NOTE: see `https://github.com./jweiegley/use-package' for usage
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
 
 ;; install auctex for the memes
 ;; (unless (package-installed-p 'auctex)
@@ -189,24 +199,78 @@
 ;;   :ensure t
 ;;   :init (latex-preview-pane-enable))
 
-(eval-when-compile
-  (require 'use-package))
-(setq use-package-always-ensure t)
+;; (eval-when-compile
+;;   (require 'use-package))
+;; (setq use-package-always-ensure t)
 
-(use-package org
+(use-package auto-package-update
+  :custom
+  (auto-package-update-interval 7)
+  (auto-package-update-prompt-before-update t)
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe)
+  (auto-package-update-at-time "04:00"))
+
+(use-package evil
   :ensure t
   :init
-  ;; (setq org-list-use-circular-motion t)
-  (setq org-M-RET-may-split-line nil))
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-set-leader 'normal (kbd "SPC"))
+  (evil-set-leader 'visual (kbd "SPC"))
+  (defun my/vsplit-then-move-right ()
+	"Split the current window right, then move into the new window."
+	(interactive)
+	(split-window-right)
+	(windmove-right))
+  (defun my/split-then-move-down ()
+	"Split the current window below, then move into the new window."
+	(interactive)
+	(split-window-below)
+	(windmove-down))
+  (defun my/shell-right ()
+	"foo"
+	(interactive)
+	(split-window-right)
+	(windmove-right)
+	(shell))
+  (defun my/shell-down ()
+	"foo"
+	(interactive)
+	(split-window-below)
+	(windmove-down)
+	(shell))
+  ;; (evil-set-leader 'replace (kbd "C-SPC"))
+  ;; (evil-set-leader 'insert (kbd "C-SPC"))
+  (evil-mode 1)
+  :bind
+  ("M-e" . eval-last-sexp)
+  (:map evil-normal-state-map
+		("\\ x" . eval-last-sexp)
+		("C-w V" . my/vsplit-then-move-right)
+		("C-w S" . my/vsplit-then-move-down)
+		("<leader> l" . toggle-linums)
+		("<leader> t" . next-buffer)
+		("<leader> T" . previous-buffer)
+		("<leader> s" . my/shell-right)
+		("<leader> S" . my/shell-down)
+		:map evil-visual-state-map
+		("\\ x" . eval-region)
+		("<leader> l" . toggle-linums)
+		("C-w V" . my/vsplit-then-move-right)
+		("C-w S" . my/vsplit-then-move-down)
+  ))
+		;; ("C-w V" . '(progn (split-window-right)(windmove-right)))
+		;; ("C-w S" . '(progn (split-window-below)(windmove-down))))
 
-;; language server
-;; (use-package eglot
-;;   :ensure t)
-  ;; :init
-  ;; (setq eglot-server-programs ((c++-mode c-mode) "clangd")))
-  ;; :hook
-  ;; (c-mode . eglot-ensure)
-  ;; (c++-mode . eglot-ensure))
+;; TODO leader keybinds
+(use-package org
+  :after evil
+  :ensure t
+  :init
+  (setq org-M-RET-may-split-line nil))
 
 (use-package auto-complete
   :ensure t
@@ -216,77 +280,28 @@
   :config
   (ac-config-default))
 
-;; see https://company-mode.github.io/
-;; used for auto completion
-;; (use-package company
-;;   :ensure t
-;;   :bind
-;;   ("<f7>" . company-mode)
-;;   (:map evil-insert-state-map
-;;    ("<tab>" . company-indent-or-complete-common))
-;;   ;; :diminish company-mode
-;;   :hook
-;;   (prog-mode . company-mode)
-;;   (shell-mode . company-mode))
-
-;; (use-package company-ctags
-;;   :ensure t
-;;   :after company
-;;   :init
-;;   (company-ctags-auto-setup))
-
-(defun my/vsplit-then-move-right ()
-  "Split the current window right, then move into the new window."
-  (interactive)
-  (split-window-right)
-  (windmove-right))
-
-(defun my/split-then-move-down ()
-  "Split the current window below, then move into the new window."
-  (interactive)
-  (split-window-below)
-  (windmove-down))
 
 (use-package yasnippet
  :ensure t
- ;; :bind
- ;; ("<tab>" . yas-insert-snippet)
  :init
  (setq yas-indent-line 'fixed)
- (yas-global-mode 1))
+ (yas-global-mode 1)
+ :bind
+ (:map evil-normal-state-map
+	   ("\\ c" . yas-insert-snippet)))
 
 (use-package origami
   :ensure t
   :hook (prog-mode . origami-mode))
 
-(use-package evil
-  :ensure t
-  :bind
-  (:map evil-normal-state-map
-		("C-w V" . my/vsplit-then-move-right)
-		("C-w S" . my/split-then-move-down)
-		("g t" . next-buffer)
-		("g T" . previous-buffer)
-		("g s" . shell)
-		("\\ x" . eval-last-sexp)
-		:map evil-visual-state-map
-		("C-w V" . my/vsplit-then-move-right)
-		("C-w S" . my/split-then-move-down)
-		("\\ x" . eval-region))
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  :config
-  (evil-mode 1))
+;; (use-package anzu
+;;   :ensure t
+;;   :config
+;;   (global-anzu-mode))
 
-(use-package anzu
-  :ensure t
-  :config
-  (global-anzu-mode))
-
-(use-package evil-anzu
-  :ensure t
-  :after (:all evil anzu))
+;; (use-package evil-anzu
+;;   :ensure t
+;;   :after (:all evil anzu))
 
 (use-package evil-collection
   :after evil
@@ -295,48 +310,65 @@
   (evil-collection-init))
 
 (use-package evil-nerd-commenter
-  :ensure t)
+  :after evil
+  :ensure t
+  :bind
+  (:map evil-normal-state-map
+		("<leader> c i" . evilnc-comment-or-uncomment-lines)
+		("<leader> c c" . evilnc-copy-and-comment-lines)
+		:map evil-visual-state-map
+		("<leader> c i" . evilnc-comment-or-uncomment-lines)
+		("<leader> c c" . evilnc-copy-and-comment-lines)))
 
 ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
+  :after evil
   :ensure t
   :diminish smartparens-mode
-  :bind
-  ("C-l" . sp-forward-sexp)
-  ("C-k" . sp-backward-sexp)
   :hook
   (prog-mode . smartparens-mode)
+  :init
+	(defun sp-wrap-single-quote (&optional arg)
+	  "bruh."
+	  (interactive "P")
+	  (sp-wrap-with-pair "'"))
+	(defun sp-wrap-double-quote (&optional arg)
+	  "bruh."
+	  (interactive "P")
+	  (sp-wrap-with-pair "\""))
   :config
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
-  (setq sp-highlight-pair-overlay nil))
-
-;; TODO STOP EMBARASSING YOURSELF
-;; naw-- just add node_modules/.bin/ to the exec-path
-;; (use-package add-node-modules-path
-;;   :ensure t
-;;   :hook
-;;   (js-mode . add-node-modules-path)
-;;   (js2-mode . add-node-modules-path))
+  (setq sp-highlight-pair-overlay nil)
+  :bind
+  ("C-l" . sp-forward-sexp)
+  ("C-k" . sp-backward-sexp)
+  (:map evil-normal-state-map
+		("<leader> '" . sp-wrap-single-quote)
+		("<leader> \"" . sp-wrap-double-quote)
+		("<leader> (" . sp-wrap-round)
+		("<leader> )" . sp-wrap-round)
+		("<leader> {" . sp-wrap-curly)
+		("<leader> }" . sp-wrap-curly)
+		("<leader> ]" . sp-wrap-square)
+		("<leader> [" . sp-wrap-square)
+  :map evil-visual-state-map
+		("<leader> '" . sp-wrap-single-quote)
+		("<leader> \"" . sp-wrap-double-quote)
+		("<leader> (" . sp-wrap-round)
+		("<leader> )" . sp-wrap-round)
+		("<leader> {" . sp-wrap-curly)
+		("<leader> }" . sp-wrap-curly)
+		("<leader> ]" . sp-wrap-square)
+		("<leader> [" . sp-wrap-square)))
 
 (use-package js2-mode
   :ensure t
   :init
-  ;; (setq js-chain-indent t)
-  ;; (setq js-indent-level 2)
   (setq js2-bounce-indent-p t))
 
 (use-package json-mode
   :ensure t)
-
-;; (use-package tree-sitter
-;;   :ensure t)
-
-;; (use-package tree-sitter-langs
-;;   :ensure t)
-
-;; (use-package tree-sitter-indent
-;;   :ensure t)
 
 (use-package csharp-mode
   :ensure t
@@ -347,11 +379,15 @@
   :ensure t
   :config
   (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
-  :bind ("<f8>" . flycheck-mode)
   :hook
   (json-mode . flycheck-mode)
   (prog-mode . flycheck-mode)
-  (LaTeX-mode . flycheck-mode))
+  (LaTeX-mode . flycheck-mode)
+  :bind
+  ("<f8>" . flycheck-mode)
+  (:map evil-normal-state-map
+		("<leader> e" . flycheck-next-error)
+		("<leader> E" . flycheck-previous-error)))
 
 (use-package ws-butler
   :ensure t
@@ -377,10 +413,8 @@
   :bind
   ("<f10>" . neotree-hidden-file-toggle)
   (:map evil-normal-state-map
-		("\\ d" . my/desktop-read)
 		("\\ t" . neotree-toggle)
 		:map evil-visual-state-map
-		("\\ d" . my/desktop-read)
 		("\\ t" . neotree-toggle)))
 
 (use-package solaire-mode
@@ -388,18 +422,19 @@
   :diminish solaire-global-mode
   :hook (after-init . solaire-global-mode))
 
-(use-package undo-tree
-  :ensure t
-  :diminish global-undo-tree-mode
-  :after evil
-  :bind
-  (:map evil-normal-state-map
-		("\\ u" . undo-tree-visualize)
-		:map evil-visual-state-map
-		("\\ u" . undo-tree-visualize))
-  :config
-  (append neo-hidden-regexp-list '("\\.aux$" "\\.bak$" "\\.toc$")) ;; latex ignores
-  (global-undo-tree-mode))
+;; I don't use this at all tbqh
+;; (use-package undo-tree
+;;   :ensure t
+;;   :diminish global-undo-tree-mode
+;;   :after evil
+;;   :bind
+;;   (:map evil-normal-state-map
+;; 		("\\ u" . undo-tree-visualize)
+;; 		:map evil-visual-state-map
+;; 		("\\ u" . undo-tree-visualize))
+;;   :config
+;;   (append neo-hidden-regexp-list '("\\.aux$" "\\.bak$" "\\.toc$")) ;; latex ignores
+;;   (global-undo-tree-mode))
 
 (use-package which-key
   :ensure t
@@ -409,12 +444,22 @@
 
 (use-package magit
   :ensure t
-  :after evil
   :bind
   (:map evil-normal-state-map
 		("\\ g" . magit-status)
 		:map evil-visual-state-map
 		("\\ g" . magit-status)))
+
+(use-package imenu-list
+  :after evil
+  :ensure t
+  :config
+  (setq imenu-list-focus-after-activation t)
+  :bind
+  (:map evil-normal-state-map
+  ("<leader> i" . imenu-list-minor-mode)
+  :map evil-visual-state-map
+  ("<leader> i" . imenu-list-minor-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -429,6 +474,7 @@
 
 (use-package projectile
   :ensure t
+  :after evil
   :diminish projectile-mode
   :after evil
   :init
@@ -445,27 +491,26 @@
 		(projectile-find-other-file t))
   :bind
   ;; ("s-p" . projectile-command-map)
-  (("C-c p" . projectile-command-map)
-   :map evil-normal-state-map
-   ("\\ p" . projectile-switch-project)
-   :map evil-visual-state-map
-   ("\\ p" . projectile-switch-project)
-   :map evil-normal-state-map
-   ("\\ h" . projectile-find-other-file)
-   ("\\ H" . my/projectile-find-other-file)
-   :map evil-visual-state-map
-   ("\\ h" . projectile-find-other-file)
-   ("\\ H" . my/projectile-find-other-file)
-   :map evil-normal-state-map
-   ("\\ a" . my/context-ag)
-   :map evil-visual-state-map
-   ("\\ a" . my/context-ag)
-   :map evil-normal-state-map
-   ("\\ i" . counsel-imenu)
-   :map evil-visual-state-map
-   ("\\ i" . counsel-imenu))
+  ("C-c p" . projectile-command-map)
+  (:map evil-normal-state-map
+		("\\ p" . projectile-switch-project)
+		("<leader> a" . my/context-ag)
+		("<leader> h" . my/projectile-find-other-file)
+		:map evil-visual-state-map
+		("\\ p" . projectile-switch-project)
+		("<leader> a" . my/context-ag)
+		("<leader> h" . my/projectile-find-other-file))
   :config (projectile-mode 1))
 
+(use-package ag
+  :init
+  (setq ag-highlight-search t)
+  (setq ag-reuse-window t))
+
+(use-package flycheck-projectile
+  :after projectile
+  :load-path "~/.emacs.d/packages"
+  :bind ("C-c e" . flycheck-projectile-list-errors))
 
 (use-package dashboard
   :ensure t
@@ -484,7 +529,7 @@
 
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (defun my/refresh-revert ()
-  "refresh the dashboard or revert the current buffer."
+  "Refresh the dashboard or revert the current buffer."
   (interactive)
   (if (string= (buffer-name) "*dashboard*")
 	  (progn
@@ -504,13 +549,15 @@
 
 (use-package ivy
   :ensure t
-  :after all-the-icons
+  :after (:all evil all-the-icons)
   :diminish ivy-mode
   :bind
   (("C-s" . swiper)
    :map evil-normal-state-map
+   ("<leader> /" . swiper)
    ("\\ s" . swiper)
    :map evil-visual-state-map
+   ("<leader> /" . swiper)
    ("\\ s" . swiper)
    :map ivy-minibuffer-map
    ("TAB" . ivy-alt-done)
@@ -542,17 +589,18 @@
   :bind
   (("M-x" . counsel-M-x)
    ("C-x b" . counsel-ibuffer)
+   ;; ("C-x C-m," . counsel-bookmark)
    ("C-x C-f" . counsel-find-file)
    :map evil-normal-state-map
-   ("\\ r" . counsel-recentf)
-   ("\\ m" . counsel-bookmark)
-   ("\\ f" . counsel-find-file)
-   ("\\ b" . counsel-ibuffer)
+   ("<leader> r" . counsel-recentf)
+   ;; ("<leader> m" . counsel-bookmark)
+   ("<leader> f" . counsel-find-file)
+   ("<leader> b" . counsel-ibuffer)
    :map evil-visual-state-map
-   ("\\ r" . counsel-recentf)
-   ("\\ m" . counsel-bookmark)
-   ("\\ f" . counsel-find-file)
-   ("\\ b" . counsel-ibuffer)
+   ("<leader> r" . counsel-recentf)
+   ;; ("<leader> m" . counsel-bookmark)
+   ("<leader> f" . counsel-find-file)
+   ("<leader> b" . counsel-ibuffer)
    :map dired-mode-map
    ("c" . counsel-find-file)
    :map minibuffer-local-map
@@ -567,68 +615,67 @@
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-(defun sp-wrap-single-quote (&optional arg)
-  "bruh."
-  (interactive "P")
-  (sp-wrap-with-pair "'"))
-
-(defun sp-wrap-double-quote (&optional arg)
-  "bruh."
-  (interactive "P")
-  (sp-wrap-with-pair "\""))
-
-(use-package evil-leader ;; the leader key is SPACEBAR (default is \)
-  :ensure t
-  :diminish global-evil-leader-mode
-  :after evil-nerd-commenter
-  :config
-  (global-evil-leader-mode)
-  (evil-leader/set-leader "SPC")
-  (evil-leader/set-key
-	"<up>" 'flycheck-previous-error
-	"<down>" 'flycheck-next-error
+;; (use-package evil-leader ;; the leader key is SPACEBAR (default is \)
+  ;; :ensure t
+  ;; :diminish global-evil-leader-mode
+  ;; :after (:all evil evil-nerd-commenter imenu-list)
+  ;; :config
+  ;; (global-evil-leader-mode 1)
+  ;; (evil-leader/leader "SPC")
+  ;; (global-evil-leader-mode)
+  ;; (evil-leader/set-leader "<SPC>")
+  ;; (evil-leader/set-key
+	;; "<up>" 'flycheck-previous-error
+	;; "<down>" 'flycheck-next-error
 	;; "i" 'quick-insert-func
-	"l" 'toggle-linums
-    "ci" 'evilnc-comment-or-uncomment-lines
-    "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
-    "cc" 'evilnc-copy-and-comment-lines
-    "cp" 'evilnc-comment-or-uncomment-paragraphs
-    "cr" 'comment-or-uncomment-region
-    "cv" 'evilnc-toggle-invert-comment-line-by-line
-    "." 'evilnc-copy-and-comment-operator
-	"'" 'sp-wrap-single-quote
-	"\"" 'sp-wrap-double-quote
-	")" 'sp-wrap-round
-	"(" 'sp-wrap-round
-	"}" 'sp-wrap-curly
-	"{" 'sp-wrap-curly
-	"]" 'sp-wrap-square
-	"[" 'sp-wrap-square)
-  (evil-leader/set-key-for-mode 'org-mode
-	"SPC i" 'org-insert-todo-heading
-	"SPC I" 'org-insert-heading
-	"SPC a" 'org-insert-heading-respect-content
-	"SPC A" 'org-insert-todo-heading-respect-content
-	"SPC /" 'org-update-statistics-cookies
-	"SPC -" 'org-ctrl-c-minus
-	"SPC c" 'org-ctrl-c-ctrl-c
-	"SPC h" 'org-metaleft
-	"SPC j" 'org-metadown
-	"SPC k" 'org-metaup
-	"SPC l" 'org-metaright
-	"SPC H" 'org-shiftmetaleft
-	"SPC RET" 'org-meta-return
-	"SPC t" 'org-todo
-	"SPC L" 'org-shiftmetaright)
-  (evil-leader/set-key-for-mode 'js-mode
-	"<backtab>" 'js2-indent-bounce-backward
-	"SPC h" 'js2-indent-bounce-backward
-	"SPC l" 'js2-indent-bounce
-	"TAB" 'js2-indent-bounce)
-	)
+	;; "l" 'toggle-linums
+    ;; "ci" 'evilnc-comment-or-uncomment-lines
+    ;; "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
+    ;; "cc" 'evilnc-copy-and-comment-lines
+    ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
+    ;; "cr" 'comment-or-uncomment-region
+    ;; "cv" 'evilnc-toggle-invert-comment-line-by-line
+    ;; "." 'evilnc-copy-and-comment-operator
+	;; "'" 'sp-wrap-single-quote
+	;; "\"" 'sp-wrap-double-quote
+	;; ")" 'sp-wrap-round
+	;; "(" 'sp-wrap-round
+	;; "}" 'sp-wrap-curly
+	;; "{" 'sp-wrap-curly
+	;; "]" 'sp-wrap-square
+	;; "[" 'sp-wrap-square)
+  ;; (evil-leader/set-key-for-mode 'org-mode
+  ;; 	"SPC i" 'org-insert-todo-heading
+  ;; 	"SPC I" 'org-insert-heading
+  ;; 	"SPC a" 'org-insert-heading-respect-content
+  ;; 	"Spc A" 'org-insert-todo-heading-respect-content
+  ;; 	"SPC /" 'org-update-statistics-cookies
+  ;; 	"SPC -" 'org-ctrl-c-minus
+  ;; 	"SPC c" 'org-ctrl-c-ctrl-c
+  ;; 	"SPC h" 'org-metaleft
+  ;; 	"SPC j" 'org-metadown
+  ;; 	"SPC k" 'org-metaup
+  ;; 	"SPC l" 'org-metaright
+  ;; 	"SPC H" 'org-shiftmetaleft
+  ;; 	"SPC RET" 'org-meta-return
+  ;; 	"SPC t" 'org-todo
+  ;; 	"SPC L" 'org-shiftmetaright)
+  ;; (evil-leader/set-key-for-mode 'js-mode
+  ;; 	"<backtab>" 'js2-indent-bounce-backward
+  ;; 	"SPC h" 'js2-indent-bounce-backward
+  ;; 	"SPC l" 'js2-indent-bounce
+  ;; 	"TAB" 'js2-indent-bounce)
+  ;; 	)
 
 (use-package vmd-mode ;; enable to begin previewing markdown
   :ensure t)
+
+(use-package rainbow-mode
+  :diminish rainbow-mode
+  :hook
+  (emacs-lisp-mode . raimbow-mode)
+  (text-mode . rainbow-mode)
+  (lisp-mode . rainbow-mode))
 
 ;; apparently this isn't in the public packages
 ;; (use-package undo-browse
@@ -636,9 +683,9 @@
 
 ;; AESTHETICS ;;
 
-(use-package yascroll
-  :ensure t
-  :config (global-yascroll-bar-mode 1))
+;; (use-package yascroll
+;;   :ensure t
+;;   :config (global-yascroll-bar-mode 1))
 
 (use-package doom-themes
   :ensure t
@@ -684,6 +731,25 @@
 ;;   (setq rmh-elfeed-org-files (list "elfeed.org"))
 ;; )
 
+(use-package gdscript-mode
+  :straight (gdscript-mode
+			 :type git
+			 :host github
+			 :repo "godotengine/emacs-gdscript-mode"))
+
+(use-package lsp-mode
+  :after gdscript-mode
+  :hook (gdscript-mode . lsp-deferred)
+  :commands (lsp lsp-deferred))
+
+(use-package lsp-ui
+  :after lsp-mode
+  :commands lsp-ui-mode)
+
+(use-package lsp-ivy
+  :after lsp-mode
+  :commands lsp-ivy-workspace-symbol)
 
 
+(evil-mode 1)
 (setq gc-cons-threshod (* 2 1000 1000))
