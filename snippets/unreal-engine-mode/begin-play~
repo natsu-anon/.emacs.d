@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: begin-play
+# key: ubp
+# --
+virtual void BeginPlay() override;

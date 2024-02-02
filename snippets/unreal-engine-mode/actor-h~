@@ -1,0 +1,39 @@
+# -*- mode: snippet -*-
+# name: actor.h
+# key: actor.h
+# --
+// prepend to source file: (setq-local yas-cpp-class A$1)
+
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "$1.generated.h"
+
+/* API: https://docs.unrealengine.com/5.3/en-US/API/Runtime/Engine/GameFramework/AActor/
+ *
+ */
+
+UCLASS()
+class `(format "%s" unreal-engine-module-api)` A${1:ActorName} : public AActor
+{
+	GENERATED_BODY()
+
+public:
+
+	A$1();
+
+public:
+
+	// virtual void Tick(float DeltaTime) override;
+
+	// virtual void BeginDestroy() override;
+
+protected:
+
+	// virtual void BeginPlay() override;
+
+	// virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+};

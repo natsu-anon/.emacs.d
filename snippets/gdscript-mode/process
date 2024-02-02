@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: process
+# key: _process
+# overload Node._process()
+# --
+func _process(_delta: float) -> void:
+	${1:pass}

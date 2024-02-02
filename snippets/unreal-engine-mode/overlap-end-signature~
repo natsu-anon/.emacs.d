@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: overlap end signature
+# key: oes
+# --
+UFUNCTION()
+virtual void ${1:OverlapEndFunc}(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep);

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: upa
+# key: upa
+# --
+UPROPERTY(BlueprintAssignable)
+$0

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: cpp-function
+# key: c:
+# condition: (boundp 'yas-cpp-class)
+# --
+`(format "%s::" yas-cpp-class)`::$0

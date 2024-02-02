@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: component hit signature
+# key: chs
+# --
+UFUNCTION()
+virtual void ${1:CompoentHitFunc}(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult);

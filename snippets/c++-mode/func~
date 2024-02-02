@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: cpp-function
+# key: func
+# --
+${1:void} `(when (bound-p 'ya-class)(format "%s::" ya-class)`${2:func}($3)
+{
+	$0
+}
