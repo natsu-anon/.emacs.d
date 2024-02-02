@@ -181,13 +181,12 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; install use-package with straight
-(straight-use-package 'use-package)
 
 ;; setup use-package
 ;; NOTE: see `https://github.com./jweiegley/use-package' for usage
-;; (unless (package-installed-p 'use-package)
-;;   (package-refresh-contents)
-;;   (package-install 'use-package))
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
 ;; install auctex for the memes
 ;; (unless (package-installed-p 'auctex)
@@ -199,9 +198,10 @@
 ;;   :ensure t
 ;;   :init (latex-preview-pane-enable))
 
-;; (eval-when-compile
-;;   (require 'use-package))
-;; (setq use-package-always-ensure t)
+(eval-when-compile
+  (require 'use-package))
+(setq use-package-always-ensure t)
+(straight-use-package 'use-package)
 
 (use-package auto-package-update
   :custom
@@ -244,7 +244,7 @@
 	(shell))
   ;; (evil-set-leader 'replace (kbd "C-SPC"))
   ;; (evil-set-leader 'insert (kbd "C-SPC"))
-  (evil-mode 1)
+  ;; (evil-mode 1)
   :bind
   ("M-e" . eval-last-sexp)
   (:map evil-normal-state-map
@@ -282,26 +282,28 @@
 
 
 (use-package yasnippet
+ ;; :after evil
  :ensure t
  :init
  (setq yas-indent-line 'fixed)
  (yas-global-mode 1)
  :bind
- (:map evil-normal-state-map
-	   ("\\ c" . yas-insert-snippet)))
+ ("C-<tab>". yas-isnert-snippet))
+ ;; (:map evil-normal-state-map
+ ;; 	   ("\\ c" . yas-insert-snippet)))
 
 (use-package origami
   :ensure t
   :hook (prog-mode . origami-mode))
 
-;; (use-package anzu
-;;   :ensure t
-;;   :config
-;;   (global-anzu-mode))
+;; ;; (use-package anzu
+;; ;;   :ensure t
+;; ;;   :config
+;; ;;   (global-anzu-mode))
 
-;; (use-package evil-anzu
-;;   :ensure t
-;;   :after (:all evil anzu))
+;; ;; (use-package evil-anzu
+;; ;;   :ensure t
+;; ;;   :after (:all evil anzu))
 
 (use-package evil-collection
   :after evil
@@ -320,7 +322,7 @@
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)))
 
-;; see `https://github.com/Fuco1/smartparens/wiki'
+;; ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
   :after evil
   :ensure t
@@ -380,6 +382,7 @@
   :config
   (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
   :hook
+  ;; (lisp-mode . flycheck-mode)
   (json-mode . flycheck-mode)
   (prog-mode . flycheck-mode)
   (LaTeX-mode . flycheck-mode)
@@ -440,7 +443,7 @@
   :ensure t
   :diminish which-key-mode
   :init (which-key-mode)
-  :config (setq which-key-idle-delay 0.5))
+  :config (setq which-key-idle-delay 0.3))
 
 (use-package magit
   :ensure t
@@ -453,7 +456,7 @@
 (use-package imenu-list
   :after evil
   :ensure t
-  :config
+  :init
   (setq imenu-list-focus-after-activation t)
   :bind
   (:map evil-normal-state-map
@@ -527,7 +530,6 @@
   (add-to-list 'dashboard-items '(agenda) t)
   (dashboard-setup-startup-hook))
 
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (defun my/refresh-revert ()
   "Refresh the dashboard or revert the current buffer."
   (interactive)
@@ -615,77 +617,77 @@
 	 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-;; (use-package evil-leader ;; the leader key is SPACEBAR (default is \)
-  ;; :ensure t
-  ;; :diminish global-evil-leader-mode
-  ;; :after (:all evil evil-nerd-commenter imenu-list)
-  ;; :config
-  ;; (global-evil-leader-mode 1)
-  ;; (evil-leader/leader "SPC")
-  ;; (global-evil-leader-mode)
-  ;; (evil-leader/set-leader "<SPC>")
-  ;; (evil-leader/set-key
-	;; "<up>" 'flycheck-previous-error
-	;; "<down>" 'flycheck-next-error
-	;; "i" 'quick-insert-func
-	;; "l" 'toggle-linums
-    ;; "ci" 'evilnc-comment-or-uncomment-lines
-    ;; "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
-    ;; "cc" 'evilnc-copy-and-comment-lines
-    ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
-    ;; "cr" 'comment-or-uncomment-region
-    ;; "cv" 'evilnc-toggle-invert-comment-line-by-line
-    ;; "." 'evilnc-copy-and-comment-operator
-	;; "'" 'sp-wrap-single-quote
-	;; "\"" 'sp-wrap-double-quote
-	;; ")" 'sp-wrap-round
-	;; "(" 'sp-wrap-round
-	;; "}" 'sp-wrap-curly
-	;; "{" 'sp-wrap-curly
-	;; "]" 'sp-wrap-square
-	;; "[" 'sp-wrap-square)
-  ;; (evil-leader/set-key-for-mode 'org-mode
-  ;; 	"SPC i" 'org-insert-todo-heading
-  ;; 	"SPC I" 'org-insert-heading
-  ;; 	"SPC a" 'org-insert-heading-respect-content
-  ;; 	"Spc A" 'org-insert-todo-heading-respect-content
-  ;; 	"SPC /" 'org-update-statistics-cookies
-  ;; 	"SPC -" 'org-ctrl-c-minus
-  ;; 	"SPC c" 'org-ctrl-c-ctrl-c
-  ;; 	"SPC h" 'org-metaleft
-  ;; 	"SPC j" 'org-metadown
-  ;; 	"SPC k" 'org-metaup
-  ;; 	"SPC l" 'org-metaright
-  ;; 	"SPC H" 'org-shiftmetaleft
-  ;; 	"SPC RET" 'org-meta-return
-  ;; 	"SPC t" 'org-todo
-  ;; 	"SPC L" 'org-shiftmetaright)
-  ;; (evil-leader/set-key-for-mode 'js-mode
-  ;; 	"<backtab>" 'js2-indent-bounce-backward
-  ;; 	"SPC h" 'js2-indent-bounce-backward
-  ;; 	"SPC l" 'js2-indent-bounce
-  ;; 	"TAB" 'js2-indent-bounce)
-  ;; 	)
+;; ;; (use-package evil-leader ;; the leader key is SPACEBAR (default is \)
+;;   ;; :ensure t
+;;   ;; :diminish global-evil-leader-mode
+;;   ;; :after (:all evil evil-nerd-commenter imenu-list)
+;;   ;; :config
+;;   ;; (global-evil-leader-mode 1)
+;;   ;; (evil-leader/leader "SPC")
+;;   ;; (global-evil-leader-mode)
+;;   ;; (evil-leader/set-leader "<SPC>")
+;;   ;; (evil-leader/set-key
+;; 	;; "<up>" 'flycheck-previous-error
+;; 	;; "<down>" 'flycheck-next-error
+;; 	;; "i" 'quick-insert-func
+;; 	;; "l" 'toggle-linums
+;;     ;; "ci" 'evilnc-comment-or-uncomment-lines
+;;     ;; "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
+;;     ;; "cc" 'evilnc-copy-and-comment-lines
+;;     ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
+;;     ;; "cr" 'comment-or-uncomment-region
+;;     ;; "cv" 'evilnc-toggle-invert-comment-line-by-line
+;;     ;; "." 'evilnc-copy-and-comment-operator
+;; 	;; "'" 'sp-wrap-single-quote
+;; 	;; "\"" 'sp-wrap-double-quote
+;; 	;; ")" 'sp-wrap-round
+;; 	;; "(" 'sp-wrap-round
+;; 	;; "}" 'sp-wrap-curly
+;; 	;; "{" 'sp-wrap-curly
+;; 	;; "]" 'sp-wrap-square
+;; 	;; "[" 'sp-wrap-square)
+;;   ;; (evil-leader/set-key-for-mode 'org-mode
+;;   ;; 	"SPC i" 'org-insert-todo-heading
+;;   ;; 	"SPC I" 'org-insert-heading
+;;   ;; 	"SPC a" 'org-insert-heading-respect-content
+;;   ;; 	"Spc A" 'org-insert-todo-heading-respect-content
+;;   ;; 	"SPC /" 'org-update-statistics-cookies
+;;   ;; 	"SPC -" 'org-ctrl-c-minus
+;;   ;; 	"SPC c" 'org-ctrl-c-ctrl-c
+;;   ;; 	"SPC h" 'org-metaleft
+;;   ;; 	"SPC j" 'org-metadown
+;;   ;; 	"SPC k" 'org-metaup
+;;   ;; 	"SPC l" 'org-metaright
+;;   ;; 	"SPC H" 'org-shiftmetaleft
+;;   ;; 	"SPC RET" 'org-meta-return
+;;   ;; 	"SPC t" 'org-todo
+;;   ;; 	"SPC L" 'org-shiftmetaright)
+;;   ;; (evil-leader/set-key-for-mode 'js-mode
+;;   ;; 	"<backtab>" 'js2-indent-bounce-backward
+;;   ;; 	"SPC h" 'js2-indent-bounce-backward
+;;   ;; 	"SPC l" 'js2-indent-bounce
+;;   ;; 	"TAB" 'js2-indent-bounce)
+;;   ;; 	)
 
-(use-package vmd-mode ;; enable to begin previewing markdown
-  :ensure t)
+ (use-package vmd-mode ;; enable to begin previewing markdown
+   :ensure t)
 
-(use-package rainbow-mode
-  :diminish rainbow-mode
-  :hook
-  (emacs-lisp-mode . raimbow-mode)
-  (text-mode . rainbow-mode)
-  (lisp-mode . rainbow-mode))
+ (use-package rainbow-mode
+   :diminish rainbow-mode
+   :hook
+   (emacs-lisp-mode . rainbow-mode)
+   (text-mode . rainbow-mode)
+   (lisp-mode . rainbow-mode))
 
-;; apparently this isn't in the public packages
-;; (use-package undo-browse
-;;   :ensure t)
+;;  ;; apparently this isn't in the public packages
+;;  ;; (use-package undo-browse
+;;  ;;   :ensure t)
 
-;; AESTHETICS ;;
+;; ;; AESTHETICS ;;
 
-;; (use-package yascroll
-;;   :ensure t
-;;   :config (global-yascroll-bar-mode 1))
+;; ;; (use-package yascroll
+;; ;;   :ensure t
+;; ;;   :config (global-yascroll-bar-mode 1))
 
 (use-package doom-themes
   :ensure t
@@ -751,5 +753,6 @@
   :commands lsp-ivy-workspace-symbol)
 
 
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (evil-mode 1)
 (setq gc-cons-threshod (* 2 1000 1000))
