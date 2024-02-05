@@ -336,6 +336,15 @@
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)))
 
+(defun sp-wrap-single-quote (&optional arg)
+  "bruh."
+  (interactive "P")
+  (sp-wrap-with-pair "'"))
+(defun sp-wrap-double-quote (&optional arg)
+  "bruh."
+  (interactive "P")
+  (sp-wrap-with-pair "\""))
+
 ;; ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
   :after evil
@@ -343,15 +352,6 @@
   :diminish smartparens-mode
   :hook
   (prog-mode . smartparens-mode)
-  :init
-	(defun sp-wrap-single-quote (&optional arg)
-	  "bruh."
-	  (interactive "P")
-	  (sp-wrap-with-pair "'"))
-	(defun sp-wrap-double-quote (&optional arg)
-	  "bruh."
-	  (interactive "P")
-	  (sp-wrap-with-pair "\""))
   :config
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
@@ -491,6 +491,29 @@
   :hook (prog-mode . highlight-indent-guides-mode)
   :config (setq highlight-indent-guides-method 'character))
 
+(defun my/context-ag (&optional initial-value)
+  "Use projectile-ag if in a project, otherwise regular ag."
+  (interactive)
+  (if (projectile-project-p)
+	  (ag-project (read-string "search-string (use ag-project-files to limit search to a given filetype):" initial-value))
+	(ag (read-string "search-string (use ag-files to limit search to a given filetype):" initial-value)
+		(file-name-directory buffer-file-name))))
+
+(defun my/normal-ag ()
+	"Use projectile-ag if in a project, otherwise regular ag."
+	(interactive)
+	(my/context-ag (word-at-point t)))
+
+(defun my/visual-ag ()
+	"Use projectile-ag if in a project, otherwise regular ag."
+	(interactive)
+	(my/context-ag (buffer-substring-no-properties (region-beginning) (region-end))))
+
+(defun my/projectile-find-other-file ()
+		"projectile-find-other-file but with flex-matching enabled by default"
+		(interactive)
+		(projectile-find-other-file t))
+
 (use-package projectile
   :ensure t
   :after evil
@@ -498,26 +521,16 @@
   :after evil
   :init
   (setq projectile-completion-system 'ivy)
-  (defun my/context-ag ()
-	"Use projectile-ag if in a project, otherwise regular ag."
-	(interactive)
-	(if (projectile-project-p)
-		(ag-project (read-string "search-string (use ag-project-files to limit search to a given filetype):"))
-	  (ag (read-string "search-string (use ag-files to limit search to a given filetype):") (file-name-directory buffer-file-name))))
-  (defun my/projectile-find-other-file ()
-		"projectile-find-other-file but with flex-matching enabled by default"
-		(interactive)
-		(projectile-find-other-file t))
   :bind
   ;; ("s-p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
   (:map evil-normal-state-map
 		("\\ p" . projectile-switch-project)
-		("<leader> a" . my/context-ag)
+		("<leader> a" . my/normal-ag)
 		("<leader> h" . my/projectile-find-other-file)
 		:map evil-visual-state-map
 		("\\ p" . projectile-switch-project)
-		("<leader> a" . my/context-ag)
+		("<leader> a" . my/visual-ag)
 		("<leader> h" . my/projectile-find-other-file))
   :config (projectile-mode 1))
 
