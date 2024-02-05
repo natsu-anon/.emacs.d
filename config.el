@@ -51,6 +51,8 @@
 							(highlight-regexp "SENPAI")
 							(highlight-regexp "NOTA BENE")))
 
+(add-hook 'prog-mode-hook 'outline-minor-mode)
+
 ;; 80 character line in prog-mode
 (setq-default display-fill-column-indicator-column 80)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
@@ -116,12 +118,11 @@
 
 ;; allow remembering risky commands
 
-;; turn on line numbers
+;; turn on RELATIVEline numbers
 (column-number-mode)
-(global-display-line-numbers-mode t)
+(global-display-line-numbers-mode)
 (setq display-line-numbers 'relative)
 (advice-add 'risky-local-variable-p :override #'ignore)
-
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
@@ -210,7 +211,40 @@
   (auto-package-update-hide-results t)
   :config
   (auto-package-update-maybe)
-  (auto-package-update-at-time "04:00"))
+  (auto-package-update-at-time "17:00"))
+
+(defun my/vsplit-then-move-right ()
+  "Split the current window right, then move into the new window."
+  (interactive)
+  (split-window-right)
+  (windmove-right))
+
+(defun my/split-then-move-down ()
+  "Split the current window below, then move into the new window."
+  (interactive)
+  (split-window-below)
+  (windmove-down))
+
+(defun my/shell-right ()
+  "foo"
+  (interactive)
+  (my/vsplit-then-move-right)
+  (shell))
+
+(defun my/shell-down ()
+  "foo"
+  (interactive)
+  (my/split-then-move-down)
+  (shell))
+
+(defun my/ibuffer-toggle ()
+  "toggle the ibuffer list"
+  (interactive)
+  (if (string= (buffer-name) "*Ibuffer*")
+	  (kill-buffer-and-window)
+	(progn
+	  (ibuffer-list-buffers)
+	  (pop-to-buffer "*Ibuffer*"))))
 
 (use-package evil
   :ensure t
@@ -220,45 +254,22 @@
   :config
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
-  (defun my/vsplit-then-move-right ()
-	"Split the current window right, then move into the new window."
-	(interactive)
-	(split-window-right)
-	(windmove-right))
-  (defun my/split-then-move-down ()
-	"Split the current window below, then move into the new window."
-	(interactive)
-	(split-window-below)
-	(windmove-down))
-  (defun my/shell-right ()
-	"foo"
-	(interactive)
-	(split-window-right)
-	(windmove-right)
-	(shell))
-  (defun my/shell-down ()
-	"foo"
-	(interactive)
-	(split-window-below)
-	(windmove-down)
-	(shell))
-  ;; (evil-set-leader 'replace (kbd "C-SPC"))
-  ;; (evil-set-leader 'insert (kbd "C-SPC"))
-  ;; (evil-mode 1)
   :bind
   ("M-e" . eval-last-sexp)
   (:map evil-normal-state-map
 		("\\ x" . eval-last-sexp)
+		("\\ b" . my/ibuffer-toggle)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/vsplit-then-move-down)
-		("<leader> l" . toggle-linums)
+		("\\ l" . toggle-linums)
 		("<leader> t" . next-buffer)
 		("<leader> T" . previous-buffer)
 		("<leader> s" . my/shell-right)
 		("<leader> S" . my/shell-down)
 		:map evil-visual-state-map
 		("\\ x" . eval-region)
-		("<leader> l" . toggle-linums)
+		("\\ b" . my/ibuffer-toggle)
+		("\\ l" . toggle-linums)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/vsplit-then-move-down)
   ))
@@ -280,21 +291,22 @@
   :config
   (ac-config-default))
 
-
 (use-package yasnippet
- ;; :after evil
+ :after evil
  :ensure t
  :init
  (setq yas-indent-line 'fixed)
  (yas-global-mode 1)
  :bind
- ("C-<tab>". yas-isnert-snippet))
- ;; (:map evil-normal-state-map
- ;; 	   ("\\ c" . yas-insert-snippet)))
+ ("C-<tab>". yas-isnert-snippet)
+ (:map evil-normal-state-map
+	   ("<leader> y" . yas-insert-snippet)
+	   :map evil-visual-state-map
+	   ("<leader> y" . yas-insert-snippet)))
 
-(use-package origami
-  :ensure t
-  :hook (prog-mode . origami-mode))
+;; (use-package origami
+;;   :ensure t
+;;   :hook (prog-mode . origami-mode))
 
 ;; ;; (use-package anzu
 ;; ;;   :ensure t
@@ -446,7 +458,9 @@
   :config (setq which-key-idle-delay 0.3))
 
 (use-package magit
+  :after evil
   :ensure t
+  :config
   :bind
   (:map evil-normal-state-map
 		("\\ g" . magit-status)
@@ -460,9 +474,9 @@
   (setq imenu-list-focus-after-activation t)
   :bind
   (:map evil-normal-state-map
-  ("<leader> i" . imenu-list-minor-mode)
+  ("\\ i" . imenu-list-minor-mode)
   :map evil-visual-state-map
-  ("<leader> i" . imenu-list-minor-mode)))
+  ("\\ i" . imenu-list-minor-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -533,19 +547,34 @@
 (defun my/refresh-revert ()
   "Refresh the dashboard or revert the current buffer."
   (interactive)
-  (if (string= (buffer-name) "*dashboard*")
-	  (progn
-		(dashboard-refresh-buffer)
-		(message "%s refreshed!" (buffer-name)))
-	(if (string-match "magit:.+" (buffer-name))
-		(progn
-		  (magit-refresh)
-		  (message "%s refreshed!" (buffer-name)))
-	  (if (string-match "\*.+?\*" (buffer-name))
-		  (message "cannot revert %s!" (buffer-name))
-		(progn
-		  (revert-buffer t t t)
-		  (message "%s reverted!" (buffer-name)))))))
+  (cond
+   ((string= (buffer-name) "*dashboard*")
+	(progn
+	  (dashboard-refresh-buffer)
+	  (message "%s refreshed!" (buffer-name))))
+   ((string-match "magit:.+" (buffer-name))
+	(progn
+	  (magit-refresh)
+	  (message "%s refreshed!" (buffer-name))))
+   ((string-match "\*.+?\*" (buffer-name))
+	(message "cannot revert %s!" (buffer-name)))
+   (t (progn
+		(revert-buffer t t t)
+		(message "%s reverted!" (buffer-name))))))
+  ;; OLD
+  ;; (if (string= (buffer-name) "*dashboard*")
+  ;; 	  (progn
+  ;; 		(dashboard-refresh-buffer)
+  ;; 		(message "%s refreshed!" (buffer-name)))
+  ;; 	(if (string-match "magit:.+" (buffer-name))
+  ;; 		(progn
+  ;; 		  (magit-refresh)
+  ;; 		  (message "%s refreshed!" (buffer-name)))
+  ;; 	  (if (string-match "\*.+?\*" (buffer-name))
+  ;; 		  (message "cannot revert %s!" (buffer-name))
+  ;; 		(progn
+  ;; 		  (revert-buffer t t t)
+  ;; 		  (message "%s reverted!" (buffer-name)))))))
 
 (global-set-key [f5] 'my/refresh-revert)
 
@@ -590,19 +619,21 @@
   :after evil
   :bind
   (("M-x" . counsel-M-x)
-   ("C-x b" . counsel-ibuffer)
+   ("C-x b" . counsel-switch-buffer)
    ;; ("C-x C-m," . counsel-bookmark)
    ("C-x C-f" . counsel-find-file)
    :map evil-normal-state-map
    ("<leader> r" . counsel-recentf)
+   ("<leader> i" . counsel-imenu)
    ;; ("<leader> m" . counsel-bookmark)
    ("<leader> f" . counsel-find-file)
-   ("<leader> b" . counsel-ibuffer)
+   ("<leader> b" . counsel-switch-buffer)
    :map evil-visual-state-map
    ("<leader> r" . counsel-recentf)
+   ("<leader> i" . counsel-imenu)
    ;; ("<leader> m" . counsel-bookmark)
    ("<leader> f" . counsel-find-file)
-   ("<leader> b" . counsel-ibuffer)
+   ("<leader> b" . counsel-switch-buffer)
    :map dired-mode-map
    ("c" . counsel-find-file)
    :map minibuffer-local-map
@@ -752,6 +783,26 @@
   :after lsp-mode
   :commands lsp-ivy-workspace-symbol)
 
+;; TOO HOT
+;; (bind-keys :prefix-map my-space-map
+;; 		   :prefix "SPC"
+;; 		   ("t" . next-buffer)
+;; 		   ("T" . previous-buffer)
+;; 		   ("s" . my/shell-right)
+;; 		   ("S" . my/shell-down)
+;; 		   ("a" . my/context-ag)
+;; 		   ("f" . counsel-find-file)
+;; 		   ("i" . counsel-imenu)
+;; 		   ("b" . counsel-switch-buffer)
+;; 		   ("/" . swiper))
+
+;; (bind-keys :prefix-map my-backslash-map
+;; 		   :prefix "\\"
+;; 		   ("p" . projectile-switch-project)
+;; 		   ("t" . neotree-toggle)
+;; 		   ("x" . eval-last-sexp)
+;; 		   ("i" . imenu-list-minor-mode)
+;; 		   ("b" . my/ibuffer-toggle))
 
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (evil-mode 1)
