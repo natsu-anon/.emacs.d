@@ -799,13 +799,14 @@
   "Hand over the lsp and no-one gets hurt >:^("
   (interactive)
   (let ((gdscript-buffer-name (format "*GDScript LSP for %s*" (gdscript-util--get-godot-project-name)))
+		(gdscript-process "GDScript LSP")
 		(gdscript-project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
 	(if (not (get-buffer gdscript-buffer-name))
 		(progn
-		  (start-process "GDScrpt LSP" my-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
-		  (message "%s started!" my-buffer-name))
+		  (start-process gdscript-process gdscript-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
+		  (message "%s started!" gdscript-process))
 	(if (not quiet)
-		(message "%s already exists!" my-buffer-name)))))
+		(message "%s already exists!" gdscript-process)))))
 
 (bind-keys :prefix-map my-gdscript-command-map
 		   :prefix "C-c g"
