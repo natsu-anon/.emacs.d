@@ -244,7 +244,8 @@
 	  (kill-buffer-and-window)
 	(progn
 	  (ibuffer-list-buffers)
-	  (pop-to-buffer "*Ibuffer*"))))
+	  (pop-to-buffer "*Ibuffer*")
+	  (ibuffer-mark-unsaved-buffers))))
 
 (use-package evil
   :ensure t
