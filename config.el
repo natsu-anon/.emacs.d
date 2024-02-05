@@ -766,15 +766,12 @@
 ;;   (setq rmh-elfeed-org-files (list "elfeed.org"))
 ;; )
 
-(use-package gdscript-mode
-  :straight (gdscript-mode
-			 :type git
-			 :host github
-			 :repo "godotengine/emacs-gdscript-mode"))
-
 (use-package lsp-mode
-  :after gdscript-mode
-  :hook (gdscript-mode . lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (setq lsp-response-timeout 1)
+  (setq lsp-progress-spinner-type 'rotating-line)
   :commands (lsp lsp-deferred))
 
 (use-package lsp-ui
@@ -783,7 +780,38 @@
 
 (use-package lsp-ivy
   :after lsp-mode
-  :commands lsp-ivy-workspace-symbol)
+  :commands lsp-ivy-workspace-symbol
+  :bind
+  (:map evil-normal-state-map
+		("<leader> w" . lsp-ivy-workspace-symbol)
+		:map evil-visual-state-map
+		("<leader> w" . lsp-ivy-workspace-symbol)))
+
+(use-package gdscript-mode
+  :straight (gdscript-mode
+			 :type git
+			 :host github
+			 :repo "godotengine/emacs-gdscript-mode"))
+  ;; :hook (gdscript-mode . lsp-deferred))
+
+(bind-keys :prefix-map my-gdscript-command-map
+		   :prefix "C-c g"
+		   ("r" . gdscript-godot-run-project-debug)
+		   ("o" . gdscript-godot-open-project-in-editor)
+		   ("d" . gdscript-debug-make-server))
+
+(defun lsp--gdscript-ignore-errors (original-function &rest args)
+  "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
+  (if (string-equal major-mode "gdscript-mode")
+      (let ((json-data (nth 0 args)))
+        (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
+                 (not (gethash "id" json-data nil))
+                 (not (gethash "method" json-data nil)))
+            nil ; (message "Method not found")
+          (apply original-function args)))
+    (apply original-function args)))
+;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
+(advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
 ;; TOO HOT
 ;; (bind-keys :prefix-map my-space-map
