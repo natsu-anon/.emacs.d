@@ -298,11 +298,12 @@
  (setq yas-indent-line 'fixed)
  (yas-global-mode 1)
  :bind
- ("C-<tab>". yas-isnert-snippet)
+ ("M-y". yas-expand)
+ ("C-M-y". yas-insert-snippet)
  (:map evil-normal-state-map
-	   ("<leader> y" . yas-insert-snippet)
+	   ("<leader> y" . yas-expand)
 	   :map evil-visual-state-map
-	   ("<leader> y" . yas-insert-snippet)))
+	   ("<leader> y" . yas-expand)))
 
 ;; (use-package origami
 ;;   :ensure t
