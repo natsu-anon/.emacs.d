@@ -791,14 +791,28 @@
   :straight (gdscript-mode
 			 :type git
 			 :host github
-			 :repo "godotengine/emacs-gdscript-mode"))
-  ;; :hook (gdscript-mode . lsp-deferred))
+			 :repo "godotengine/emacs-gdscript-mode")
+  :hook (gdscript-mode . lsp-deferred))
+
+;; THIS CARRIES--see .dir-locals.el
+(defun my/headless-godot-editor (&optional quiet)
+  "Hand over the lsp and no-one gets hurt >:^("
+  (interactive)
+  (let ((gdscript-buffer-name (format "*GDScript LSP for %s*" (gdscript-util--get-godot-project-name)))
+		(gdscript-project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
+	(if (not (get-buffer gdscript-buffer-name))
+		(progn
+		  (start-process "GDScrpt LSP" my-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
+		  (message "%s started!" my-buffer-name))
+	(if (not quiet)
+		(message "%s already exists!" my-buffer-name)))))
 
 (bind-keys :prefix-map my-gdscript-command-map
 		   :prefix "C-c g"
+		   ("e" . my/headless-godot-editor)
 		   ("r" . gdscript-godot-run-project-debug)
 		   ("o" . gdscript-godot-open-project-in-editor)
-		   ("d" . gdscript-debug-make-server))
+		   ("d" . gdscript-debug-make-server)) ;; this DOES NOT seem to work???
 
 (defun lsp--gdscript-ignore-errors (original-function &rest args)
   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
