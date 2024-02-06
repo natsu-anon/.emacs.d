@@ -823,19 +823,26 @@
 (defun my/headless-godot-editor (&optional quiet)
   "Hand over the lsp and no-one gets hurt >:^("
   (interactive)
-  (let ((gdscript-buffer-name (format "*GDScript LSP for %s*" (gdscript-util--get-godot-project-name)))
-		(gdscript-process "GDScript LSP")
-		(gdscript-project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
-	(if (not (get-buffer gdscript-buffer-name))
-		(progn
-		  (start-process gdscript-process gdscript-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
-		  (message "%s started!" gdscript-process))
-	  (if (not quiet)
-		  (message "%s already exists!" gdscript-process)))))
+  (if (gdscript-util--find-project-configuration-file)
+	  (let ((gdscript-buffer-name (format "*GDScript LSP -- %s*" (gdscript-util--get-godot-project-name)))
+			(gdscript-process "GDScript LSP")
+			(gdscript-project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
+		(if (not (get-buffer gdscript-buffer-name))
+			(progn
+			  (start-process gdscript-process gdscript-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
+			  (message "%s started!" gdscript-process))
+		  (if (not quiet)
+			  (message "%s already exists!" gdscript-process))))))
+
+(defun my/kill-headless-godot-editor ()
+  "STOP THAT LSP!"
+  (interactive)
+  (kill-buffer (format "*GDScript LSP -- %s*" (gdscript-util--get-godot-project-name))))
 
 (bind-keys :prefix-map my-gdscript-command-map
 		   :prefix "C-c g"
 		   ("e" . my/headless-godot-editor)
+		   ("k" . my/kill-headless-godot-editor)
 		   ("r" . gdscript-godot-run-project-debug)
 		   ("o" . gdscript-godot-open-project-in-editor)
 		   ("d" . gdscript-debug-make-server)) ;; this DOES NOT seem to work???
