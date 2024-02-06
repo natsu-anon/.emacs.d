@@ -121,18 +121,18 @@
 
 ;; allow remembering risky commands
 
-;; turn on RELATIVEline numbers
+;; turn on RELATIVE line numbers
+;; NOTE: visual is better than relative for navigating w/ code folds
 (column-number-mode)
 (display-line-numbers-mode)
-(setq display-line-numbers 'relative)
-(setq display-line-numbers t)
+(setq display-line-numbers 'visual)
 (advice-add 'risky-local-variable-p :override #'ignore)
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
   (interactive)
   (if (eq display-line-numbers t)
-	  (setq display-line-numbers 'relative)
+	  (setq display-line-numbers 'visual)
 	(setq display-line-numbers t)))
 
 (defun absolute-linums ()
@@ -141,7 +141,7 @@
 
 (defun relative-linums ()
   "set relative line numbers."
-  (setq display-line-numbers 'relative))
+  (setq display-line-numbers 'visual))
 
 ;; HAND OVER THE RELATIVE LINUMS NOW!
 (add-hook 'prog-mode-hook 'relative-linums)
@@ -609,10 +609,10 @@
   :bind
   (("C-s" . swiper)
    :map evil-normal-state-map
-   ("<leader> /" . swiper)
+   ("<leader> j" . swiper)
    ("\\ s" . swiper)
    :map evil-visual-state-map
-   ("<leader> /" . swiper)
+   ("<leader> j" . swiper)
    ("\\ s" . swiper)
    :map ivy-minibuffer-map
    ("TAB" . ivy-alt-done)
@@ -643,9 +643,12 @@
   :after evil
   :bind
   (("M-x" . counsel-M-x)
-   ("C-x b" . counsel-switch-buffer)
+   ;; ("C-x b" . counsel-switch-buffer)
+   ("M-b" . counsel-switch-buffer)
    ;; ("C-x C-m," . counsel-bookmark)
-   ("C-x C-f" . counsel-find-file)
+   ;; ("C-x C-f" . counsel-find-file)
+   ("M-f" . counsel-find-file)
+   ("M-r" . counsel-recentf)
    :map evil-normal-state-map
    ("<leader> r" . counsel-recentf)
    ("<leader> i" . counsel-imenu)
