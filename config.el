@@ -53,6 +53,9 @@
 
 (add-hook 'prog-mode-hook 'outline-minor-mode)
 
+;; frfr PLEASE update the recent files
+(add-hook 'buffer-list-update-hook 'recentf-save-list)
+
 ;; 80 character line in prog-mode
 (setq-default display-fill-column-indicator-column 80)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
@@ -120,8 +123,9 @@
 
 ;; turn on RELATIVEline numbers
 (column-number-mode)
-(global-display-line-numbers-mode)
+(display-line-numbers-mode)
 (setq display-line-numbers 'relative)
+(setq display-line-numbers t)
 (advice-add 'risky-local-variable-p :override #'ignore)
 
 (defun toggle-linums ()
