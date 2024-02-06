@@ -1,4 +1,4 @@
-; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
+;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
 ;; remember -- you _MUST_ run `all-the-icons-install-fonts' AND `nerd-icons-install-fonts' then install the fonts to get that working
@@ -88,7 +88,7 @@
 		(insert qinsert)
 		(evil-append 0 0))
 	(message "No quick insert string!  Eval (setq-local qinsert VALUE)")))
-	;; (message "No quick insert string!  Use (setq-local qinsert \"foo\") then `eval-last-sexp'")))
+;; (message "No quick insert string!  Use (setq-local qinsert \"foo\") then `eval-last-sexp'")))
 (global-set-key (kbd "M-i") 'quick-insert-func)
 
 (require 'package)
@@ -139,6 +139,9 @@
   "set relative line numbers."
   (setq display-line-numbers 'relative))
 
+;; HAND OVER THE RELATIVE LINUMS NOW!
+(add-hook 'prog-mode-hook 'relative-linums)
+
 (defun obs-1080p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
@@ -156,7 +159,7 @@
 
 ;; but disable for some modes
 (dolist (mode '(term-mode-hook
-		eshell-mode-hook))
+				eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ;; IT JUST WORKS
@@ -273,9 +276,9 @@
 		("\\ l" . toggle-linums)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
-  ))
-		;; ("C-w V" . '(progn (split-window-right)(windmove-right)))
-		;; ("C-w S" . '(progn (split-window-below)(windmove-down))))
+		))
+;; ("C-w V" . '(progn (split-window-right)(windmove-right)))
+;; ("C-w S" . '(progn (split-window-below)(windmove-down))))
 
 ;; TODO leader keybinds
 (use-package org
@@ -293,18 +296,18 @@
   (ac-config-default))
 
 (use-package yasnippet
- :after evil
- :ensure t
- :init
- (setq yas-indent-line 'fixed)
- (yas-global-mode 1)
- :bind
- ("M-y". yas-expand)
- ("C-M-y". yas-insert-snippet)
- (:map evil-normal-state-map
-	   ("<leader> y" . yas-expand)
-	   :map evil-visual-state-map
-	   ("<leader> y" . yas-expand)))
+  :after evil
+  :ensure t
+  :init
+  (setq yas-indent-line 'fixed)
+  (yas-global-mode 1)
+  :bind
+  ("M-y". yas-expand)
+  ("C-M-y". yas-insert-snippet)
+  (:map evil-normal-state-map
+		("<leader> y" . yas-expand)
+		:map evil-visual-state-map
+		("<leader> y" . yas-expand)))
 
 ;; (use-package origami
 ;;   :ensure t
@@ -368,7 +371,7 @@
 		("<leader> }" . sp-wrap-curly)
 		("<leader> ]" . sp-wrap-square)
 		("<leader> [" . sp-wrap-square)
-  :map evil-visual-state-map
+		:map evil-visual-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
 		("<leader> (" . sp-wrap-round)
@@ -420,13 +423,15 @@
   :ensure t
   :init
   (setq neo-smart-open t)
+  (setq neo-banner-message "'U' to go up a dir")
+  (setq neo-window-position 'right)
   (setq neo-autorefresh t)
   (setq projectile-switch-project-action 'neotree-projectile-action)
   (setq-default neo-show-updir-line t)
   (setq-default neo-show-slash-for-folder t)
   (setq-default neo-show-hidden-files nil)
   (setq neo-window-fixed-size nil)
-  (setq neo-theme (if (display-graphic-p) 'classic 'arrow))
+  (setq neo-theme (if (display-graphic-p) 'classic 'ascii))
   :bind
   ("<f10>" . neotree-hidden-file-toggle)
   (:map evil-normal-state-map
@@ -476,9 +481,9 @@
   (setq imenu-list-focus-after-activation t)
   :bind
   (:map evil-normal-state-map
-  ("\\ i" . imenu-list-minor-mode)
-  :map evil-visual-state-map
-  ("\\ i" . imenu-list-minor-mode)))
+		("\\ i" . imenu-list-minor-mode)
+		:map evil-visual-state-map
+		("\\ i" . imenu-list-minor-mode)))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -500,19 +505,19 @@
 		(file-name-directory buffer-file-name))))
 
 (defun my/normal-ag ()
-	"Use projectile-ag if in a project, otherwise regular ag."
-	(interactive)
-	(my/context-ag (word-at-point t)))
+  "Use projectile-ag if in a project, otherwise regular ag."
+  (interactive)
+  (my/context-ag (word-at-point t)))
 
 (defun my/visual-ag ()
-	"Use projectile-ag if in a project, otherwise regular ag."
-	(interactive)
-	(my/context-ag (buffer-substring-no-properties (region-beginning) (region-end))))
+  "Use projectile-ag if in a project, otherwise regular ag."
+  (interactive)
+  (my/context-ag (buffer-substring-no-properties (region-beginning) (region-end))))
 
 (defun my/projectile-find-other-file ()
-		"projectile-find-other-file but with flex-matching enabled by default"
-		(interactive)
-		(projectile-find-other-file t))
+  "projectile-find-other-file but with flex-matching enabled by default"
+  (interactive)
+  (projectile-find-other-file t))
 
 (use-package projectile
   :ensure t
@@ -576,20 +581,20 @@
    (t (progn
 		(revert-buffer t t t)
 		(message "%s reverted!" (buffer-name))))))
-  ;; OLD
-  ;; (if (string= (buffer-name) "*dashboard*")
-  ;; 	  (progn
-  ;; 		(dashboard-refresh-buffer)
-  ;; 		(message "%s refreshed!" (buffer-name)))
-  ;; 	(if (string-match "magit:.+" (buffer-name))
-  ;; 		(progn
-  ;; 		  (magit-refresh)
-  ;; 		  (message "%s refreshed!" (buffer-name)))
-  ;; 	  (if (string-match "\*.+?\*" (buffer-name))
-  ;; 		  (message "cannot revert %s!" (buffer-name))
-  ;; 		(progn
-  ;; 		  (revert-buffer t t t)
-  ;; 		  (message "%s reverted!" (buffer-name)))))))
+;; OLD
+;; (if (string= (buffer-name) "*dashboard*")
+;; 	  (progn
+;; 		(dashboard-refresh-buffer)
+;; 		(message "%s refreshed!" (buffer-name)))
+;; 	(if (string-match "magit:.+" (buffer-name))
+;; 		(progn
+;; 		  (magit-refresh)
+;; 		  (message "%s refreshed!" (buffer-name)))
+;; 	  (if (string-match "\*.+?\*" (buffer-name))
+;; 		  (message "cannot revert %s!" (buffer-name))
+;; 		(progn
+;; 		  (revert-buffer t t t)
+;; 		  (message "%s reverted!" (buffer-name)))))))
 
 (global-set-key [f5] 'my/refresh-revert)
 
@@ -659,8 +664,8 @@
   :diminish (markdown-mode gfm-mode)
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
+		 ("\\.md'" . markdown-mode)
+		 ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
 ;; ;; (use-package evil-leader ;; the leader key is SPACEBAR (default is \)
@@ -715,15 +720,15 @@
 ;;   ;; 	"TAB" 'js2-indent-bounce)
 ;;   ;; 	)
 
- (use-package vmd-mode ;; enable to begin previewing markdown
-   :ensure t)
+(use-package vmd-mode ;; enable to begin previewing markdown
+  :ensure t)
 
- (use-package rainbow-mode
-   :diminish rainbow-mode
-   :hook
-   (emacs-lisp-mode . rainbow-mode)
-   (text-mode . rainbow-mode)
-   (lisp-mode . rainbow-mode))
+(use-package rainbow-mode
+  :diminish rainbow-mode
+  :hook
+  (emacs-lisp-mode . rainbow-mode)
+  (text-mode . rainbow-mode)
+  (lisp-mode . rainbow-mode))
 
 ;;  ;; apparently this isn't in the public packages
 ;;  ;; (use-package undo-browse
@@ -739,7 +744,7 @@
   :ensure t
   :config
   (setq doom-themes-enable-bold t
-	doom-themes-enable-italic t)
+		doom-themes-enable-italic t)
   ;; load theme in `local.el' now
   ;; (load-theme 'doom-solarized-dark t) ;; see `https://github.com/hlissner/emacs-doom-themes' for themes
   (doom-themes-visual-bell-config)
@@ -818,8 +823,8 @@
 		(progn
 		  (start-process gdscript-process gdscript-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
 		  (message "%s started!" gdscript-process))
-	(if (not quiet)
-		(message "%s already exists!" gdscript-process)))))
+	  (if (not quiet)
+		  (message "%s already exists!" gdscript-process)))))
 
 (bind-keys :prefix-map my-gdscript-command-map
 		   :prefix "C-c g"
