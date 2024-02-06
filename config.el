@@ -50,11 +50,18 @@
 							(highlight-regexp "FAMPAI")
 							(highlight-regexp "SENPAI")
 							(highlight-regexp "NOTA BENE")))
-
+>
 (add-hook 'prog-mode-hook 'outline-minor-mode)
 
-;; frfr PLEASE update the recent files
-(add-hook 'buffer-list-update-hook 'recentf-save-list)
+
+;; Show the current function name in the header line
+(which-function-mode)
+(setq-default header-line-format
+              '((which-func-mode (" " which-func-format " "))))
+(setq mode-line-misc-info
+            ;; We remove Which Function Mode from the mode line, because it's mostly
+            ;; invisible here anyway.
+            (assq-delete-all 'which-func-mode mode-line-misc-info))
 
 ;; 80 character line in prog-mode
 (setq-default display-fill-column-indicator-column 80)
@@ -66,8 +73,6 @@
 ;; make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escapequit)
 
-;; make dired
-
 ;; shell settings
 (setq eshell-scroll-to-bottom-on-input t) ;; NOTE eshell only q.q
 ;; make file paths clickable?
@@ -78,6 +83,9 @@
 
 ;; enable recent file tracking
 (recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(setq recentf-max-saved-items 25)
+(run-at-time nil (* 5 60) 'recentf-save-list)
 ;; prevent using UI dialogs for prompts
 (setq use-dialog-box nil)
 ;; global auto revert files
