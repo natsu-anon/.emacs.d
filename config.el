@@ -50,7 +50,7 @@
 							(highlight-regexp "FAMPAI")
 							(highlight-regexp "SENPAI")
 							(highlight-regexp "NOTA BENE")))
->
+
 (add-hook 'prog-mode-hook 'outline-minor-mode)
 
 
@@ -519,7 +519,7 @@
 (defun my/normal-ag ()
   "Use projectile-ag if in a project, otherwise regular ag."
   (interactive)
-  (my/context-ag (word-at-point t)))
+  (my/context-ag (symbol-name (symbol-at-point))))
 
 (defun my/visual-ag ()
   "Use projectile-ag if in a project, otherwise regular ag."
