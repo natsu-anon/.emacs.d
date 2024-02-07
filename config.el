@@ -273,6 +273,15 @@
   ;; (universal-argument) ;; lmao doesn't work GOOD TO KNOW THO--BOUND TO C-u BY DEFAULT--ITS NIFTY!
   (rectangle-number-lines (region-beginning) (region-end) (read-number "First digit:" 0) (read-string "Format:" "%d")))
 
+;; tab-bar memels
+(tab-bar-mode 1)                           ;; enable tab bar
+(setq tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
+(setq tab-bar-close-button-show nil)       ;; hide tab close / X button
+;; (setq tab-bar-new-tab-choice "*dashboard*");; buffer to show in new tabs
+(setq tab-bar-new-tab-choice t)            ;; lol this is the default AND I LIKE IT
+(setq tab-bar-tab-hints t)                 ;; show tab numbers
+(setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+
 (use-package evil
   :ensure t
   :init
@@ -289,8 +298,10 @@
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
 		("\\ l" . toggle-linums)
-		("<leader> t" . next-buffer)
-		("<leader> T" . previous-buffer)
+		;; I REALLY LIKE THIS WOW
+		("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
+		("\\ n" . tab-bar-new-tab)
+		("\\ q" . tab-bar-close-tab)
 		("<leader> s" . my/shell-right)
 		("<leader> S" . my/shell-down)
 		:map evil-visual-state-map
