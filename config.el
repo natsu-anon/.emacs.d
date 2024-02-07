@@ -6,6 +6,11 @@
 ;; see `https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
 ;; NOTE sometimes you gotta run package-refresh-contents
 
+;; (uinversal-argument) into (rectangle-number-lines)
+
+;; NOTE see `'https://irreal.org/blog' for some emacs stuff
+;; NOTE see `'https://codelearn.me/' for more emacs stuff
+
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
 
@@ -262,6 +267,12 @@
 	  (pop-to-buffer "*Ibuffer*")
 	  (ibuffer-mark-unsaved-buffers))))
 
+(defun my/rectangle-number-lines ()
+  "GOD I NEEDED THIS."
+  (interactive)
+  ;; (universal-argument) ;; lmao doesn't work GOOD TO KNOW THO--BOUND TO C-u BY DEFAULT--ITS NIFTY!
+  (rectangle-number-lines (region-beginning) (region-end) (read-number "First digit:" 0) (read-string "Format:" "%d")))
+
 (use-package evil
   :ensure t
   :init
@@ -283,6 +294,7 @@
 		("<leader> s" . my/shell-right)
 		("<leader> S" . my/shell-down)
 		:map evil-visual-state-map
+		("\\ d" . my/rectangle-number-lines)
 		("\\ x" . eval-region)
 		("\\ b" . my/ibuffer-toggle)
 		("\\ l" . toggle-linums)
