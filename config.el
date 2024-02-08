@@ -274,13 +274,13 @@
   (rectangle-number-lines (region-beginning) (region-end) (read-number "First digit:" 0) (read-string "Format:" "%d")))
 
 ;; tab-bar memels
-(tab-bar-mode 1)                           ;; enable tab bar
 (setq tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
 (setq tab-bar-close-button-show nil)       ;; hide tab close / X button
 ;; (setq tab-bar-new-tab-choice "*dashboard*");; buffer to show in new tabs
 (setq tab-bar-new-tab-choice t)            ;; lol this is the default AND I LIKE IT
 (setq tab-bar-tab-hints t)                 ;; show tab numbers
 (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+(tab-bar-mode 1)                           ;; enable tab bar
 
 (use-package evil
   :ensure t
