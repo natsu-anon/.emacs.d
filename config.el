@@ -542,7 +542,7 @@
 (defun my/normal-ag ()
   "Use projectile-ag if in a project, otherwise regular ag."
   (interactive)
-  (my/context-ag (symbol-name (symbol-at-point))))
+  (my/context-ag (if (symbol-at-point) (symbol-name (symbol-at-point)))))
 
 (defun my/visual-ag ()
   "Use projectile-ag if in a project, otherwise regular ag."
