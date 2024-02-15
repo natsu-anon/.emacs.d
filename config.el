@@ -430,6 +430,7 @@
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
 (use-package flycheck
+  :after evil
   :ensure t
   :config
   (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
@@ -827,6 +828,8 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (setq lsp-response-timeout 1)
+  (setq read-process-output-max (* 1024 1024))
+  (setq lsp-idle-delay 0.01)
   (setq lsp-progress-spinner-type 'rotating-line)
   :commands (lsp lsp-deferred))
 
