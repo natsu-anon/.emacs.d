@@ -62,11 +62,11 @@
 ;; Show the current function name in the header line
 (which-function-mode)
 (setq-default header-line-format
-              '((which-func-mode (" " which-func-format " "))))
+			  '((which-func-mode (" " which-func-format " "))))
 (setq mode-line-misc-info
-            ;; We remove Which Function Mode from the mode line, because it's mostly
-            ;; invisible here anyway.
-            (assq-delete-all 'which-func-mode mode-line-misc-info))
+	  ;; We remove Which Function Mode from the mode line, because it's mostly
+	  ;; invisible here anyway.
+	  (assq-delete-all 'which-func-mode mode-line-misc-info))
 
 ;; 80 character line in prog-mode
 (setq-default display-fill-column-indicator-column 80)
@@ -105,7 +105,7 @@
 		(evil-append 0 0))
 	(message "No quick insert string!  Eval (setq-local qinsert VALUE)")))
 ;; (message "No quick insert string!  Use (setq-local qinsert \"foo\") then `eval-last-sexp'")))
-(global-set-key (kbd "M-i") 'quick-insert-func)
+(global-set-key (kbd "M-i") 'qinsert-func)
 
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
@@ -187,18 +187,18 @@
 ;; bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
+	   (expand-file-name
+		"straight/repos/straight.el/bootstrap.el"
+		(or (bound-and-true-p straight-base-dir)
+			user-emacs-directory)))
+	  (bootstrap-version 7))
   (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
+	(with-current-buffer
+		(url-retrieve-synchronously
+		 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+		 'silent 'inhibit-cookies)
+	  (goto-char (point-max))
+	  (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
 ;; install use-package with straight
@@ -300,6 +300,7 @@
 		("\\ l" . toggle-linums)
 		;; I REALLY LIKE THIS WOW
 		("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
+		("<leader> d" . my/dired) ;; press numbers THEN <leader> t
 		("\\ n" . tab-bar-new-tab)
 		("\\ q" . tab-bar-close-tab)
 		("<leader> s" . my/shell-right)
@@ -373,6 +374,41 @@
 		:map evil-visual-state-map
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)))
+
+(use-package dired
+  :ensure nil
+  :after evil-collection
+  :commands (dired dired-jump)
+  :bind (("C-x C-j" . dired-jump))
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :hook (dired-mode . dired-hide-details-mode)
+  :config
+  (setq dired-dwim-target t)
+  (evil-collection-define-key 'normal 'dired-mode-map
+	"h" 'dired-single-up-directory
+	"l" 'dired-single-buffer))
+
+;; tbqh I hate the minibuffer
+(defun my/dired ()
+  "ya im thinkn ya"
+  (interactive)
+  (--if-let (file-name-directory (buffer-name))
+	  (find-file it)
+	(find-file default-directory)))
+
+;; (use-package dired-single)
+
+(use-package dired-hide-dotfiles
+  :ensure t
+  :after evil-collection
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+	"H" 'dired-hide-dotfiles-mode))
+
+(use-package all-the-icons-dired
+  :ensure t
+  :hook (dired-mode . all-the-icons-dired-mode))
 
 (defun sp-wrap-single-quote (&optional arg)
   "bruh."
@@ -605,18 +641,11 @@
   (interactive)
   (cond
    ((string= (buffer-name) "*dashboard*")
-	(progn
-	  (dashboard-refresh-buffer)
-	  (message "%s refreshed!" (buffer-name))))
+	(dashboard-refresh-buffer))
    ((string-match "magit:.+" (buffer-name))
-	(progn
-	  (magit-refresh)
-	  (message "%s refreshed!" (buffer-name))))
-   ((string-match "\*.+?\*" (buffer-name))
-	(message "cannot revert %s!" (buffer-name)))
-   (t (progn
-		(revert-buffer t t t)
-		(message "%s reverted!" (buffer-name))))))
+	(magit-refresh))
+   (t (revert-buffer t t t)))
+  (message "%s refreshed!" (buffer-name)))
 ;; OLD
 ;; (if (string= (buffer-name) "*dashboard*")
 ;; 	  (progn
@@ -856,7 +885,7 @@
 ;; THIS CARRIES--see .dir-locals.el
 (defun my/headless-godot-editor (&optional quiet)
   "Hand over the lsp and no-one gets hurt >:^("
-  (interactive)
+  (interactive '(gdscript-mode))
   (if (gdscript-util--find-project-configuration-file)
 	  (let ((gdscript-buffer-name (format "*GDScript LSP -- %s*" (gdscript-util--get-godot-project-name)))
 			(gdscript-process "GDScript LSP")
@@ -884,13 +913,13 @@
 (defun lsp--gdscript-ignore-errors (original-function &rest args)
   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
   (if (string-equal major-mode "gdscript-mode")
-      (let ((json-data (nth 0 args)))
-        (if (and (string= (gethash "jsonrpc" json-data "") "2.0")
-                 (not (gethash "id" json-data nil))
-                 (not (gethash "method" json-data nil)))
-            nil ; (message "Method not found")
-          (apply original-function args)))
-    (apply original-function args)))
+	  (let ((json-data (nth 0 args)))
+		(if (and (string= (gethash "jsonrpc" json-data "") "2.0")
+				 (not (gethash "id" json-data nil))
+				 (not (gethash "method" json-data nil)))
+			nil ; (message "Method not found")
+		  (apply original-function args)))
+	(apply original-function args)))
 ;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
 (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
