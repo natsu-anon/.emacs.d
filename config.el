@@ -716,8 +716,8 @@
 		("TAB" . vertico-insert)
 		("C-j" . vertico-next)
 		("C-k" . vertico-previous)
-		("C-(" . vertico-next-group)
-		("C-)" . vertico-previous-group)
+		("C-9" . vertico-next-group)
+		("C-0" . vertico-previous-group)
 		("C-n" . vertico-scroll-down)
 		("C-m" . vertico-scroll-up)))
 
