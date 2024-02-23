@@ -2,8 +2,7 @@
 ;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
 ;; add emacs dir with the binary to the PATH
 ;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
-;; remember -- you _MUST_ run `all-the-icons-install-fonts' AND `nerd-icons-install-fonts' then install the fonts to get that working
-;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
+;; remember -- you _MUST_ run `all-the-icons-install-fonts' AND `nerd-icons-install-fonts' then install the fonts to get that working ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
 ;; see `https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
 ;; NOTE sometimes you gotta run package-refresh-contents
 
@@ -63,15 +62,6 @@
 
 (add-hook 'prog-mode-hook 'outline-minor-mode)
 
-
-;; Show the current function name in the header line
-(which-function-mode)
-(setq-default header-line-format
-			  '((which-func-mode (" " which-func-format " "))))
-(setq mode-line-misc-info
-	  ;; We remove Which Function Mode from the mode line, because it's mostly
-	  ;; invisible here anyway.
-	  (assq-delete-all 'which-func-mode mode-line-misc-info))
 
 ;; 80 character line in prog-mode
 (setq-default display-fill-column-indicator-column 80)
@@ -142,8 +132,8 @@
 ;; turn on RELATIVE line numbers
 ;; NOTE: visual is better than relative for navigating w/ code folds
 (column-number-mode)
-(display-line-numbers-mode)
 (setq display-line-numbers 'visual)
+(display-line-numbers-mode)
 (advice-add 'risky-local-variable-p :override #'ignore)
 
 (defun toggle-linums ()
@@ -287,6 +277,76 @@
 (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
 (tab-bar-mode 1)                           ;; enable tab bar
 
+;; (defun find-or-dired (dirname &rest switches)
+;;   ""
+;;   (interactive (dired-read-dir-and-switches ""))
+;;   (message "%s %s" dirname switches))
+
+;; THIS IS JUST dired-jump YOU MONG
+;; The minibuffer is based but this ok too
+;; (defun my/dired-dir ()
+;;   "ya im thinkn ya"
+;;   (interactive)
+;;   (--if-let (file-name-directory (buffer-name))
+;; 	  (find-file it)
+;; 	(find-file default-directory)))
+
+(defun my/dired-recursive (&optional dirname)
+  ""
+  (interactive "GDired recursive (directory): ")
+  (dired dirname "-laRgho"))
+
+;; (switch-to-buffer-same-window (dired-noselect dirname switches));; dired option
+
+;; minibuffer-with-setup-hook
+;; after-change-functions
+;; set-window-buffer
+;; find-file-noselect
+(defun message-and-kill (buffer)
+  ""
+  (unless (get-buffer-window buffer)
+	(message "killing: %s" (buffer-name buffer))
+	(kill-buffer buffer)))
+
+(defun my/find-file ()
+  "Show `find-file' results (only with full matches) with a psuedo-temporary buffer in current window."
+  (interactive)
+  (let ((window (selected-window))
+		(temp-buffers '()))
+	(minibuffer-with-setup-hook
+		(lambda ()
+		  (add-hook 'after-change-functions
+					(lambda (beg end len)
+					  (when (file-exists-p (minibuffer-contents))
+						(setq temp-buffers (append `(,(find-file-noselect (minibuffer-contents))) temp-buffers))
+						(set-window-buffer window (car temp-buffers)))))
+		  (add-hook 'minibuffer-exit-hook
+					(lambda () (mapc (lambda (buffer)
+									   (unless (get-buffer-window buffer)
+										 ;; (message "killing: %s" (buffer-name buffer))
+										 (kill-buffer buffer)))
+									 temp-buffers))))
+	  (find-file (read-file-name "Find file: ")))))
+
+(defun my/dired ()
+  "Show Dired results with a psuedo-temporary buffer in current window."
+  (interactive)
+  (let ((window (selected-window))
+		(temp-buffers '()))
+	(minibuffer-with-setup-hook
+		(lambda ()
+		  (add-hook 'after-change-functions
+					(lambda (beg end len)
+					  (setq temp-buffers (append `(,(dired-noselect (minibuffer-contents))) temp-buffers))
+					  (set-window-buffer window (car temp-buffers))))
+		  (add-hook 'minibuffer-exit-hook
+					(lambda () (mapc (lambda (buffer)
+									   (unless (get-buffer-window buffer)
+										 ;; (message "killing: %s" (buffer-name buffer))
+										 (kill-buffer buffer)))
+									 temp-buffers))))
+	  (dired (read-file-name "Find file: " nil nil nil)))))
+
 (use-package evil
   :ensure t
   :demand t
@@ -301,8 +361,9 @@
   (evil-set-leader 'visual (kbd "SPC"))
   :bind
   ("M-e" . eval-last-sexp)
-  ("M-f" . find-file)
-  ("M-d" . dired)
+  ("M-f" . my/find-file)
+  ("C-c d" . my/dired)
+  ("C-c D" . find-name-dired)
   ;; ("M-b" . switch-to-buffer)
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
@@ -314,15 +375,18 @@
 		("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
-		("\\ d" . my/dired-dir)
+		("\\ d" . dired-jump)
+		("\\ D" . my/dired-recursive)
 		("\\ n" . tab-bar-new-tab)
 		("\\ q" . tab-bar-close-tab)
 		("C-s <return>" . shell)
 		("C-s v" . my/shell-right)
 		("C-s s" . my/shell-down)
-		("<leader> f" . find-file)
-		("<leader> d" . dired)
+		("<leader> f" . my/find-file)
+		;; ("<leader> d" . dired)
 		;; ("<leader> b" . switch-to-buffer)
+		;; ("g <backspace>" . switch-to-prev-buffer)
+		("g b" . switch-to-prev-buffer)
 		:map evil-visual-state-map
 		("\\ #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
@@ -358,6 +422,10 @@
   :ensure t
   :init
   (setq yas-indent-line 'fixed)
+  (defcustom yas-cpp-class nil
+	"Class name of current CPP for yasnippet."
+	:type 'string
+	:local t)
   (yas-global-mode 1)
   :bind
   ("M-y". yas-expand)
@@ -401,32 +469,43 @@
   :ensure nil
   ;; :after evil-collection
   :commands (dired dired-jump)
-  :bind (("C-x C-j" . dired-jump))
-  :custom ((dired-listing-switches "-agho --group-directories-first"))
-  :hook (dired-mode . dired-hide-details-mode)
+  :custom ((dired-listing-switches "-lagho --group-directories-first"))
+  :hook ((dired-mode . dired-hide-details-mode)
+		 (dired-mode . dired-omit-mode)
+		 ;; (dired-mode . (display-line-numbers . 'visual))
+		 (dired-mode . relative-linums)
+		 (dired-mode . display-line-numbers-mode))
   :config
   (setq dired-dwim-target t)
   (evil-collection-define-key 'normal 'dired-mode-map
 	"h" 'dired-single-up-directory
 	"l" 'dired-single-buffer
-	"c" 'my/dired-create))
+	"c" 'my/dired-create)
+  :bind
+  (:map evil-normal-state-map
+		("z c" . dired-kill-subdir)
+		("z o" . dired-maybe-insert-subdir)))
 
-;; The minibuffer is based but this ok too
-(defun my/dired-dir ()
-  "ya im thinkn ya"
-  (interactive)
-  (--if-let (file-name-directory (buffer-name))
-	  (find-file it)
-	(find-file default-directory)))
+;; BRUH
+;; (use-package shell
+;;   :ensure nil
+;;   :bind
+;;   (:map evil-normal-state-map
+;; 		("<return>" . comint-send-input)
+;; 		("C-]" . comint-next-input)
+;; 		("C-[" . comint-previous-input)))
 
 ;; file-exists-p
-(defun my/dired-create (&optional args)
+(defun my/dired-create (&optional arg)
   "foo"
-  (interactive "GNew File or Directory:")
-  (if (string-match-p arg ".+/$")
-	  (dired-create-directory arg)
-	(dired-create-empty-file arg))
-  (when (bound-and-true-p dired-mode) (revert-buffer-quick)))
+  (interactive "GNew File/Directory: ")
+  (if (or (file-exists-p arg) (f-directory-p arg))
+	  (dired-goto-file arg)
+	(if (directory-name-p arg)
+		(dired-create-directory arg)
+		(dired-create-empty-file arg)))
+  (revert-buffer-quick))
+
 
 ;; (use-package dired-single)
 
@@ -532,7 +611,7 @@
   (setq neo-banner-message "'U' to go up a dir")
   (setq neo-window-position 'right)
   (setq neo-autorefresh t)
-  (setq projectile-switch-project-action 'neotree-projectile-action)
+  (setq projectile-switch-project-action 'projectile-dired)
   (setq-default neo-show-updir-line t)
   (setq-default neo-show-slash-for-folder t)
   (setq-default neo-show-hidden-files nil)
@@ -637,11 +716,11 @@
   (:map evil-normal-state-map
 		("\\ p" . projectile-switch-project)
 		("<leader> a" . my/normal-ag)
-		("<leader> h" . my/projectile-find-other-file)
+		("\\ h" . my/projectile-find-other-file)
 		:map evil-visual-state-map
 		("\\ p" . projectile-switch-project)
 		("<leader> a" . my/visual-ag)
-		("<leader> h" . my/projectile-find-other-file))
+		("\\ h" . my/projectile-find-other-file))
   :config (projectile-mode 1))
 
 (use-package ag
@@ -713,11 +792,14 @@
   (:map vertico-map
 		("<escape>" . keyboard-escape-quit)
 		("<return>" . vertico-exit)
+		("<backspace>" . vertico-directory-delete-char)
+		("S-<backspace>" . vertico-directory-up)
+		("M-<backspace>" . vertico-directory-delete-word)
 		("TAB" . vertico-insert)
 		("C-j" . vertico-next)
 		("C-k" . vertico-previous)
-		("C-9" . vertico-next-group)
-		("C-0" . vertico-previous-group)
+		("C-0" . vertico-next-group)
+		("C-9" . vertico-previous-group)
 		("C-n" . vertico-scroll-down)
 		("C-m" . vertico-scroll-up)))
 
@@ -739,6 +821,14 @@
 ;; A few more useful configurations...
 (use-package emacs
   :init
+  ;; Show the current function name in the header line
+  (which-function-mode)
+  (setq-default header-line-format
+				'((which-func-mode (" " which-func-format " "))))
+  (setq mode-line-misc-info
+		;; We remove Which Function Mode from the mode line, because it's mostly
+		;; invisible here anyway.
+		(assq-delete-all 'which-function-mode mode-line-misc-info))
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -762,6 +852,7 @@
 
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
+
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
@@ -787,10 +878,14 @@
   ("M-b" . consult-buffer)
   ("M-s" . consult-line)
   ("M-i" . consult-imenu)
+  ("M-I" . consult-imenu)
+  ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
 		("<leader> b" . consult-buffer)
 		("<leader> s" . consult-line)
-		("<leader> i" . consult-imenu))
+		("<leader> i" . consult-imenu)
+		("<leader> I" . consult-imenu-multi))
+		;; ("<leader> f" . consult-find))
   ;; Replace bindings. Lazily loaded due by `use-package'.
   ;; :bind (;; C-c bindings in `mode-specific-map'
          ;; ("C-c M-x" . consult-mode-command)
@@ -1047,10 +1142,13 @@
   (setq doom-modeline-height 20)
   (setq doom-modeline-bar-width 4)
   (setq doom-modeline-window-width-limit fill-column)
+  (setq doom-modeline-support-imenu t)
+  (setq doom-modeline-battery t)
   (setq doom-modeline-project-detection 'project)
   (setq doom-modeline-buffer-file-name-style 'truncate-upto-project)
   (setq doom-modeline-buffer-state-icon t)
   (setq doom-modeline-icon t)
+  (setq doom-modeline-enable-word-count t)
   (setq doom-modeline-modal-icon t))
 
 ;; RSS nonsense
@@ -1142,5 +1240,8 @@
 (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
 
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;; (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+(setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
+;; (setq initial-buffer-choice #'list-packages)
+;; (setq initial-buffer-choice (lambda () (list-packages)(package-menu-filter-by-status '("installed" "dependency" "buillt-in"))(package-menu-filter-upgradeable)))
 (setq gc-cons-threshod (* 2 1000 1000))
