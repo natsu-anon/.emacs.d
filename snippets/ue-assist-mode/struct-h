@@ -1,0 +1,20 @@
+# -*- mode: snippet -*-
+# name: struct.h
+# key: struct.h
+# --
+#pragma once
+
+#include "CoreMinimal.h"
+#include "$1.generated.h"
+
+/**
+ *
+ */
+USTRUCT()
+struct F${1:StructName}
+{
+	GENERATED_BODY()
+
+	$0
+
+};

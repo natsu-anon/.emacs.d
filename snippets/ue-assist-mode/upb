@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: upb
+# key: upb
+# --
+UPROPERTY(EditAnywhere, BlueprintReadWrite)
+$0

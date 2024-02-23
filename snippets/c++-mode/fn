@@ -2,7 +2,7 @@
 # name: cpp-function
 # key: fn
 # --
-${1:void} `(when (boundp 'yas-cpp-class)(format "%s::" yas-cpp-class))`${2:func}($3)
+${1:void} `(when (boundp 'yas-cpp-class) (format "%s::" yas-cpp-class))`${2:func}($3)
 {
 	$0
 }

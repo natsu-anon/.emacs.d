@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: overlap end signature
+# key: oes
+# condition: (not (eval ue-assist-class))
+# --
+UFUNCTION()
+virtual void ${1:OverlapEndFunc}(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
