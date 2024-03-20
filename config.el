@@ -1,15 +1,13 @@
 ;; EMACS CONFIG
-;; see `https://blog.aaronbieber.com/2015/05/24/from-vim-to-emacs-in-fourteen-days.html' for the gestalt
-;; add emacs dir with the binary to the PATH
-;; create an einvornmnent variable HOME, (at Users/name or wherever), create .emacs.d there
-;; remember -- you _MUST_ run `all-the-icons-install-fonts' AND `nerd-icons-install-fonts' then install the fonts to get that working ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
-;; see `https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
+;; see `https://blog.aaronbieber.com/2015/05/24/fronmnent variable HOME, (at Users/name or wherever), create .emacs.d there
+;; remember -- you _MUST_ run 'all-the-icons-install-fonts' AND 'nerd-icons-install-fonts' then install the fonts to get that working ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
+;; see 'https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
 ;; NOTE sometimes you gotta run package-refresh-contents
 
 ;; (uinversal-argument) into (rectangle-number-lines)
 
-;; NOTE see `'https://irreal.org/blog' for some emacs stuff
-;; NOTE see `'https://codelearn.me/' for more emacs stuff
+;; NOTE see 'https://irreal.org/blog' for some emacs stuff
+;; NOTE see 'https://codelearn.me/' for more emacs stuff
 
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
@@ -26,18 +24,27 @@
 (toggle-scroll-bar -1)
 (customize-set-variable 'scroll-bar-mode nil)
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
-(set-fringe-mode 10)
+(set-fringe-mode 0)
 (menu-bar-mode -1)
-;; (setq display-time-day-and-date 1)
+;; (setq display-time-day-and-date 0)
 ;; (display-time)
 (setq visible-bell t)
 (show-paren-mode 1)
 (setq show-paren-delay 0)
 (setq warning-minimum-level :error)
 
+;; truncate regular lines
+;; (set-default 'truncate-lines nil)
+;; don't truncate minibuffers
+;; (add-hook 'minibuffer-setup-hook (lambda () (setq truncate-lines nil)))
+
+;; WRAP CHADS
+(set-default 'truncate-lines nil)
+
 
 ;; NO PROMPT WARRANTS MORE THAN 1 CHARACTER
-(defalias 'yes-or-no-p 'y-or-n-p)
+;; LOOK! FSET!!!!
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;; only show trailing white space when programming
 (add-hook 'prog-mode-hook (lambda () (setq-local show-trailing-whitespace t)))
@@ -125,16 +132,19 @@
 ;;   (ub-mode))
 
 ;; hide the async shell command buffer
-(add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
+;; (add-to-list 'display-buffer-alist '("*Async Shell Command*" . (display-buffer-no-window . nil)))
+
+;; disbale blinking cursor (i.e. it stops blinking after 0 blinks)
+(blink-cursor-mode 0)
 
 ;; allow remembering risky commands
+(advice-add 'risky-local-variable-p :override #'ignore)
 
 ;; turn on RELATIVE line numbers
 ;; NOTE: visual is better than relative for navigating w/ code folds
 (column-number-mode)
 (setq display-line-numbers 'visual)
 (display-line-numbers-mode)
-(advice-add 'risky-local-variable-p :override #'ignore)
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
@@ -219,10 +229,25 @@
 (setq use-package-always-ensure t)
 (straight-use-package 'use-package)
 
+(defun doc ()
+  "Toggle eldoc in frame."
+  (interactive)
+  (let ((eldoc-buffers (seq-filter (lambda (x) (string-match-p "\*eldoc.*\*" x ))
+								   (mapcar #'buffer-name
+										   (mapcar #'window-buffer (window-list))))))
+	(if eldoc-buffers
+		;; (progn (mapc #'delete-window (mapcar #'get-buffer-window eldoc-buffers))
+		;; 	   (mapc #'kill-buffer eldoc-buffers))
+		(mapc #'kill-buffer eldoc-buffers)
+	  (eldoc t))))
+
+;; (use-package eldoc
+;;   :hook (eldoc-mode . (lambda () (setq-local truncate-lines (not (eldoc-mode))))))
+
 (use-package auto-package-update
   :custom
   (auto-package-update-interval 7)
-  (setq auto-package-update-prompt-before-update (not (daemonp)))
+  (setq auto-package-update-prompt-before-update t)
   (auto-package-update-hide-results t)
   :config
   (auto-package-update-maybe)
@@ -253,7 +278,7 @@
   (shell))
 
 (defun my/ibuffer-toggle ()
-  "toggle the ibuffer list"
+  "Toggle the ibuffer list."
   (interactive)
   (if (string= (buffer-name) "*Ibuffer*")
 	  (kill-buffer-and-window)
@@ -262,11 +287,11 @@
 	  (pop-to-buffer "*Ibuffer*")
 	  (ibuffer-mark-unsaved-buffers))))
 
-(defun my/rectangle-number-lines ()
+(defun my/rectangle-number-lines (&optional point mark)
   "GOD I NEEDED THIS."
-  (interactive)
+  (interactive "r")
   ;; (universal-argument) ;; lmao doesn't work GOOD TO KNOW THO--BOUND TO C-u BY DEFAULT--ITS NIFTY!
-  (rectangle-number-lines (region-beginning) (region-end) (read-number "First digit: " 0) (read-string "Format: " "%d")))
+  (rectangle-number-lines point mark (read-number "First digit: " 0) (read-string "Format: " "%d")))
 
 ;; tab-bar memels
 (setq tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
@@ -302,16 +327,17 @@
 ;; after-change-functions
 ;; set-window-buffer
 ;; find-file-noselect
-(defun message-and-kill (buffer)
-  ""
-  (unless (get-buffer-window buffer)
-	(message "killing: %s" (buffer-name buffer))
-	(kill-buffer buffer)))
+;; (defun message-and-kill (buffer)
+;;   ""
+;;   (unless (get-buffer-window buffer)
+;; 	(message "killing: %s" (buffer-name buffer))
+;; 	(kill-buffer buffer)))
 
 (defun my/find-file ()
   "Show `find-file' results (only with full matches) with a psuedo-temporary buffer in current window."
   (interactive)
   (let ((window (selected-window))
+		(current-buffers '())
 		(temp-buffers '()))
 	(minibuffer-with-setup-hook
 		(lambda ()
@@ -328,6 +354,7 @@
 									 temp-buffers))))
 	  (find-file (read-file-name "Find file: ")))))
 
+;; not working on laptop :(
 (defun my/dired ()
   "Show Dired results with a psuedo-temporary buffer in current window."
   (interactive)
@@ -347,60 +374,97 @@
 									 temp-buffers))))
 	  (dired (read-file-name "Find file: " nil nil nil)))))
 
+(defun rename-this-file (&optional new-name)
+  "Rename buffer's current file to NEW-NAME."
+  (interactive "*FRename current file to: ")
+  (when (buffer-file-name)
+	(if (file-exists-p new-name)
+		(message "%s already exists!" new-name)
+	  (rename-file (buffer-file-name) new-name))))
+
+(defun my/shell-command-region (&optional point mark)
+  (interactive "r")
+  (let ((command (buffer-substring point mark)))
+	(shell-command command)))
+
+;; ls /home/jon/
+
 (use-package evil
   :ensure t
-  :demand t
+  ;; :demand t
   :init
-  (evil-mode)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  (define-prefix-command 'my-shell-command-map)
-  (global-set-key (kbd "C-e") 'my-shell-command-map)
+  (define-prefix-command 'my-shell-prefix)
+  (define-prefix-command 'my-help-prefix)
+  ;; (setq evil-undo-system 'undo-redo)
+  ;; (define-prefix-command 'my-consult-buffer-prefix)
+  ;; (global-set-key (kbd "C-s") 'my-consult-buffer-prefix)
+  ;; (define-prefix-command 'my-leader)
+  ;; (define-prefix-command 'my-more-searching)
+  ;; (global-set-key (kbd "SPC e") 'my-emacs-leader)
+  (evil-mode)
   :config
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
+  (evil-global-set-key 'normal (kbd "<leader> h") 'my-help-prefix)
+  ;; (global-set-key (kbd "C-t") 'my-shell-prefix)
+  (evil-global-set-key 'normal (kbd "C-t") 'my-shell-prefix)
   :bind
   ("M-e" . eval-last-sexp)
   ("M-f" . my/find-file)
-  ("C-c d" . my/dired)
+  ;; ("C-c d" . my/dired)
+  ("C-c d" . dired)
   ("C-c D" . find-name-dired)
   ;; ("M-b" . switch-to-buffer)
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
 		("\\ b" . my/ibuffer-toggle)
+		("\\ r" . rename-this-file)
+		("\\ p" . list-processes)
+		("\\ s" . scratch-buffer)
+		("\\ h" . doc)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
 		("\\ l" . toggle-linums)
-		;; I REALLY LIKE THIS WOW
-		("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
-		("<leader> h" . evil-first-non-blank)
-		("<leader> l" . evil-end-of-line)
+		;; RETVRN TO VIM MOTIONS
+		;; ("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
+		;; ("<leader> h" . evil-first-non-blank) use '_'
+		;; ("<leader> l" . evil-end-of-line) use '$'
+		("<leader> h v" . describe-variable)
+		("<leader> h f" . describe-function)
+		("<leader> h k" . describe-key)
+		("<leader> r" . undo-redo)
 		("\\ d" . dired-jump)
 		("\\ D" . my/dired-recursive)
 		("\\ n" . tab-bar-new-tab)
 		("\\ q" . tab-bar-close-tab)
-		("C-s <return>" . shell)
-		("C-s v" . my/shell-right)
-		("C-s s" . my/shell-down)
+		("C-t h" . shell)
+		("C-t v" . my/shell-right)
+		("C-t s" . my/shell-down)
 		("<leader> f" . my/find-file)
-		;; ("<leader> d" . dired)
-		;; ("<leader> b" . switch-to-buffer)
-		;; ("g <backspace>" . switch-to-prev-buffer)
-		("g b" . switch-to-prev-buffer)
+		("<leader> d" . dired)
+		("<leader> D" . find-name-dired)
+		("<leader> m" . evil-goto-mark-line)
+		("<leader> M" . evil-goto-mark)
+		("\\ m" . evil-show-marks)
+		("\\ f" . evil-show-files)
+		;; ("g b" . switch-to-prev-buffer) ;; use [ b
+		;; ("g B" . switch-to-next-buffer) ;; use ] b
+		("<leader> q" . evil-quit) ;; lmao wtf am I thinkign?
+		("<leader> K" . kill-buffer-and-window) ;; lmao wtf am I thinkign?
 		:map evil-visual-state-map
 		("\\ #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
+		("<leader> m" . evil-goto-mark-line)
+		("<leader> M" . evil-goto-mark)
+		("<leader> !" . my/shell-command-region)
 		("\\ b" . my/ibuffer-toggle)
 		("\\ l" . toggle-linums)
-		;; ("<leader> f" . find-file)
-		;; ("<leader> d" . dired)
-		;; ("<leader> b" . switch-to-buffer)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
-;; ("C-w V" . '(progn (split-window-right)(windmove-right)))
-;; ("C-w S" . '(progn (split-window-below)(windmove-down))))
 
 ;; TODO leader keybinds
 (use-package org
@@ -429,6 +493,7 @@
   (yas-global-mode 1)
   :bind
   ("M-y". yas-expand)
+  ("M-f". yas-expand)
   ("C-M-y". yas-insert-snippet)
   (:map evil-normal-state-map
 		("<leader> y" . yas-expand)
@@ -477,14 +542,24 @@
 		 (dired-mode . display-line-numbers-mode))
   :config
   (setq dired-dwim-target t)
+  ;; (unbind-key (kbd "SPC") dired-mode-map)
   (evil-collection-define-key 'normal 'dired-mode-map
-	"h" 'dired-single-up-directory
-	"l" 'dired-single-buffer
-	"c" 'my/dired-create)
-  :bind
-  (:map evil-normal-state-map
-		("z c" . dired-kill-subdir)
-		("z o" . dired-maybe-insert-subdir)))
+	;; "<leader>" nil
+	;; "SPC" nil
+	" " nil
+	"h" 'dired-up-directory
+	"l" 'dired-find-file
+	"c" 'my/dired-create
+	"z c" 'dired-kill-subdir
+	"z o" 'dired-maybe-insert-subdir)
+  (define-key dired-mode-map (kbd "SPC") nil))
+
+  ;; :bind
+  ;; (:map evil-normal-state-map ;; DO NOT DO THIS ITS SO BAD GOD STOP
+  ;; 		;; ("h" . dired-up-directory)
+  ;; 		;; ("l" . dired-find-file)
+  ;; 		;; ("c" . my/dired-create)
+  ;; 		("z o" . dired-maybe-insert-subdir)))
 
 ;; BRUH
 ;; (use-package shell
@@ -578,21 +653,22 @@
   :config
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
-(use-package flycheck
-  ;; :after evil
-  :ensure t
-  :config
-  (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
-  :hook
-  ;; (lisp-mode . flycheck-mode)
-  (json-mode . flycheck-mode)
-  (prog-mode . flycheck-mode)
-  (LaTeX-mode . flycheck-mode)
-  :bind
-  ("<f8>" . flycheck-mode)
-  (:map evil-normal-state-map
-		("<leader> e" . flycheck-next-error)
-		("<leader> E" . flycheck-previous-error)))
+;; flymake chads now
+;; (use-package flycheck
+;;   ;; :after evil
+;;   :ensure t
+;;   :config
+;;   (setq flycheck-python-flake8-executable "c:/Python39/Scripts/flake8.exe")
+;;   :hook
+;;   ;; (lisp-mode . flycheck-mode)
+;;   (json-mode . flycheck-mode)
+;;   (prog-mode . flycheck-mode)
+;;   (LaTeX-mode . flycheck-mode)
+;;   :bind
+;;   ("<f8>" . flycheck-mode)
+;;   (:map evil-normal-state-map
+;; 		("<leader> e" . flycheck-next-error)
+;; 		("<leader> E" . flycheck-previous-error)))
 
 (use-package ws-butler
   :ensure t
@@ -709,29 +785,32 @@
   ;; :after evil
   :diminish projectile-mode
   :init
-  (setq projectile-completion-system 'ivy)
+  (setq projectile-completion-system 'auto)
+  (define-prefix-command 'projectile-prefix)
+  :config
+  (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map)
+  (projectile-mode 1)
   :bind
   ;; ("s-p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
   (:map evil-normal-state-map
-		("\\ p" . projectile-switch-project)
+		;; ("\\ p" . projectile-switch-project)
 		("<leader> a" . my/normal-ag)
-		("\\ h" . my/projectile-find-other-file)
+		;; ("\\ h" . my/projectile-find-other-file)
 		:map evil-visual-state-map
-		("\\ p" . projectile-switch-project)
-		("<leader> a" . my/visual-ag)
-		("\\ h" . my/projectile-find-other-file))
-  :config (projectile-mode 1))
+		;; ("\\ p" . projectile-switch-project)
+		("<leader> a" . my/visual-ag)))
+		;; ("\\ h" . my/projectile-find-other-file)))
 
 (use-package ag
   :init
   (setq ag-highlight-search t)
   (setq ag-reuse-window t))
 
-(use-package flycheck-projectile
-  :after projectile
-  :load-path "~/.emacs.d/packages"
-  :bind ("C-c e" . flycheck-projectile-list-errors))
+;; (use-package flycheck-projectile
+;;   :after projectile
+;;   :load-path "~/.emacs.d/packages"
+;;   :bind ("C-c e" . flycheck-projectile-list-errors))
 
 (use-package dashboard
   :ensure t
@@ -739,13 +818,15 @@
   (setq dashboard-set-navigator t)
   (setq dashboard-startup-banner "~/.emacs.d/ascii-art.txt")
   (setq dashboard-set-footer t)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
+  (setq dashboard-footer-messages '("M-x 'list-packages' 'U' 'x'"))
+  (setq dashboard-center-content t)
+  ;; (setq dashboard-icon-type 'all-the-icons)
+  ;; (setq dashboard-set-heading-icons t)
+  ;; (setq dashboard-set-file-icons t)
   (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
-  (setq dashboard-items '((projects . 5)
-						  (bookmarks . 5)
-						  (recents . 5)))
-  (add-to-list 'dashboard-items '(agenda) t)
+  (setq dashboard-items '((bookmarks . 10)
+						  (projects . 20)))
+  ;; (add-to-list 'dashboard-items '(agenda) t)
   (dashboard-setup-startup-hook))
 
 (defun my/refresh-revert ()
@@ -776,7 +857,7 @@
 (global-set-key [f5] 'my/refresh-revert)
 
 (use-package vertico
-  :after evil
+  ;; :after orderless
   ;; (evil-collection-vertico-setup)
   ;; :after 'evil-collection
   :ensure t
@@ -805,6 +886,7 @@
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
+  :ensure t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
@@ -853,6 +935,11 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
+(use-package flymake
+  :bind
+  ("C-c e" . flymake-show-buffer-diagnostics)
+  ("C-c E" . flymake-show-project-diagnostics))
+
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
@@ -872,19 +959,26 @@
 ;; Example configuration for Consult
 (use-package consult
   :ensure t
-  :demand t
   :after evil
   :bind
-  ("M-b" . consult-buffer)
-  ("M-s" . consult-line)
+  ("M-s" . consult-buffer)
+  ("M-S" . consult-buffer-other-window)
+  ("M-p" . consult-project-buffer)
+  ("M-j" . consult-line)
   ("M-i" . consult-imenu)
-  ("M-I" . consult-imenu)
+  ("M-I" . consult-imenu-multi)
+  ("M-e" . consult-flymake)
+  ("M-E" . my/consult-flymake-t)
   ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
-		("<leader> b" . consult-buffer)
-		("<leader> s" . consult-line)
+		("<leader> s" . consult-buffer)
+		("<leader> S" . consult-buffer-other-window)
+		("<leader> o" . consult-project-buffer)
+		("<leader> j" . consult-line)
 		("<leader> i" . consult-imenu)
-		("<leader> I" . consult-imenu-multi))
+		("<leader> I" . consult-imenu-multi)
+		("<leader> e" . consult-flymake)
+		("<leader> E" . my/consult-flymake-t))
 		;; ("<leader> f" . consult-find))
   ;; Replace bindings. Lazily loaded due by `use-package'.
   ;; :bind (;; C-c bindings in `mode-specific-map'
@@ -946,7 +1040,6 @@
 
   ;; The :init configuration is always executed (Not lazy)
   :init
-
   ;; Optionally configure the register formatting. This improves the register
   ;; preview for `consult-register', `consult-register-load',
   ;; `consult-register-store' and the Emacs built-ins.
@@ -964,6 +1057,10 @@
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
+  (defun my/consult-flymake-t ()
+	"project-wide consult-flymake"
+	(interactive)
+	(consult-flymake t))
   (setq completion-in-region-function
 		(lambda (&rest args)
 		  (apply (if vertico-mode
@@ -989,7 +1086,8 @@
 
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<") ;; "C-+"
+  ;; (setq consult-narrow-key "<") ;; "C-+"
+  (setq consult-narrow-key "C-+") ;; "<"
 
   ;; Optionally make narrowing help available in the minibuffer.
   ;; You may want to use `embark-prefix-help-command' or which-key instead.
@@ -1168,63 +1266,116 @@
 ;;   (setq rmh-elfeed-org-files (list "elfeed.org"))
 ;; )
 
-(use-package lsp-mode
-  :init
-  (setq lsp-keymap-prefix "C-c l")
+;; lmao no
+;; (use-package nix-mode
+;;   :ensure t
+;;   :mode "\\.nix\\'")
+
+;; (use-package lsp-mode
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   :config
+;;   (setq lsp-response-timeout 1)
+;;   (setq read-process-output-max (* 1024 1024))
+;;   (setq lsp-idle-delay 0.01)
+;;   (setq lsp-progress-spinner-type 'rotating-line)
+;;   :commands (lsp lsp-deferred))
+
+;; (use-package lsp-ui
+;;   :after lsp-mode
+;;   :commands lsp-ui-mode)
+
+;; (use-package lsp-ivy
+;;   :after lsp-mode
+;;   :commands lsp-ivy-workspace-symbol
+;;   :bind
+;;   (:map evil-normal-state-map
+;; 		("<leader> w" . lsp-ivy-workspace-symbol)
+;; 		:map evil-visual-state-map
+;; 		("<leader> w" . lsp-ivy-workspace-symbol)))
+
+(use-package eglot
+  :ensure t
   :config
-  (setq lsp-response-timeout 1)
-  (setq read-process-output-max (* 1024 1024))
-  (setq lsp-idle-delay 0.01)
-  (setq lsp-progress-spinner-type 'rotating-line)
-  :commands (lsp lsp-deferred))
+  (setq eglot-autoshutdown t)
+  (setq eglot-report-progress nil)
+  (setq eglot-events-buffer-size 0)
+  (setq eldoc-echo-area-use-multiline-p nil)
+  (setq read-process-output-max (* 1024 1024)))
 
-(use-package lsp-ui
-  :after lsp-mode
-  :commands lsp-ui-mode)
+(use-package company
+  :after eglot
+  :ensure t
+  :config
+  (defun disable-auto-complete-mode ()
+	"disables auto-complete so that way company mode takes over"
+	(auto-complete-mode -1)
+	(message "auto-complete-mode disabled in current buffer!"))
+  (setq company-idle-delay 0.00)
+  (setq company-tooltip-idle-delay 0.00)
+  :hook
+  (company-mode . disable-auto-complete-mode))
 
-(use-package lsp-ivy
-  :after lsp-mode
-  :commands lsp-ivy-workspace-symbol
-  :bind
-  (:map evil-normal-state-map
-		("<leader> w" . lsp-ivy-workspace-symbol)
-		:map evil-visual-state-map
-		("<leader> w" . lsp-ivy-workspace-symbol)))
+;; eglot config
+
+;; THIS CARRIES--see .dir-locals.el
+;; this is by far the FASTEST option (IF YOU USE A BUFFER--WHY???)
+(defun my/headless-godot-editor (&optional godot-project quiet)
+  "Hand over the lsp and no-one gets hurt >:^("
+  (interactive)
+  (when (or godot-project (gdscript-util--find-project-configuration-file))
+	  (let ((godot-buffer (format "*Headless Godot -- %s*" (gdscript-util--get-godot-project-name)))
+			(godot-process(format "Headless Godot (%s)" (gdscript-util--get-godot-project-name)))
+			(project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
+		(if (get-buffer godot-buffer)
+			(unless quiet (message "%s already exists!" godot-process))
+		  (start-process godot-process godot-buffer gdscript-godot-executable "-e" "--headless" project-file)
+		  (unless quiet (message "%s started!" godot-process))))))
+
+(defun my/kill-headless-godot-editor ()
+  "STOP THAT LANGUAGE SEVER!"
+  (interactive)
+  (if (gdscript-util--find-project-configuration-file)
+	(kill-buffer (format "*Headless Godot -- %s*" (gdscript-util--get-godot-project-name)))
+  (-->
+   (seq-map #'buffer-name (buffer-list))
+   (seq-filter (lambda (x) (string-match-p "\*Headless Godot -- .+\*" x)) it)
+   (if it (kill-buffer (completing-read "Kill Headless: " it))
+	 (message "No Headless Godot Buffers!")))))
+
+(bind-keys :prefix-map gdscript-command-map
+		   :prefix "C-c g"
+		   :menu-name "GDScript commands"
+		   ("e" . my/headless-godot-editor)
+		   ("k" . my/kill-headless-godot-editor)
+		   ("r" . gdscript-godot-run-project-debug)
+		   ("o" . gdscript-godot-open-project-in-editor)
+		   ("d" . gdscript-debug-make-server)) ;; this is for DAP
 
 (use-package gdscript-mode
   :straight (gdscript-mode
 			 :type git
 			 :host github
 			 :repo "godotengine/emacs-gdscript-mode")
-  :hook (gdscript-mode . lsp-deferred))
-
-;; THIS CARRIES--see .dir-locals.el
-(defun my/headless-godot-editor (&optional quiet)
-  "Hand over the lsp and no-one gets hurt >:^("
-  (interactive '(gdscript-mode))
-  (if (gdscript-util--find-project-configuration-file)
-	  (let ((gdscript-buffer-name (format "*GDScript LSP -- %s*" (gdscript-util--get-godot-project-name)))
-			(gdscript-process "GDScript LSP")
-			(gdscript-project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
-		(if (not (get-buffer gdscript-buffer-name))
-			(progn
-			  (start-process gdscript-process gdscript-buffer-name gdscript-godot-executable "-e" "--headless" gdscript-project-file)
-			  (message "%s started!" gdscript-process))
-		  (if (not quiet)
-			  (message "%s already exists!" gdscript-process))))))
-
-(defun my/kill-headless-godot-editor ()
-  "STOP THAT LSP!"
-  (interactive)
-  (kill-buffer (format "*GDScript LSP -- %s*" (gdscript-util--get-godot-project-name))))
-
-(bind-keys :prefix-map my-gdscript-command-map
-		   :prefix "C-c g"
-		   ("e" . my/headless-godot-editor)
-		   ("k" . my/kill-headless-godot-editor)
-		   ("r" . gdscript-godot-run-project-debug)
-		   ("o" . gdscript-godot-open-project-in-editor)
-		   ("d" . gdscript-debug-make-server)) ;; this DOES NOT seem to work???
+  ;; :hook (gdscript-mode . lsp-deferred))
+  :commands (gdscript-util--find-project-configuration-file
+			 gdscript-godot-run-prject-debug
+			 gdscript-godot-open-project-in-editor
+			 gdscript-debug-make-server)
+  :config
+  (defun my/godot-project-setup ()
+	"Stuff to do when projectile switches to a Godot project."
+	(when (gdscript-util--find-project-configuration-file)
+	  (my/headless-godot-editor t)))
+  :hook
+  (gdscript-mode . eglot-ensure)
+  ;; (gdscript-mode . my/check-headless-godot)
+  (gdscript-mode . company-mode)
+  (projectile-after-switch-project . my/godot-project-setup)
+  ;; (gdscript-mode . (lambda ()
+  ;; 					 (my/start-headless-godot-if-no-existing-godot)
+  ;; 					 (eglot-ensure)))
+  :custom (gdscript-eglot-version 4))
 
 (defun lsp--gdscript-ignore-errors (original-function &rest args)
   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
@@ -1240,8 +1391,8 @@
 (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
 
-;; (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
-(setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;; (setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
 ;; (setq initial-buffer-choice #'list-packages)
 ;; (setq initial-buffer-choice (lambda () (list-packages)(package-menu-filter-by-status '("installed" "dependency" "buillt-in"))(package-menu-filter-upgradeable)))
 (setq gc-cons-threshod (* 2 1000 1000))
