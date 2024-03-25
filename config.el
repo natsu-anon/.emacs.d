@@ -445,8 +445,8 @@
 		("<leader> f" . my/find-file)
 		("<leader> d" . dired)
 		("<leader> D" . find-name-dired)
-		("<leader> m" . evil-goto-mark-line)
-		("<leader> M" . evil-goto-mark)
+		;; ("<leader> m" . evil-goto-mark-line)
+		;; ("<leader> M" . evil-goto-mark)
 		("\\ m" . evil-show-marks)
 		("\\ f" . evil-show-files)
 		;; ("g b" . switch-to-prev-buffer) ;; use [ b
@@ -783,12 +783,14 @@
 (use-package projectile
   :ensure t
   ;; :after evil
+  ;; :commands projectile-command-map
   :diminish projectile-mode
   :init
   (setq projectile-completion-system 'auto)
   (define-prefix-command 'projectile-prefix)
+  (projectile-mode)
   :config
-  (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map)
+  (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map) ;; why here?
   (projectile-mode 1)
   :bind
   ;; ("s-p" . projectile-command-map)
@@ -857,14 +859,18 @@
 (global-set-key [f5] 'my/refresh-revert)
 
 (use-package vertico
+  :straight (vertico-mode
+			 :type git
+			 :host github
+			 :repo "minad/vertico")
   ;; :after orderless
   ;; (evil-collection-vertico-setup)
   ;; :after 'evil-collection
-  :ensure t
+  ;; :ensure t
   :demand t
   :init
   (vertico-mode)
-  (vertico-mouse-mode)
+  ;; (vertico-mouse-mode)
   (setq vertico-scroll-margin 0)
   (setq vertico-count 20)
   (setq vertico-resize t)
@@ -873,9 +879,9 @@
   (:map vertico-map
 		("<escape>" . keyboard-escape-quit)
 		("<return>" . vertico-exit)
-		("<backspace>" . vertico-directory-delete-char)
-		("S-<backspace>" . vertico-directory-up)
-		("M-<backspace>" . vertico-directory-delete-word)
+		;; ("<backspace>" . vertico-directory-delete-char)
+		;; ("S-<backspace>" . vertico-directory-up)
+		;; ("M-<backspace>" . vertico-directory-delete-word)
 		("TAB" . vertico-insert)
 		("C-j" . vertico-next)
 		("C-k" . vertico-previous)
@@ -962,6 +968,7 @@
   :after evil
   :bind
   ("M-s" . consult-buffer)
+  ("M-m" . consult-bookmark)
   ("M-S" . consult-buffer-other-window)
   ("M-p" . consult-project-buffer)
   ("M-j" . consult-line)
@@ -972,6 +979,7 @@
   ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
 		("<leader> s" . consult-buffer)
+		("<leader> m" . consult-bookmarkbufferbufferbufferbuffer)
 		("<leader> S" . consult-buffer-other-window)
 		("<leader> o" . consult-project-buffer)
 		("<leader> j" . consult-line)
@@ -1057,6 +1065,9 @@
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
+  (setq read-buffer-completion-ignore-case t)
+  (setq read-file-name-completion-ignore-case t)
+  (setq completion-ignore-case t)
   (defun my/consult-flymake-t ()
 	"project-wide consult-flymake"
 	(interactive)
@@ -1070,7 +1081,7 @@
 
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
+  (setq consult-preview-key 'any)
   ;; (setq consult-preview-key "M-.")
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
   ;; For some commands and buffer sources it is useful to configure the
@@ -1108,8 +1119,8 @@
   ;; (setq consult-project-function nil)
 )
 
-(use-package ivy
-  :ensure t)
+;; (use-package ivy
+;;   :ensure t)
 ;;   :bind
 ;;   (:map minibuffer-mode-map
 ;; 		("C-j" . ivy-next-line)
@@ -1271,19 +1282,25 @@
 ;;   :ensure t
 ;;   :mode "\\.nix\\'")
 
-;; (use-package lsp-mode
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :config
-;;   (setq lsp-response-timeout 1)
-;;   (setq read-process-output-max (* 1024 1024))
-;;   (setq lsp-idle-delay 0.01)
-;;   (setq lsp-progress-spinner-type 'rotating-line)
-;;   :commands (lsp lsp-deferred))
+;; this one is working on windows yolo
+(use-package lsp-mode
+  :ensure t
+  :init
+  (setq lsp-keymap-prefix "SPC l")
+  :config
+  (setq lsp-response-timeout 1)
+  (setq read-process-output-max (* 1024 1024))
+  (setq lsp-idle-delay 0.01)
+  (setq lsp-progress-spinner-type 'rotating-line)
+  :commands (lsp lsp-deferred))
 
-;; (use-package lsp-ui
-;;   :after lsp-mode
-;;   :commands lsp-ui-mode)
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :commands (lsp-ui-mode lsp-ui-doc-mode)
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  (lsp-mode . lsp-ui-doc-mode))
 
 ;; (use-package lsp-ivy
 ;;   :after lsp-mode
@@ -1294,6 +1311,7 @@
 ;; 		:map evil-visual-state-map
 ;; 		("<leader> w" . lsp-ivy-workspace-symbol)))
 
+;; eglot config -- BUILT IN WOW!
 (use-package eglot
   :ensure t
   :config
@@ -1315,8 +1333,6 @@
   (setq company-tooltip-idle-delay 0.00)
   :hook
   (company-mode . disable-auto-complete-mode))
-
-;; eglot config
 
 ;; THIS CARRIES--see .dir-locals.el
 ;; this is by far the FASTEST option (IF YOU USE A BUFFER--WHY???)
@@ -1367,11 +1383,16 @@
 	"Stuff to do when projectile switches to a Godot project."
 	(when (gdscript-util--find-project-configuration-file)
 	  (my/headless-godot-editor t)))
+  ;; (push (cons 'gdscript-mode `(,gdscript-godot-executable "-e" "--headless" ,gdscript-util--find-project-configuration-file)) eglot-server-programs)
   :hook
-  (gdscript-mode . eglot-ensure)
+  ;; SET IN .dir-locals.el -- eglot not working with godot lsp >:^(
+  (gdscript-mode . (lambda () (if windows-flag (lsp-deferred) (eglot-ensure)))) ;; BRUH
+  ;; (gdscript-mode . eglot-ensure)
+  ;; (gdscript-mode . lsp)
   ;; (gdscript-mode . my/check-headless-godot)
   (gdscript-mode . company-mode)
   (projectile-after-switch-project . my/godot-project-setup)
+  ;; (gdscript-mode . (lambda () (message "foo bar gdscript-mode")))
   ;; (gdscript-mode . (lambda ()
   ;; 					 (my/start-headless-godot-if-no-existing-godot)
   ;; 					 (eglot-ensure)))
