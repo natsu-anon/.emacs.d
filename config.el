@@ -109,6 +109,13 @@
 ;; (message "No quick insert string!  Use (setq-local qinsert \"foo\") then `eval-last-sexp'")))
 ;; (global-set-key (kbd "M-i") 'qinsert-func)
 
+(defun temp-notes ()
+  "Brings up `*TEMP-NOTES*' in org-mode"
+  (interactive)
+  (split-window-horizontally)
+  (switch-to-buffer (get-buffer-create "*TEMP-NOTES*"))
+  (org-mode))
+
 (require 'package)
 (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -167,12 +174,12 @@
 (defun obs-1080p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
-  (set-frame-size (selected-frame) 1900 1080 t))
+  (set-frame-size (selected-frame) 1920 1064 t))
 
 (defun obs-720p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
-  (set-frame-size (selected-frame) 1260 720 t))
+  (set-frame-size (selected-frame) 1280 704 t))
 
 (defun ymd-date ()
   "lol lmao"
@@ -1285,8 +1292,10 @@
 ;; this one is working on windows yolo
 (use-package lsp-mode
   :ensure t
+  :after evil
   :init
-  (setq lsp-keymap-prefix "SPC l")
+  ;; (setq lsp-keymap-prefix "SPC l") ;; DONT DO THIS ITS AN AWFUL MISTAKE
+  (setq lsp-keymap-prefix "C-l")
   :config
   (setq lsp-response-timeout 1)
   (setq read-process-output-max (* 1024 1024))
