@@ -112,7 +112,6 @@
 (defun temp-notes ()
   "Brings up `*TEMP-NOTES*' in org-mode"
   (interactive)
-  (split-window-horizontally)
   (switch-to-buffer (get-buffer-create "*TEMP-NOTES*"))
   (org-mode))
 
@@ -475,10 +474,22 @@
 
 ;; TODO leader keybinds
 (use-package org
-  ;; :after evil
+  :after evil
   :ensure t
   :init
-  (setq org-M-RET-may-split-line nil))
+  (setq org-M-RET-may-split-line nil)
+  :config
+  (define-prefix-command 'my-org-prefix)
+  (evil-global-set-key 'normal (kbd "<leader> SPC") 'my-org-prefix)
+  :bind
+  (:map evil-normal-state-map
+		("<leader> SPC #" . org-update-checkbox-count)
+		("<leader> SPC RET" . org-toggle-checkbox)
+		("<leader> SPC i" . org-insert-item)
+		("<leader> SPC A" . org-insert-heading)
+		("<leader> SPC a" . org-insert-subheading)
+		("<leader> SPC t" . org-insert-todo-subheading)
+		("<leader> SPC T" . org-insert-todo-heading)))
 
 (use-package auto-complete
   :ensure t
