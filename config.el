@@ -1,5 +1,5 @@
 ;; EMACS CONFIG
-;; see `https://blog.aaronbieber.com/2015/05/24/fronmnent variable HOME, (at Users/name or wherever), create .emacs.d there
+; see `https://blog.aaronbieber.com/2015/05/24/fronmnent variable HOME, (at Users/name or wherever), create .emacs.d there
 ;; remember -- you _MUST_ run 'all-the-icons-install-fonts' AND 'nerd-icons-install-fonts' then install the fonts to get that working ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
 ;; see 'https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
 ;; NOTE sometimes you gotta run package-refresh-contents
@@ -149,14 +149,14 @@
 ;; turn on RELATIVE line numbers
 ;; NOTE: visual is better than relative for navigating w/ code folds
 (column-number-mode)
-(setq display-line-numbers 'visual)
+(setq display-line-numbers 'relative)
 (display-line-numbers-mode)
 
 (defun toggle-linums ()
   "Toggle between relative & absolute line numbers."
   (interactive)
   (if (eq display-line-numbers t)
-	  (setq display-line-numbers 'visual)
+	  (setq display-line-numbers 'relative)
 	(setq display-line-numbers t)))
 
 (defun absolute-linums ()
@@ -165,7 +165,7 @@
 
 (defun relative-linums ()
   "set relative line numbers."
-  (setq display-line-numbers 'visual))
+  (setq display-line-numbers 'relative))
 
 ;; HAND OVER THE RELATIVE LINUMS NOW!
 (add-hook 'prog-mode-hook 'relative-linums)
@@ -339,6 +339,22 @@
 ;; 	(message "killing: %s" (buffer-name buffer))
 ;; 	(kill-buffer buffer)))
 
+;; NOTE: NONE of these are working??? Nor is `consult-buffer'????? wtf?
+(defun my/switch-to-buffer ()
+  "Show `switch-to-buffer' results in the current window"
+  (interactive)
+  (let ((window (selected-window)))
+	(minibuffer-with-setup-hook
+		(lambda ()
+		  ;; (setq-local inhibit-modification-)
+		  (add-hook 'after-change-functions
+					(lambda (beg end len)
+					  (message (minibuffer-contents))
+					  (set-window-buffer window (get-buffer (minibuffer-contents))))))
+					  ;; (set-window-buffer window (get-buffer "*scratch*")))))
+	  (message "LETS GO?")
+	  (switch-to-buffer (read-buffer "Switch to buffer: ") `(,(window-buffer window))))))
+
 (defun my/find-file ()
   "Show `find-file' results (only with full matches) with a psuedo-temporary buffer in current window."
   (interactive)
@@ -380,13 +396,17 @@
 									 temp-buffers))))
 	  (dired (read-file-name "Find file: " nil nil nil)))))
 
+
 (defun rename-this-file (&optional new-name)
   "Rename buffer's current file to NEW-NAME."
   (interactive "*FRename current file to: ")
   (when (buffer-file-name)
 	(if (file-exists-p new-name)
 		(message "%s already exists!" new-name)
-	  (rename-file (buffer-file-name) new-name))))
+	  (let ((old-buffer (buffer-name)))
+		(rename-file (buffer-file-name) new-name)
+		(find-file new-name)
+		(kill-buffer old-buffer)))))
 
 (defun my/shell-command-region (&optional point mark)
   (interactive "r")
@@ -413,9 +433,9 @@
   :config
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
+  (evil-global-set-key 'normal (kbd "C-t") 'my-shell-prefix)
   (evil-global-set-key 'normal (kbd "<leader> h") 'my-help-prefix)
   ;; (global-set-key (kbd "C-t") 'my-shell-prefix)
-  (evil-global-set-key 'normal (kbd "C-t") 'my-shell-prefix)
   :bind
   ("M-e" . eval-last-sexp)
   ("M-f" . my/find-file)
@@ -446,6 +466,7 @@
 		("\\ n" . tab-bar-new-tab)
 		("\\ q" . tab-bar-close-tab)
 		("C-t h" . shell)
+		("C-t p" . project-shell)
 		("C-t v" . my/shell-right)
 		("C-t s" . my/shell-down)
 		("<leader> f" . my/find-file)
@@ -457,8 +478,9 @@
 		("\\ f" . evil-show-files)
 		;; ("g b" . switch-to-prev-buffer) ;; use [ b
 		;; ("g B" . switch-to-next-buffer) ;; use ] b
-		("<leader> q" . evil-quit) ;; lmao wtf am I thinkign?
-		("<leader> K" . kill-buffer-and-window) ;; lmao wtf am I thinkign?
+		;; ("<leader> q" . evil-quit) ;; lmao wtf am I thinkign?
+		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
+		("<leader> s" . switch-to-buffer)
 		:map evil-visual-state-map
 		("\\ #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
@@ -480,16 +502,18 @@
   (setq org-M-RET-may-split-line nil)
   :config
   (define-prefix-command 'my-org-prefix)
-  (evil-global-set-key 'normal (kbd "<leader> SPC") 'my-org-prefix)
+  (evil-global-set-key 'normal (kbd "<leader> u") 'my-org-prefix)
   :bind
   (:map evil-normal-state-map
-		("<leader> SPC #" . org-update-checkbox-count)
-		("<leader> SPC RET" . org-toggle-checkbox)
-		("<leader> SPC i" . org-insert-item)
-		("<leader> SPC A" . org-insert-heading)
-		("<leader> SPC a" . org-insert-subheading)
-		("<leader> SPC t" . org-insert-todo-subheading)
-		("<leader> SPC T" . org-insert-todo-heading)))
+		("<leader> u h" . org-do-promote)
+		("<leader> u l" . org-do-demote)
+		("<leader> u #" . org-update-checkbox-count)
+		("<leader> u RET" . org-toggle-checkbox)
+		("<leader> u i" . org-insert-item)
+		("<leader> u A" . org-insert-heading)
+		("<leader> u a" . org-insert-subheading)
+		("<leader> u t" . org-insert-todo-subheading)
+		("<leader> u T" . org-insert-todo-heading)))
 
 (use-package auto-complete
   :ensure t
@@ -618,10 +642,16 @@
   "bruh."
   (interactive "P")
   (sp-wrap-with-pair "'"))
+
 (defun sp-wrap-double-quote (&optional arg)
   "bruh."
   (interactive "P")
   (sp-wrap-with-pair "\""))
+
+;; (defun sp-wrap-grave (&optional arg)
+;;   "bruh"
+;;   (interactive "P")
+;;   (sp-wrap-with-pair "`"))
 
 ;; ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
@@ -816,6 +846,7 @@
   (:map evil-normal-state-map
 		;; ("\\ p" . projectile-switch-project)
 		("<leader> a" . my/normal-ag)
+		("<leader> o" . projectile-find-file)
 		;; ("\\ h" . my/projectile-find-other-file)
 		:map evil-visual-state-map
 		;; ("\\ p" . projectile-switch-project)
@@ -982,13 +1013,17 @@
 
 ;; Example configuration for Consult
 (use-package consult
+  :straight (consult
+			 :type git
+			 :host github
+			 :repo "minad/consult")
   :ensure t
   :after evil
   :bind
-  ("M-s" . consult-buffer)
+  ;; ("M-s" . consult-buffer)
   ("M-m" . consult-bookmark)
-  ("M-S" . consult-buffer-other-window)
-  ("M-p" . consult-project-buffer)
+  ;; ("M-S" . consult-buffer-other-window)
+  ;; ("M-p" . consult-project-buffer)
   ("M-j" . consult-line)
   ("M-i" . consult-imenu)
   ("M-I" . consult-imenu-multi)
@@ -996,10 +1031,10 @@
   ("M-E" . my/consult-flymake-t)
   ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
-		("<leader> s" . consult-buffer)
-		("<leader> m" . consult-bookmarkbufferbufferbufferbuffer)
-		("<leader> S" . consult-buffer-other-window)
-		("<leader> o" . consult-project-buffer)
+		;; ("<leader> s" . consult-buffer)
+		("<leader> m" . consult-bookmark)
+		;; ("<leader> S" . consult-buffer-other-window)
+		;; ("<leader> p" . consult-project-buffer)
 		("<leader> j" . consult-line)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
@@ -1011,7 +1046,7 @@
          ;; ("C-c M-x" . consult-mode-command)
          ;; ("C-c h" . consult-history)
          ;; ("C-c k" . consult-kmacro)
-         ;; ("C-c m" . consult-man)
+         ("C-c m" . consult-man)
          ;; ("C-c i" . consult-info)
          ;; ([remap Info-search] . consult-info)
          ;; ;; C-x bindings in `ctl-x-map'
@@ -1083,6 +1118,7 @@
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
   :config
+  (add-to-list 'consult-buffer-sources 'consult--source-hidden-buffer )
   (setq read-buffer-completion-ignore-case t)
   (setq read-file-name-completion-ignore-case t)
   (setq completion-ignore-case t)
@@ -1341,6 +1377,37 @@
   (setq eldoc-echo-area-use-multiline-p nil)
   (setq read-process-output-max (* 1024 1024)))
 
+(defun lsp-however ()
+  "Launch lsp with either eglot or lsp-mode"
+  (if (bound-and-true-p use-lsp-mode)
+	  (lsp-deferred)
+	(eglot-ensure)))
+
+(defun my/lsp-rename (newname)
+  "Rename."
+  (interactive
+   (list (read-from-minibuffer
+          (format "Rename `%s' to: " (or (thing-at-point 'symbol t)
+                                         "unknown symbol"))
+          nil nil nil nil
+          (symbol-name (symbol-at-point)))))
+  (if (bound-and-true-p use-lsp-mode)
+	  (lsp-rename newname)
+	(eglot-rename newname)))
+
+(defun my/lsp-quickfix (BEG &optional END)
+  "Quickfix."
+  (interactive (and (region-active-p) (list (region-beginning) (region-end))))
+  (if (boound-and-true-p use-lsp-mode)
+	  (lsp-eslint-fix-all)
+	(eglot-code-action-quickfix BEG END)))
+
+(bind-keys :menu-name "LSP commands"
+		   :prefix-map my/lsp-map
+		   :prefix "C-c l"
+		   ("r" . my/lsp-rename)
+		   ("q" . my/lsp-quickfix))
+
 (use-package company
   :after eglot
   :ensure t
@@ -1352,7 +1419,8 @@
   (setq company-idle-delay 0.00)
   (setq company-tooltip-idle-delay 0.00)
   :hook
-  (company-mode . disable-auto-complete-mode))
+  (company-mode . disable-auto-complete-mode)
+  (c++-mode . company-mode))
 
 ;; THIS CARRIES--see .dir-locals.el
 ;; this is by far the FASTEST option (IF YOU USE A BUFFER--WHY???)
@@ -1365,7 +1433,7 @@
 			(project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
 		(if (get-buffer godot-buffer)
 			(unless quiet (message "%s already exists!" godot-process))
-		  (start-process godot-process godot-buffer gdscript-godot-executable "-e" "--headless" project-file)
+		  (start-process godot-process godot-buffer gdscript-godot-executable "--verbose" "-e" "--headless" project-file)
 		  (unless quiet (message "%s started!" godot-process))))))
 
 (defun my/kill-headless-godot-editor ()
@@ -1389,6 +1457,7 @@
 		   ("d" . gdscript-debug-make-server)) ;; this is for DAP
 
 (use-package gdscript-mode
+  :after eglot
   :straight (gdscript-mode
 			 :type git
 			 :host github
@@ -1404,9 +1473,11 @@
 	(when (gdscript-util--find-project-configuration-file)
 	  (my/headless-godot-editor t)))
   ;; (push (cons 'gdscript-mode `(,gdscript-godot-executable "-e" "--headless" ,gdscript-util--find-project-configuration-file)) eglot-server-programs)
+  ;; (assq-delete-all 'gdscript-mode eglot-server-programs)
+  (add-to-list 'eglot-server-programs '(gdscript-mode . ("localhost" 6005)))
   :hook
   ;; SET IN .dir-locals.el -- eglot not working with godot lsp >:^(
-  (gdscript-mode . (lambda () (if windows-flag (lsp-deferred) (eglot-ensure)))) ;; BRUH
+  (gdscript-mode . lsp-however) ;; BRUH
   ;; (gdscript-mode . eglot-ensure)
   ;; (gdscript-mode . lsp)
   ;; (gdscript-mode . my/check-headless-godot)
