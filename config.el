@@ -173,12 +173,12 @@
 (defun obs-1080p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
-  (set-frame-size (selected-frame) 1920 1064 t))
+  (set-frame-size (selected-frame) 1920 1080 t))
 
 (defun obs-720p ()
   "set the frame size to 1900x1080 pixels because for some raisin emacs gives a free 20 horizontal pixels."
   (interactive)
-  (set-frame-size (selected-frame) 1280 704 t))
+  (set-frame-size (selected-frame) 1280 720 t))
 
 (defun ymd-date ()
   "lol lmao"
