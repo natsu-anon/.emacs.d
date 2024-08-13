@@ -195,6 +195,11 @@
 (setq c-default-style "bsd")
 (setq c-basic-offset 4)
 
+;; I'VE TAKEN THE RIPGREP PILL
+;; (setq grep-command "rg -nS --no-heading ")
+;; (setq grep-use-null-device nil)
+
+
 ;; bootstrap straight.el
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -421,9 +426,9 @@
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  (define-prefix-command 'my-shell-prefix)
+  (define-prefix-command 'my-tab-prefix)
   (define-prefix-command 'my-help-prefix)
-  ;; (setq evil-undo-system 'undo-redo)
+  (setq evil-undo-system 'undo-redo)
   ;; (define-prefix-command 'my-consult-buffer-prefix)
   ;; (global-set-key (kbd "C-s") 'my-consult-buffer-prefix)
   ;; (define-prefix-command 'my-leader)
@@ -431,9 +436,10 @@
   ;; (global-set-key (kbd "SPC e") 'my-emacs-leader)
   (evil-mode)
   :config
+  ;; (setq evil-undo-system 'undo-redo)
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
-  (evil-global-set-key 'normal (kbd "C-t") 'my-shell-prefix)
+  (evil-global-set-key 'normal (kbd "C-t") 'my-tab-prefix)
   (evil-global-set-key 'normal (kbd "<leader> h") 'my-help-prefix)
   ;; (global-set-key (kbd "C-t") 'my-shell-prefix)
   :bind
@@ -460,39 +466,54 @@
 		("<leader> h v" . describe-variable)
 		("<leader> h f" . describe-function)
 		("<leader> h k" . describe-key)
-		("<leader> r" . undo-redo)
+		("<leader> h o" . describe-symbol)
+		;; ("<leader> r" . undo-redo)
+		("-" . dired-jump)
 		("\\ d" . dired-jump)
 		("\\ D" . my/dired-recursive)
-		("\\ n" . tab-bar-new-tab)
-		("\\ q" . tab-bar-close-tab)
-		("C-t h" . shell)
-		("C-t p" . project-shell)
-		("C-t v" . my/shell-right)
-		("C-t s" . my/shell-down)
-		("<leader> f" . my/find-file)
+		("C-t n" . tab-bar-new-tab)
+		("C-t q" . tab-bar-close-tab)
+		("\\ t" . shell)
+		("\\ T" . project-shell)
+		;; ("C-t v" . my/shell-right)
+		;; ("C-t s" . my/shell-down)
+		("<leader> f" . find-file)
 		("<leader> d" . dired)
 		("<leader> D" . find-name-dired)
 		;; ("<leader> m" . evil-goto-mark-line)
 		;; ("<leader> M" . evil-goto-mark)
-		("\\ m" . evil-show-marks)
+		("\\ '" . evil-show-marks)
 		("\\ f" . evil-show-files)
 		;; ("g b" . switch-to-prev-buffer) ;; use [ b
 		;; ("g B" . switch-to-next-buffer) ;; use ] b
 		;; ("<leader> q" . evil-quit) ;; lmao wtf am I thinkign?
 		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
-		("<leader> s" . switch-to-buffer)
+		("<leader> b" . switch-to-buffer)
+		("<leader> r" . recentf)
 		:map evil-visual-state-map
 		("\\ #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
-		("<leader> m" . evil-goto-mark-line)
-		("<leader> M" . evil-goto-mark)
+		;; ("<leader> m" . evil-goto-mark-line)
+		;; ("<leader> M" . evil-goto-mark)
 		("<leader> !" . my/shell-command-region)
 		("\\ b" . my/ibuffer-toggle)
 		("\\ l" . toggle-linums)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
+
+;; temporarily highlights modified regions
+(use-package evil-goggles
+  :ensure t
+  :config
+  (evil-goggles-mode)
+
+  ;; optionally use diff-mode's faces; as a result, deleted text
+  ;; will be highlighed with `diff-removed` face which is typically
+  ;; some red color (as defined by the color theme)
+  ;; other faces such as `diff-added` will be used for other actions
+  (evil-goggles-use-diff-faces))
 
 ;; TODO leader keybinds
 (use-package org
@@ -688,6 +709,12 @@
 		("<leader> ]" . sp-wrap-square)
 		("<leader> [" . sp-wrap-square)))
 
+(use-package lua-mode
+  :ensure t
+  :diminish lua-mode
+  :config
+  (setq lua-indent-level 2))
+
 (use-package js2-mode
   :ensure t
   :init
@@ -805,32 +832,10 @@
   :hook (prog-mode . highlight-indent-guides-mode)
   :config (setq highlight-indent-guides-method 'character))
 
-(defun my/context-ag (&optional initial-value)
-  "Use projectile-ag if in a project, otherwise regular ag."
-  (interactive)
-  (if (projectile-project-p)
-	  (ag-project (read-string "search-string (use ag-project-files to limit search to a given filetype):" initial-value))
-	(ag (read-string "search-string (use ag-files to limit search to a given filetype):" initial-value)
-		(file-name-directory buffer-file-name))))
-
-(defun my/normal-ag ()
-  "Use projectile-ag if in a project, otherwise regular ag."
-  (interactive)
-  (my/context-ag (if (symbol-at-point) (symbol-name (symbol-at-point)))))
-
-(defun my/visual-ag ()
-  "Use projectile-ag if in a project, otherwise regular ag."
-  (interactive)
-  (my/context-ag (buffer-substring-no-properties (region-beginning) (region-end))))
-
-(defun my/projectile-find-other-file ()
-  "projectile-find-other-file but with flex-matching enabled by default"
-  (interactive)
-  (projectile-find-other-file t))
 
 (use-package projectile
   :ensure t
-  ;; :after evil
+  ;; :after rg
   ;; :commands projectile-command-map
   :diminish projectile-mode
   :init
@@ -841,17 +846,14 @@
   (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map) ;; why here?
   (projectile-mode 1)
   :bind
-  ;; ("s-p" . projectile-command-map)
   ("C-c p" . projectile-command-map)
   (:map evil-normal-state-map
-		;; ("\\ p" . projectile-switch-project)
-		("<leader> a" . my/normal-ag)
+		("<leader> a" . projectile-find-other-file)
 		("<leader> o" . projectile-find-file)
-		;; ("\\ h" . my/projectile-find-other-file)
-		:map evil-visual-state-map
-		;; ("\\ p" . projectile-switch-project)
-		("<leader> a" . my/visual-ag)))
-		;; ("\\ h" . my/projectile-find-other-file)))
+		("<leader> B" . projectile-switch-to-buffer)))
+
+(use-package rg
+  :ensure t)
 
 (use-package ag
   :init
@@ -908,7 +910,7 @@
 (global-set-key [f5] 'my/refresh-revert)
 
 (use-package vertico
-  :straight (vertico-mode
+  :straight (vertico
 			 :type git
 			 :host github
 			 :repo "minad/vertico")
@@ -927,7 +929,7 @@
   :bind
   (:map vertico-map
 		("<escape>" . keyboard-escape-quit)
-		("<return>" . vertico-exit)
+		;; ("<return>" . vertico-exit)
 		;; ("<backspace>" . vertico-directory-delete-char)
 		;; ("S-<backspace>" . vertico-directory-up)
 		;; ("M-<backspace>" . vertico-directory-delete-word)
@@ -938,6 +940,16 @@
 		("C-9" . vertico-previous-group)
 		("C-n" . vertico-scroll-down)
 		("C-m" . vertico-scroll-up)))
+
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
+  :bind
+  (:map vertico-map
+		("<return>" . vertico-directory-enter)
+		("<backspace>" . vertico-directory-delete-char)
+		("M-<backspace>" . vertico-directory-delete-word)))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
@@ -993,7 +1005,9 @@
 (use-package flymake
   :bind
   ("C-c e" . flymake-show-buffer-diagnostics)
-  ("C-c E" . flymake-show-project-diagnostics))
+  ("C-c E" . flymake-show-project-diagnostics)
+  :hook
+  (lisp-mode . flymake-mode))
 
 ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
@@ -1010,6 +1024,28 @@
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
   (marginalia-mode))
+
+(defun my/completing-read (prompt default)
+  (completing-read prompt `(,default)))
+
+(defun my/consult-rg (query)
+  (if (projectile-project-p)
+	  (consult-ripgrep (project-root (project-current)) query)
+	(if (file-name-directory buffer-file-name)
+		(consult-ripgrep (file-name-directory buffer-file-name) query)
+	  (consult-ripgrep default-directory query))))
+
+(defun my/normal-rg ()
+  (interactive)
+  ;; (my/consult-rg (my/completing-read "ripgrep: " (if (symbol-at-point) (symbol-at-point) ""))))
+  (my/consult-rg (if (thing-at-point 'symbol t) (thing-at-point 'symbol t) "")))
+
+(defun my/visual-rg ()
+  (interactive)
+  (let ((query (buffer-substring-no-properties (region-beginning) (region-end))))
+	(evil-force-normal-state)
+	(my/consult-rg query)))
+
 
 ;; Example configuration for Consult
 (use-package consult
@@ -1029,71 +1065,77 @@
   ("M-I" . consult-imenu-multi)
   ("M-e" . consult-flymake)
   ("M-E" . my/consult-flymake-t)
+  ("C-c m" . consult-man)
   ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
 		;; ("<leader> s" . consult-buffer)
 		("<leader> m" . consult-bookmark)
 		;; ("<leader> S" . consult-buffer-other-window)
 		;; ("<leader> p" . consult-project-buffer)
+		("<leader> s" . my/normal-rg)
+		("<leader> S" . consult-ripgrep)
+		;; ("<leader> S" . consult-git-grep)
 		("<leader> j" . consult-line)
+		("<leader> J" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
 		("<leader> e" . consult-flymake)
 		("<leader> E" . my/consult-flymake-t))
-		;; ("<leader> f" . consult-find))
+  (:map evil-visual-state-map
+		("<leader> s" . my/visual-rg))
+  ;; ("<leader> f" . consult-find))
   ;; Replace bindings. Lazily loaded due by `use-package'.
   ;; :bind (;; C-c bindings in `mode-specific-map'
-         ;; ("C-c M-x" . consult-mode-command)
-         ;; ("C-c h" . consult-history)
-         ;; ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ;; ("C-c i" . consult-info)
-         ;; ([remap Info-search] . consult-info)
-         ;; ;; C-x bindings in `ctl-x-map'
-         ;; ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ;; ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-         ;; ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ;; ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ;; ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
-         ;; ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-         ;; ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-         ;; ;; Custom M-# bindings for fast register access
-         ;; ("M-#" . consult-register-load)
-         ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-         ;; ("C-M-#" . consult-register)
-         ;; ;; Other custom bindings
-         ;; ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ;; ;; M-g bindings in `goto-map'
-         ;; ("M-g e" . consult-compile-error)
-         ;; ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ;; ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ;; ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ;; ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-         ;; ("M-g m" . consult-mark)
-         ;; ("M-g k" . consult-global-mark)
-         ;; ("M-g i" . consult-imenu)
-         ;; ("M-g I" . consult-imenu-multi)
-         ;; ;; M-s bindings in `search-map'
-         ;; ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-         ;; ("M-s c" . consult-locate)
-         ;; ("M-s g" . consult-grep)
-         ;; ("M-s G" . consult-git-grep)
-         ;; ("M-s r" . consult-ripgrep)
-         ;; ("M-s l" . consult-line)
-         ;; ("M-s L" . consult-line-multi)
-         ;; ("M-s k" . consult-keep-lines)
-         ;; ("M-s u" . consult-focus-lines)
-         ;; ;; Isearch integration
-         ;; ("M-s e" . consult-isearch-history)
-         ;; :map isearch-mode-map
-         ;; ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-         ;; ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ;; ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ;; ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-         ;; ;; Minibuffer history
-         ;; :map minibuffer-local-map
-         ;; ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-         ;; ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+  ;; ("C-c M-x" . consult-mode-command)
+  ;; ("C-c h" . consult-history)
+  ;; ("C-c k" . consult-kmacro)
+  ;; ("C-c i" . consult-info)
+  ;; ([remap Info-search] . consult-info)
+  ;; ;; C-x bindings in `ctl-x-map'
+  ;; ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+  ;; ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+  ;; ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+  ;; ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+  ;; ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+  ;; ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+  ;; ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+  ;; ;; Custom M-# bindings for fast register access
+  ;; ("M-#" . consult-register-load)
+  ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+  ;; ("C-M-#" . consult-register)
+  ;; ;; Other custom bindings
+  ;; ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+  ;; ;; M-g bindings in `goto-map'
+  ;; ("M-g e" . consult-compile-error)
+  ;; ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+  ;; ("M-g g" . consult-goto-line)             ;; orig. goto-line
+  ;; ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+  ;; ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+  ;; ("M-g m" . consult-mark)
+  ;; ("M-g k" . consult-global-mark)
+  ;; ("M-g i" . consult-imenu)
+  ;; ("M-g I" . consult-imenu-multi)
+  ;; ;; M-s bindings in `search-map'
+  ;; ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+  ;; ("M-s c" . consult-locate)
+  ;; ("M-s g" . consult-grep)
+  ;; ("M-s G" . consult-git-grep)
+  ;; ("M-s r" . consult-ripgrep)
+  ;; ("M-s l" . consult-line)
+  ;; ("M-s L" . consult-line-multi)
+  ;; ("M-s k" . consult-keep-lines)
+  ;; ("M-s u" . consult-focus-lines)
+  ;; ;; Isearch integration
+  ;; ("M-s e" . consult-isearch-history)
+  ;; :map isearch-mode-map
+  ;; ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+  ;; ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+  ;; ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+  ;; ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+  ;; ;; Minibuffer history
+  ;; :map minibuffer-local-map
+  ;; ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+  ;; ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
   ;; Enable automatic preview at point in the *Completions* buffer. This is
   ;; relevant when you use the default completion UI.
@@ -1285,7 +1327,10 @@
 ;; ;;   :config (global-yascroll-bar-mode 1))
 
 (use-package doom-themes
-  :ensure t
+  :straight (doom-themes
+			 :type git
+			 :host github
+			 :repo "doomemacs/themes")
   :config
   (setq doom-themes-enable-bold t
 		doom-themes-enable-italic t)
@@ -1398,7 +1443,7 @@
 (defun my/lsp-quickfix (BEG &optional END)
   "Quickfix."
   (interactive (and (region-active-p) (list (region-beginning) (region-end))))
-  (if (boound-and-true-p use-lsp-mode)
+  (if (bound-and-true-p use-lsp-mode)
 	  (lsp-eslint-fix-all)
 	(eglot-code-action-quickfix BEG END)))
 
