@@ -848,7 +848,7 @@
   :bind
   ("C-c p" . projectile-command-map)
   (:map evil-normal-state-map
-		("<leader> a" . projectile-find-other-file)
+		("g a" . projectile-find-other-file)
 		("<leader> o" . projectile-find-file)
 		("<leader> B" . projectile-switch-to-buffer)))
 
