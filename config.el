@@ -586,7 +586,8 @@
 		("<leader> c c" . evilnc-copy-and-comment-lines)
 		:map evil-visual-state-map
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
-		("<leader> c c" . evilnc-copy-and-comment-lines)))
+		("<leader> c c" . evilnc-copy-and-comment-lines)
+		("<leader> c b" . evilnc-comment-box)))
 
 (use-package dired
   :ensure nil
