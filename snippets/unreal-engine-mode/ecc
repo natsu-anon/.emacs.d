@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: ecc
+# key: ecc
+# --
+
+ECollisionChannel::$0

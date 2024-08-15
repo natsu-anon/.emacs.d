@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: physics process
+# key: _physics
+# overload Node._physics_process()
+# --
+func _physics_process(_delta: float) -> void:
+	${1:pass}

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: class-colon
+# key: c:
+# --
+`(format "%s" yas-cpp-class)`::$0

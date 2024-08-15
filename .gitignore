@@ -10,6 +10,9 @@
 !snippets/**
 !unreal-engine-mode/
 !unreal-engine-mode/**
+!ue-assist-mode/
+!ue-assist-mode/**
 
 **/.yas-compiled-snippets.el
 **/*~
+**/#*#

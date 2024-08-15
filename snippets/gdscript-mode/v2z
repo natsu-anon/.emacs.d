@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Vector2.ZERO
+# key: v2z
+# --
+Vector2.ZERO$0

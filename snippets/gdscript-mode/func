@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: fn
+# key: fn
+# --
+func ${1:func_name}(${2:}) -> ${3:void}:
+	$0

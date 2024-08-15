@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: init
+# key: _init
+# overload Object._init()
+# --
+
+func _init(${1:}) -> void: # add arguments that so they can be passed into new()
+	${2:pass}
