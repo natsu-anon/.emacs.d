@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: Vector3.ZERO
-# key: v3z
-# --
-Vector3.ZERO$0

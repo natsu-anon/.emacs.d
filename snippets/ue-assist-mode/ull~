@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: UE_LOG
-# key: ull
-# condition: (eval ue-assist-class)
-# --
-UE_LOG(Log${1:Category}, ${2:Display}, TEXT("$0"));

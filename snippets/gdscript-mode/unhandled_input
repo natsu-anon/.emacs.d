@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: unhandled_input
-# key: _unhandled
-# overload Node._unhandled_input()
-# --
-func _unhandled_input(_event: InputEvent) -> void:
-	${1:pass}

@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: descrtructor
-# key: dn
-# condition: (boundp 'yas-cpp-class)
-# --
-`(format "%s::~%s" yas-cpp-class yas-cpp-class)`($1)
-{
-	$0
-}

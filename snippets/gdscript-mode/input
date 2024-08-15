@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: input
-# key: _input
-# overload Node._input()
-# --
-func _input(_event: InputEvent) -> void:
-	${1:pass}

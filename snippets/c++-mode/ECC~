@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: ECollisionChannel
-# key: ECC
-# --
-
-ECollisionChannel::$0

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: upa
-# key: upa
-# condition: (not (eval ue-assist-class))
-# --
-UPROPERTY(BlueprintAssignable)
-$0

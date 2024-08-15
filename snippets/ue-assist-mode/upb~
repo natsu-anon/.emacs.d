@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: upb
-# key: upb
-# condition: (not (eval ue-assist-class))
-# --
-UPROPERTY(EditAnywhere, BlueprintReadWrite)
-$0

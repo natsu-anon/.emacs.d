@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: fori
-# key: fori
-# --
-for (${1:int }${2:i} = ${3:0}; $2 < $4; $2++) {
-    $0
-}

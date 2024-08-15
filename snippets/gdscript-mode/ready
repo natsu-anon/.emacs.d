@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: ready
-# key: _ready
-# overload Node._ready()
-# --
-func _ready() -> void:
-	${1:pass}

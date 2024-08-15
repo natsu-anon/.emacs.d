@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: begin-play
-# key: ubp
-# condition: (not (eval ue-assist-class))
-# --
-virtual void BeginPlay() override;

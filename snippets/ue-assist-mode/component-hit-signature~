@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: component hit signature
-# key: chs
-# condition: (not (eval ue-assist-class))
-# --
-UFUNCTION()
-virtual void ${1:ComponentHitFunc}(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& SweepResult);

@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: UFUNCTION
-# key: ufn
-# --
-UFUNCTION(BlueprintCallable)
-virtual ${1:ReturnValue} ${2:FunctionName}($3);
