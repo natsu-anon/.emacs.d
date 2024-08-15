@@ -240,17 +240,11 @@
 (setq use-package-always-ensure t)
 (straight-use-package 'use-package)
 
-(defun doc ()
-  "Toggle eldoc in frame."
+(defun my/goto-eldoc ()
+  "Go to the eldoc window in frame."
   (interactive)
-  (let ((eldoc-buffers (seq-filter (lambda (x) (string-match-p "\*eldoc.*\*" x ))
-								   (mapcar #'buffer-name
-										   (mapcar #'window-buffer (window-list))))))
-	(if eldoc-buffers
-		;; (progn (mapc #'delete-window (mapcar #'get-buffer-window eldoc-buffers))
-		;; 	   (mapc #'kill-buffer eldoc-buffers))
-		(mapc #'kill-buffer eldoc-buffers)
-	  (eldoc t))))
+  (if (get-buffer-window (eldoc-doc-buffer))
+    (select-window (get-buffer-window (eldoc-doc-buffer)))))
 
 ;; (use-package eldoc
 ;;   :hook (eldoc-mode . (lambda () (setq-local truncate-lines (not (eldoc-mode))))))
@@ -451,11 +445,12 @@
   ;; ("M-b" . switch-to-buffer)
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
+		("g K" . my/goto-eldoc)
 		("\\ b" . my/ibuffer-toggle)
 		("\\ r" . rename-this-file)
 		("\\ p" . list-processes)
 		("\\ s" . scratch-buffer)
-		("\\ h" . doc)
+		;; ("\\ h" . doc)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
 		("\\ l" . toggle-linums)
@@ -1465,32 +1460,26 @@
   (setq company-tooltip-idle-delay 0.00)
   :hook
   (company-mode . disable-auto-complete-mode)
+  (lsp-mode . company-mode)
   (c++-mode . company-mode))
 
 ;; THIS CARRIES--see .dir-locals.el
 ;; this is by far the FASTEST option (IF YOU USE A BUFFER--WHY???)
-(defun my/headless-godot-editor (&optional godot-project quiet)
+(defun my/headless-godot-editor (&optional quiet)
   "Hand over the lsp and no-one gets hurt >:^("
   (interactive)
-  (when (or godot-project (gdscript-util--find-project-configuration-file))
-	  (let ((godot-buffer (format "*Headless Godot -- %s*" (gdscript-util--get-godot-project-name)))
-			(godot-process(format "Headless Godot (%s)" (gdscript-util--get-godot-project-name)))
-			(project-file (format "%s/project.godot" (gdscript-util--find-project-configuration-file))))
+  (when (gdscript-util--find-project-configuration-file)
+	  (let ((godot-buffer "*Headless Godot*")
+			(godot-process(format "Headless Godot (%s)" (gdscript-util--get-godot-project-name))))
 		(if (get-buffer godot-buffer)
 			(unless quiet (message "%s already exists!" godot-process))
-		  (start-process godot-process godot-buffer gdscript-godot-executable "--verbose" "-e" "--headless" project-file)
+		  (start-process godot-process godot-buffer gdscript-godot-executable "--verbose" "-e" "--headless" "--lsp-port" "6008" (gdscript-util--find-project-configuration-file))
 		  (unless quiet (message "%s started!" godot-process))))))
 
 (defun my/kill-headless-godot-editor ()
   "STOP THAT LANGUAGE SEVER!"
   (interactive)
-  (if (gdscript-util--find-project-configuration-file)
-	(kill-buffer (format "*Headless Godot -- %s*" (gdscript-util--get-godot-project-name)))
-  (-->
-   (seq-map #'buffer-name (buffer-list))
-   (seq-filter (lambda (x) (string-match-p "\*Headless Godot -- .+\*" x)) it)
-   (if it (kill-buffer (completing-read "Kill Headless: " it))
-	 (message "No Headless Godot Buffers!")))))
+  (kill-buffer "*Headless Godot*"))
 
 (bind-keys :prefix-map gdscript-command-map
 		   :prefix "C-c g"
@@ -1518,21 +1507,25 @@
 	(when (gdscript-util--find-project-configuration-file)
 	  (my/headless-godot-editor t)))
   ;; (push (cons 'gdscript-mode `(,gdscript-godot-executable "-e" "--headless" ,gdscript-util--find-project-configuration-file)) eglot-server-programs)
-  ;; (assq-delete-all 'gdscript-mode eglot-server-programs)
-  (add-to-list 'eglot-server-programs '(gdscript-mode . ("localhost" 6005)))
+  (assq-delete-all 'gdscript-mode eglot-server-programs)
+  ;; (add-to-list 'eglot-server-programs '(gdscript-mode . ("localhost" 6008)))
+  (add-to-list 'eglot-server-programs '(gdscript-mode . ("netcat" "localhost" "6008")))
   :hook
   ;; SET IN .dir-locals.el -- eglot not working with godot lsp >:^(
-  (gdscript-mode . lsp-however) ;; BRUH
-  ;; (gdscript-mode . eglot-ensure)
+  ;; (gdscript-mode . lsp-however) ;; BRUH
   ;; (gdscript-mode . lsp)
   ;; (gdscript-mode . my/check-headless-godot)
+  ;; (gdscript-mode . my/headless-godot-editor)
+  (gdscript-mode . eglot-ensure)
   (gdscript-mode . company-mode)
   (projectile-after-switch-project . my/godot-project-setup)
   ;; (gdscript-mode . (lambda () (message "foo bar gdscript-mode")))
   ;; (gdscript-mode . (lambda ()
   ;; 					 (my/start-headless-godot-if-no-existing-godot)
   ;; 					 (eglot-ensure)))
-  :custom (gdscript-eglot-version 4))
+  ;; NOTE: you only need this if using godot 3
+  ;; :custom (gdscript-eglot-version 3))
+  )
 
 (defun lsp--gdscript-ignore-errors (original-function &rest args)
   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
