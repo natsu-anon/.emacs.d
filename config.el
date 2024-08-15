@@ -240,14 +240,11 @@
 (setq use-package-always-ensure t)
 (straight-use-package 'use-package)
 
-(defun my/goto-eldoc ()
-  "Go to the eldoc window in frame."
-  (interactive)
-  (if (get-buffer-window (eldoc-doc-buffer))
-    (select-window (get-buffer-window (eldoc-doc-buffer)))))
-
 ;; (use-package eldoc
 ;;   :hook (eldoc-mode . (lambda () (setq-local truncate-lines (not (eldoc-mode))))))
+
+(use-package gnu-elpa-keyring-update
+  :ensure t)
 
 (use-package auto-package-update
   :custom
@@ -414,6 +411,12 @@
 
 ;; ls /home/jon/
 
+(defun my/goto-eldoc ()
+  "Go to the eldoc window in frame."
+  (interactive)
+  (if (get-buffer-window (eldoc-doc-buffer))
+    (select-window (get-buffer-window (eldoc-doc-buffer)))))
+
 (use-package evil
   :ensure t
   ;; :demand t
@@ -440,8 +443,8 @@
   ("M-e" . eval-last-sexp)
   ("M-f" . my/find-file)
   ;; ("C-c d" . my/dired)
-  ("C-c d" . dired)
-  ("C-c D" . find-name-dired)
+  ;; ("C-c d" . dired)
+  ;; ("C-c D" . find-name-dired)
   ;; ("M-b" . switch-to-buffer)
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
@@ -473,8 +476,8 @@
 		;; ("C-t v" . my/shell-right)
 		;; ("C-t s" . my/shell-down)
 		("<leader> f" . find-file)
-		("<leader> d" . dired)
-		("<leader> D" . find-name-dired)
+		;; ("<leader> d" . dired)
+		;; ("<leader> D" . find-name-dired)
 		;; ("<leader> m" . evil-goto-mark-line)
 		;; ("<leader> M" . evil-goto-mark)
 		("\\ '" . evil-show-marks)
@@ -611,7 +614,14 @@
 	"c" 'my/dired-create
 	"z c" 'dired-kill-subdir
 	"z o" 'dired-maybe-insert-subdir)
-  (define-key dired-mode-map (kbd "SPC") nil))
+  (define-key dired-mode-map (kbd "SPC") nil)
+  :bind
+  ("C-x D" . find-name-dired))
+
+(use-package tex-mode
+  :ensure nil
+  :hook
+  (tex-mode . company-mode))
 
   ;; :bind
   ;; (:map evil-normal-state-map ;; DO NOT DO THIS ITS SO BAD GOD STOP
@@ -675,8 +685,11 @@
   ;; :after evil
   :ensure t
   :diminish smartparens-mode
-  :hook
+  :hook ; honestly. I just want it on all the time
   (prog-mode . smartparens-mode)
+  (text-mode . smartparens-mode)
+  :init
+  ;; (smartparens-mode)
   :config
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
@@ -749,27 +762,33 @@
 (use-package all-the-icons ;; you HAVE to install the fonts for windows (run all-the-icons-install-fonts)
   :ensure t)
 
-;; use '-' and '|' to open node in  splits & vsplits respectively
-(use-package neotree
-  ;; :after evil
+(use-package all-the-icons-ibuffer
   :ensure t
-  :init
-  (setq neo-smart-open t)
-  (setq neo-banner-message "'U' to go up a dir")
-  (setq neo-window-position 'right)
-  (setq neo-autorefresh t)
-  (setq projectile-switch-project-action 'projectile-dired)
-  (setq-default neo-show-updir-line t)
-  (setq-default neo-show-slash-for-folder t)
-  (setq-default neo-show-hidden-files nil)
-  (setq neo-window-fixed-size nil)
-  (setq neo-theme (if (display-graphic-p) 'classic 'ascii))
-  :bind
-  ("<f10>" . neotree-hidden-file-toggle)
-  (:map evil-normal-state-map
-		("\\ t" . neotree-toggle)
-		:map evil-visual-state-map
-		("\\ t" . neotree-toggle)))
+  :after all-the-icons
+  :hook
+  (ibuffer-mode . all-the-icons-ibuffer-mode))
+
+;; use '-' and '|' to open node in  splits & vsplits respectively
+;; (use-package neotree
+;;   ;; :after evil
+;;   :ensure t
+;;   :init
+;;   (setq neo-smart-open t)
+;;   (setq neo-banner-message "'U' to go up a dir")
+;;   (setq neo-window-position 'right)
+;;   (setq neo-autorefresh t)
+;;   (setq projectile-switch-project-action 'projectile-dired)
+;;   (setq-default neo-show-updir-line t)
+;;   (setq-default neo-show-slash-for-folder t)
+;;   (setq-default neo-show-hidden-files nil)
+;;   (setq neo-window-fixed-size nil)
+;;   (setq neo-theme (if (display-graphic-p) 'classic 'ascii))
+;;   :bind
+;;   ("<f10>" . neotree-hidden-file-toggle)
+;;   (:map evil-normal-state-map
+;; 		("\\ t" . neotree-toggle)
+;; 		:map evil-visual-state-map
+;; 		("\\ t" . neotree-toggle)))
 
 (use-package solaire-mode
   :ensure t
@@ -836,6 +855,7 @@
   :diminish projectile-mode
   :init
   (setq projectile-completion-system 'auto)
+  (setq projectile-switch-project-action #'projectile-dired)
   (define-prefix-command 'projectile-prefix)
   (projectile-mode)
   :config
@@ -849,7 +869,9 @@
 		("<leader> B" . projectile-switch-to-buffer)))
 
 (use-package rg
-  :ensure t)
+  :ensure t
+  :bind
+  ("C-c s" . rg))
 
 (use-package ag
   :init
@@ -910,7 +932,7 @@
 			 :type git
 			 :host github
 			 :repo "minad/vertico")
-  ;; :after orderless
+  :after orderless
   ;; (evil-collection-vertico-setup)
   ;; :after 'evil-collection
   ;; :ensure t
@@ -1000,8 +1022,11 @@
 
 (use-package flymake
   :bind
-  ("C-c e" . flymake-show-buffer-diagnostics)
-  ("C-c E" . flymake-show-project-diagnostics)
+  ("C-c d" . flymake-show-buffer-diagnostics)
+  ("C-c D" . flymake-show-project-diagnostics)
+  (:map evil-normal-state-map
+		("[ d" . flymake-goto-prev-error)
+		("] d" . flymake-goto-next-error))
   :hook
   (lisp-mode . flymake-mode))
 
@@ -1010,16 +1035,25 @@
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
+  :after vertico
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-
+  :commands (marginalia--orig-completion-metadata-get)
   ;; The :init section is always executed.
   :init
 
   ;; Marginalia must be activated in the :init section of use-package such that
   ;; the mode gets enabled right away. Note that this forces loading the
   ;; package.
-  (marginalia-mode))
+  (marginalia-mode)
+  :config
+  (setq marginalia-align 'right))
+
+(use-package all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
 
 (defun my/completing-read (prompt default)
   (completing-read prompt `(,default)))
@@ -1075,8 +1109,8 @@
 		("<leader> J" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
-		("<leader> e" . consult-flymake)
-		("<leader> E" . my/consult-flymake-t))
+		("<leader> d" . consult-flymake)
+		("<leader> D" . my/consult-flymake-t))
   (:map evil-visual-state-map
 		("<leader> s" . my/visual-rg))
   ;; ("<leader> f" . consult-find))
@@ -1461,7 +1495,7 @@
   (setq company-tooltip-idle-delay 0.00)
   :hook
   (company-mode . disable-auto-complete-mode)
-  (lsp-mode . company-mode)
+  (lisp-mode . company-mode)
   (c++-mode . company-mode))
 
 ;; THIS CARRIES--see .dir-locals.el
