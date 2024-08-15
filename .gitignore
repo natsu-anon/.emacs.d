@@ -20,4 +20,5 @@ snippets/unreal-engine-mode/.yas-compiled-snippets.el
 !unreal-engine-mode/
 !unreal-engine-mode/**
 unreal-engine-mode/*~
-.yas-compile-snippets.el
+snippets/*/.yas-compile-snippets.el
+snippets/*/*~
