@@ -319,11 +319,6 @@
 ;; 	  (find-file it)
 ;; 	(find-file default-directory)))
 
-(defun my/dired-recursive (&optional dirname)
-  ""
-  (interactive "GDired recursive (directory): ")
-  (dired dirname "-laRgho"))
-
 ;; (switch-to-buffer-same-window (dired-noselect dirname switches));; dired option
 
 ;; minibuffer-with-setup-hook
@@ -415,18 +410,58 @@
 (defun my/goto-eldoc ()
   "Go to the eldoc window in frame."
   (interactive)
-  (if (get-buffer-window (eldoc-doc-buffer))
-    (select-window (get-buffer-window (eldoc-doc-buffer)))))
+  (if (not (get-buffer-window (eldoc-doc-buffer)))
+	  (eldoc t))
+	(select-window (get-buffer-window (eldoc-doc-buffer))))
+
+(use-package emacs
+  :init
+  ;; Show the current function name in the header line
+  (define-prefix-command 'my-tab-prefix)
+  (global-set-key (kbd "C-t") 'my-tab-prefix)
+  (which-function-mode)
+  (setq-default header-line-format
+				'((which-func-mode (" " which-func-format " "))))
+  (setq mode-line-misc-info
+		;; We remove Which Function Mode from the mode line, because it's mostly
+		;; invisible here anyway.
+		(assq-delete-all 'which-function-mode mode-line-misc-info))
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+  (defun crm-indicator (args)
+	(cons (format "[CRM%s] %s"
+				  (replace-regexp-in-string
+				   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+				   crm-separator)
+				  (car args))
+		  (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+		'(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  (setq read-extended-command-predicate
+		#'command-completion-default-include-p)
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t)
+  :bind
+  ("C-t n" . tab-bar-new-tab)
+  ("C-t q" . tab-bar-close-tab)
+  ("C-c b" . my/ibuffer-toggle)
+  ("C-c l" . toggle-linums))
+
 
 (use-package evil
   :ensure t
+  :commands (evil-set-leader evil-global-set-key)
   ;; :demand t
   :init
+  (setq evil-undo-system 'undo-redo)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
-  (define-prefix-command 'my-tab-prefix)
-  (define-prefix-command 'my-help-prefix)
-  (setq evil-undo-system 'undo-redo)
+  (define-prefix-command 'evil-help-prefix)
   ;; (define-prefix-command 'my-consult-buffer-prefix)
   ;; (global-set-key (kbd "C-s") 'my-consult-buffer-prefix)
   ;; (define-prefix-command 'my-leader)
@@ -437,12 +472,11 @@
   ;; (setq evil-undo-system 'undo-redo)
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
-  (evil-global-set-key 'normal (kbd "C-t") 'my-tab-prefix)
-  (evil-global-set-key 'normal (kbd "<leader> h") 'my-help-prefix)
+  (evil-global-set-key 'normal (kbd "<leader> h") 'evil-help-prefix)
   ;; (global-set-key (kbd "C-t") 'my-shell-prefix)
   :bind
-  ("M-e" . eval-last-sexp)
-  ("M-f" . my/find-file)
+  ("C-c '" . evil-show-marks)
+  ("C-c f" . evil-show-files)
   ;; ("C-c d" . my/dired)
   ;; ("C-c d" . dired)
   ;; ("C-c D" . find-name-dired)
@@ -450,14 +484,11 @@
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
 		("g K" . my/goto-eldoc)
-		("\\ b" . my/ibuffer-toggle)
-		("\\ r" . rename-this-file)
-		("\\ p" . list-processes)
-		("\\ s" . scratch-buffer)
+		("g b" . scratch-buffer)
 		;; ("\\ h" . doc)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
-		("\\ l" . toggle-linums)
+		;; ("\\ l" . toggle-linums)
 		;; RETVRN TO VIM MOTIONS
 		;; ("<leader> t" . tab-bar-select-tab) ;; press numbers THEN <leader> t
 		;; ("<leader> h" . evil-first-non-blank) use '_'
@@ -468,10 +499,6 @@
 		("<leader> h o" . describe-symbol)
 		;; ("<leader> r" . undo-redo)
 		("-" . dired-jump)
-		("\\ d" . dired-jump)
-		("\\ D" . my/dired-recursive)
-		("C-t n" . tab-bar-new-tab)
-		("C-t q" . tab-bar-close-tab)
 		;; ("g s" . shell)
 		("g S" . project-shell)
 		;; ("C-t v" . my/shell-right)
@@ -481,8 +508,6 @@
 		;; ("<leader> D" . find-name-dired)
 		;; ("<leader> m" . evil-goto-mark-line)
 		;; ("<leader> M" . evil-goto-mark)
-		("\\ '" . evil-show-marks)
-		("\\ f" . evil-show-files)
 		;; ("g b" . switch-to-prev-buffer) ;; use [ b
 		;; ("g B" . switch-to-next-buffer) ;; use ] b
 		;; ("<leader> q" . evil-quit) ;; lmao wtf am I thinkign?
@@ -490,15 +515,13 @@
 		("<leader> b" . switch-to-buffer)
 		("<leader> r" . recentf)
 		:map evil-visual-state-map
-		("\\ #" . my/rectangle-number-lines)
+		("C-c #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
 		;; ("<leader> m" . evil-goto-mark-line)
 		;; ("<leader> M" . evil-goto-mark)
 		("<leader> !" . my/shell-command-region)
-		("\\ b" . my/ibuffer-toggle)
-		("\\ l" . toggle-linums)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
 
@@ -599,6 +622,11 @@
 		("<leader> c c" . evilnc-copy-and-comment-lines)
 		("<leader> c b" . evilnc-comment-box)))
 
+(defun my/dired-recursive (&optional dirname)
+  "Recursively open a file in dired."
+  (interactive "GDired recursive (directory): ")
+  (dired dirname "-laRgho"))
+
 (use-package dired
   :ensure nil
   ;; :after evil-collection
@@ -623,7 +651,9 @@
 	"z o" 'dired-maybe-insert-subdir)
   (define-key dired-mode-map (kbd "SPC") nil)
   :bind
-  ("C-x D" . find-name-dired))
+  ("C-x f" . find-name-dired)
+  ("C-x D" . my/dired-recursive))
+(find-name-dired "." "*.el")
 
 (use-package tex-mode
   :ensure nil
@@ -657,8 +687,6 @@
 		(dired-create-empty-file arg)))
   (revert-buffer-quick))
 
-
-;; (use-package dired-single)
 
 (use-package dired-hide-dotfiles
   :ensure t
@@ -705,7 +733,7 @@
   ("C-l" . sp-forward-sexp)
   ("C-k" . sp-backward-sexp)
   (:map evil-insert-state-map
-		("C-k" . sp-backward-sexp)
+		("C-k" . sp-backward-sexp) ; I shouldn't need this
 		:map evil-normal-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
@@ -822,15 +850,10 @@
   :init (which-key-mode)
   :config (setq which-key-idle-delay 0.3))
 
+;; just use C-x g damnid
 (use-package magit
   ;; :after evil
-  :ensure t
-  :config
-  :bind
-  (:map evil-normal-state-map
-		("\\ g" . magit-status)
-		:map evil-visual-state-map
-		("\\ g" . magit-status)))
+  :ensure t)
 
 (use-package imenu-list
   ;; :after evil
@@ -838,10 +861,7 @@
   :init
   (setq imenu-list-focus-after-activation t)
   :bind
-  (:map evil-normal-state-map
-		("\\ i" . imenu-list-minor-mode)
-		:map evil-visual-state-map
-		("\\ i" . imenu-list-minor-mode)))
+  ("C-c i" . imenu-list-minor-mode))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -876,9 +896,7 @@
 		("<leader> B" . projectile-switch-to-buffer)))
 
 (use-package rg
-  :ensure t
-  :bind
-  ("C-c s" . rg))
+  :ensure t)
 
 (use-package ag
   :init
@@ -992,41 +1010,6 @@
   :init
   (savehist-mode))
 
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; Show the current function name in the header line
-  (which-function-mode)
-  (setq-default header-line-format
-				'((which-func-mode (" " which-func-format " "))))
-  (setq mode-line-misc-info
-		;; We remove Which Function Mode from the mode line, because it's mostly
-		;; invisible here anyway.
-		(assq-delete-all 'which-function-mode mode-line-misc-info))
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  (setq read-extended-command-predicate
-        #'command-completion-default-include-p)
-
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
-
 (use-package flymake
   :bind
   ("C-c d" . flymake-show-buffer-diagnostics)
@@ -1093,15 +1076,16 @@
   :ensure t
   :after evil
   :bind
-  ;; ("M-s" . consult-buffer)
-  ("M-m" . consult-bookmark)
+  ("C-s b" . consult-buffer)
+  ("C-s m" . consult-bookmark)
   ;; ("M-S" . consult-buffer-other-window)
   ;; ("M-p" . consult-project-buffer)
-  ("M-j" . consult-line)
-  ("M-i" . consult-imenu)
-  ("M-I" . consult-imenu-multi)
-  ("M-e" . consult-flymake)
-  ("M-E" . my/consult-flymake-t)
+  ("C-s j" . consult-line)
+  ("C-s J" . consult-line-multi)
+  ("C-s i" . consult-imenu)
+  ("C-s I" . consult-imenu-multi)
+  ("C-s d" . consult-flymake)
+  ("C-s D" . my/consult-flymake-t)
   ("C-c m" . consult-man)
   ;; ("M-f" . consult-find)
   (:map evil-normal-state-map
@@ -1196,6 +1180,8 @@
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
+  (define-prefix-command 'my-consult-prefix)
+  (global-set-key (kbd "C-s") 'my-consult-prefix)
   :config
   (add-to-list 'consult-buffer-sources 'consult--source-hidden-buffer )
   (setq read-buffer-completion-ignore-case t)
@@ -1452,12 +1438,27 @@
 ;; eglot config -- BUILT IN WOW!
 (use-package eglot
   :ensure t
+  :after evil
+  :init
+  (define-prefix-command 'my-lsp-prefix)
+  (evil-global-set-key 'normal (kbd "<leader> l") 'my-lsp-prefix)
+  (evil-global-set-key 'visual (kbd "<leader> l") 'my-lsp-prefix)
   :config
   (setq eglot-autoshutdown t)
   (setq eglot-report-progress nil)
   (setq eglot-events-buffer-size 0)
   (setq eldoc-echo-area-use-multiline-p nil)
-  (setq read-process-output-max (* 1024 1024)))
+  (setq read-process-output-max (* 1024 1024))
+  :bind
+  (:map evil-normal-state-map
+		("<leader> l r" . eglot-rename)
+		("<leader> l q" . eglot-code-actions-quickfix)
+		("<leader> l a" . eglot-code-actions)
+		("<leader> l i" . eglot-code-inlay-hints)
+		("<leader> l =" . eglot-format-buffer)
+		:map evil-visual-state-map
+		("<leader> l a" . eglot-code-actions)
+		("<leader> l = " . eglot-format)))
 
 (defun lsp-however ()
   "Launch lsp with either eglot or lsp-mode"
@@ -1484,11 +1485,11 @@
 	  (lsp-eslint-fix-all)
 	(eglot-code-action-quickfix BEG END)))
 
-(bind-keys :menu-name "LSP commands"
-		   :prefix-map my/lsp-map
-		   :prefix "C-c l"
-		   ("r" . my/lsp-rename)
-		   ("q" . my/lsp-quickfix))
+;; (bind-keys :menu-name "LSP commands"
+;; 		   :prefix-map my/lsp-map
+;; 		   :prefix "C-c l"
+;; 		   ("r" . my/lsp-rename)
+;; 		   ("q" . my/lsp-quickfix))
 
 (use-package company
   :after eglot
