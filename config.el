@@ -325,13 +325,13 @@
   ("C-c l" . toggle-linums))
 
 
+(setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
   :commands (evil-set-leader evil-global-set-key)
   :init
   (setq evil-undo-system 'undo-redo)
   (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
   (define-prefix-command 'evil-help-prefix)
   (evil-mode)
   :config
@@ -345,8 +345,8 @@
 		("<leader> x" . eval-last-sexp)
 		("g K" . my/goto-eldoc)
 		;; ("g b" . scratch-buffer)
-		("C-w V" . my/vsplit-then-move-right)
-		("C-w S" . my/split-then-move-down)
+		("C-w S-v" . my/vsplit-then-move-right)
+		("C-w S-s" . my/split-then-move-down)
 		("<leader> h v" . describe-variable)
 		("<leader> h f" . describe-function)
 		("<leader> h k" . describe-key)
@@ -354,7 +354,7 @@
 		("-" . dired-jump)
 		("g S" . project-shell)
 		("<leader> f" . find-file)
-		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
+		("<leader> S-k" . kill-buffer-and-window) ;; not bad tbqh
 		("<leader> b" . switch-to-buffer)
 		("<leader> r" . recentf)
 		:map evil-visual-state-map
@@ -363,8 +363,8 @@
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
 		("<leader> !" . my/shell-command-region)
-		("C-w V" . my/vsplit-then-move-right)
-		("C-w S" . my/split-then-move-down)))
+		("C-w S-v" . my/vsplit-then-move-right)
+		("C-w S-s" . my/split-then-move-down)))
 
 (use-package shell-here
   :ensure t
@@ -485,7 +485,7 @@
   (define-key dired-mode-map (kbd "SPC") nil)
   :bind
   ("C-x f" . find-name-dired)
-  ("C-x D" . my/dired-recursive))
+  ("C-x S-d" . my/dired-recursive))
 (find-name-dired "." "*.el")
 
 (use-package tex-mode
@@ -637,7 +637,7 @@
   (:map evil-normal-state-map
 		("g a" . projectile-find-other-file)
 		("<leader> o" . projectile-find-file)
-		("<leader> B" . projectile-switch-to-buffer)))
+		("<leader> S-b" . projectile-switch-to-buffer)))
 
 (use-package rg
   :ensure t)
@@ -706,8 +706,8 @@
 		("C-k" . vertico-previous)
 		("C-n" . vertico-next-group)
 		("C-p" . vertico-previous-group)
-		("C-J" . vertico-scroll-down)
-		("C-K" . vertico-scroll-up)))
+		("C-S-j" . vertico-scroll-down)
+		("C-S-k" . vertico-scroll-up)))
 
 (use-package vertico-directory
   :after vertico
@@ -738,7 +738,7 @@
 (use-package flymake
   :bind
   ("C-c d" . flymake-show-buffer-diagnostics)
-  ("C-c D" . flymake-show-project-diagnostics)
+  ("C-c S-d" . flymake-show-project-diagnostics)
   (:map evil-normal-state-map
 		("[ d" . flymake-goto-prev-error)
 		("] d" . flymake-goto-next-error))
@@ -752,7 +752,7 @@
   ;; `completion-list-mode-map'.
   :after vertico
   :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+         ("M-S-a" . marginalia-cycle))
   :commands (marginalia--orig-completion-metadata-get)
   ;; The :init section is always executed.
   :init
@@ -869,7 +869,7 @@
   ("C-s b" . consult-buffer)
   ("C-s m" . consult-bookmark)
   ("C-s j" . consult-line)
-  ("C-s J" . consult-line-multi)
+  ("C-s S-j" . consult-line-multi)
   ("C-s i" . consult-imenu)
   ("C-s I" . consult-imenu-multi)
   ("C-s d" . consult-flymake)
@@ -880,11 +880,11 @@
 		("<leader> s" . my/normal-rg)
 		("<leader> S" . consult-ripgrep)
 		("<leader> j" . consult-line)
-		("<leader> J" . consult-line-multi)
+		("<leader> S-j" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
 		("<leader> d" . consult-flymake)
-		("<leader> D" . my/consult-flymake-t))
+		("<leader> S-d" . my/consult-flymake-t))
   (:map evil-visual-state-map
 		("<leader> s" . my/visual-rg)))
 
