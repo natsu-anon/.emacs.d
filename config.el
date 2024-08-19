@@ -984,6 +984,7 @@
 (bind-keys :prefix-map gdscript-command-map
 		   :prefix "C-c g"
 		   :menu-name "GDScript commands"
+		   ("s" . gdscript-docs-online-search-api)
 		   ("e" . my/headless-godot-editor)
 		   ("k" . my/kill-headless-godot-editor)
 		   ("r" . gdscript-godot-run-project-debug)
@@ -998,23 +999,27 @@
 			 :repo "godotengine/emacs-gdscript-mode")
   ;; :hook (gdscript-mode . lsp-deferred))
   :commands (gdscript-util--find-project-configuration-file
+			 gdscript-docs-online-search-api
 			 gdscript-godot-run-prject-debug
 			 gdscript-godot-open-project-in-editor
 			 gdscript-debug-make-server)
+  ;; :init
+  ;; (assq-delete-all 'gdscript-mode eglot-server-programs)
+  ;; (add-to-list 'eglot-server-programs '(gdscript-mode . ("netcat" "localhost" "6008"))) ;; GOD I hope this works
   :config
+  (setq gdscript-docs-use-eww nil)
+  (defun gdscript-eglot-contact (_interactive)
+	'("netcat" "localhost" "6008"))
   (defun my/godot-project-setup ()
 	"Stuff to do when projectile switches to a Godot project."
 	(when (gdscript-util--find-project-configuration-file)
 	  (my/headless-godot-editor t)))
-  (assq-delete-all 'gdscript-mode eglot-server-programs)
-  (add-to-list 'eglot-server-programs '(gdscript-mode . ("netcat" "localhost" "6008")))
   :hook
   (gdscript-mode . eglot-ensure)
   (gdscript-mode . company-mode)
   (projectile-after-switch-project . my/godot-project-setup)
   ;; NOTE: you only need this if using godot 3
-  ;; :custom (gdscript-eglot-version 3))
-  )
+  :custom (gdscript-eglot-version 4))
 
 (defun lsp--gdscript-ignore-errors (original-function &rest args)
   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
