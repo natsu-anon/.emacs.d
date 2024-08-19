@@ -936,12 +936,13 @@
   (setq eglot-events-buffer-size 0)
   (setq eldoc-echo-area-use-multiline-p nil)
   (setq read-process-output-max (* 1024 1024))
+  (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
   :bind
   (:map evil-normal-state-map
 		("<leader> l r" . eglot-rename)
 		("<leader> l q" . eglot-code-actions-quickfix)
 		("<leader> l a" . eglot-code-actions)
-		("<leader> l i" . eglot-code-inlay-hints)
+		;; ("<leader> l i" . eglot-inlay-hints-mode)
 		("<leader> l =" . eglot-format-buffer)
 		:map evil-visual-state-map
 		("<leader> l a" . eglot-code-actions)
