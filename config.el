@@ -346,8 +346,8 @@
 		("<leader> x" . eval-last-sexp)
 		("g K" . my/goto-eldoc)
 		;; ("g b" . scratch-buffer)
-		("C-w S-v" . my/vsplit-then-move-right)
-		("C-w S-s" . my/split-then-move-down)
+		("C-w V" . my/vsplit-then-move-right)
+		("C-w S" . my/split-then-move-down)
 		("<leader> h v" . describe-variable)
 		("<leader> h f" . describe-function)
 		("<leader> h k" . describe-key)
@@ -355,7 +355,7 @@
 		("-" . dired-jump)
 		("g S" . project-shell)
 		("<leader> f" . find-file)
-		("<leader> S-k" . kill-buffer-and-window) ;; not bad tbqh
+		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
 		("<leader> b" . switch-to-buffer)
 		("<leader> r" . recentf)
 		:map evil-visual-state-map
@@ -364,8 +364,8 @@
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
 		("<leader> !" . my/shell-command-region)
-		("C-w S-v" . my/vsplit-then-move-right)
-		("C-w S-s" . my/split-then-move-down)))
+		("C-w V" . my/vsplit-then-move-right)
+		("C-w S" . my/split-then-move-down)))
 
 (use-package shell-here
   :ensure t
@@ -397,7 +397,7 @@
 		("<leader> u h" . org-do-promote)
 		("<leader> u l" . org-do-demote)
 		("<leader> u #" . org-update-checkbox-count)
-		("<leader> u RET" . org-toggle-checkbox)
+		("<leader> u c" . org-toggle-checkbox)
 		("<leader> u i" . org-insert-item)
 		("<leader> u A" . org-insert-heading)
 		("<leader> u a" . org-insert-subheading)
@@ -486,7 +486,7 @@
   (define-key dired-mode-map (kbd "SPC") nil)
   :bind
   ("C-x f" . find-name-dired)
-  ("C-x S-d" . my/dired-recursive))
+  ("C-x D" . my/dired-recursive))
 (find-name-dired "." "*.el")
 
 (use-package tex-mode
@@ -638,7 +638,7 @@
   (:map evil-normal-state-map
 		("g a" . projectile-find-other-file)
 		("<leader> o" . projectile-find-file)
-		("<leader> S-b" . projectile-switch-to-buffer)))
+		("<leader> B" . projectile-switch-to-buffer)))
 
 (use-package rg
   :ensure t)
@@ -882,7 +882,7 @@
   ("C-s b" . consult-buffer)
   ("C-s m" . consult-bookmark)
   ("C-s j" . consult-line)
-  ("C-s S-j" . consult-line-multi)
+  ("C-s J" . consult-line-multi)
   ("C-s i" . consult-imenu)
   ("C-s I" . consult-imenu-multi)
   ("C-s d" . consult-flymake)
@@ -893,11 +893,11 @@
 		("<leader> s" . my/normal-rg)
 		("<leader> S" . consult-ripgrep)
 		("<leader> j" . consult-line)
-		("<leader> S-j" . consult-line-multi)
+		("<leader> J" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
 		("<leader> d" . consult-flymake)
-		("<leader> S-d" . my/consult-flymake-t))
+		("<leader> D" . my/consult-flymake-t))
   (:map evil-visual-state-map
 		("<leader> s" . my/visual-rg)))
 
