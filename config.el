@@ -737,12 +737,24 @@
   (savehist-mode))
 
 (use-package flymake
+  :config
+  (defun my/flymake-diagnostics-at-point ()
+	(interactive)
+	;; (momentary-string-display (flymake-diagnostics (point)) (point)))
+	(let ((text (flymake-diagnostic-text (car (flymake-diagnostics (point))))))
+	  (put-text-property 0 (length text) 'face 'font-lock-warning-face text)
+	  (save-excursion
+		(end-of-line)
+		(momentary-string-display (format " %s" text) (point) nil ""))))
   :bind
   ("C-c d" . flymake-show-buffer-diagnostics)
-  ("C-c S-d" . flymake-show-project-diagnostics)
+  ("C-c D" . flymake-show-project-diagnostics)
   (:map evil-normal-state-map
+		("<leader> t" . my/flymake-diagnostics-at-point)
 		("[ d" . flymake-goto-prev-error)
-		("] d" . flymake-goto-next-error))
+		("] d" . flymake-goto-next-error)
+		:map flymake-mode-map
+		("C-c t" . my/flymake-diagnostics-at-point))
   :hook
   (lisp-mode . flymake-mode))
 
