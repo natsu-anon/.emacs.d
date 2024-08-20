@@ -287,6 +287,7 @@
 	(select-window (get-buffer-window (eldoc-doc-buffer))))
 
 (use-package emacs
+  :ensure nil
   :init
   ;; Show the current function name in the header line
   (define-prefix-command 'my-tab-prefix)
@@ -924,8 +925,9 @@
 
 ;; eglot config -- BUILT IN WOW!
 (use-package eglot
-  :ensure t
-  :after evil
+  :ensure nil
+  ;; :after evil
+  ;; :demand t
   :init
   (define-prefix-command 'my-lsp-prefix)
   (evil-global-set-key 'normal (kbd "<leader> l") 'my-lsp-prefix)
@@ -992,20 +994,15 @@
 		   ("d" . gdscript-debug-make-server)) ;; this is for DAP
 
 (use-package gdscript-mode
-  :after eglot
   :straight (gdscript-mode
 			 :type git
 			 :host github
 			 :repo "godotengine/emacs-gdscript-mode")
-  ;; :hook (gdscript-mode . lsp-deferred))
   :commands (gdscript-util--find-project-configuration-file
 			 gdscript-docs-online-search-api
 			 gdscript-godot-run-prject-debug
 			 gdscript-godot-open-project-in-editor
 			 gdscript-debug-make-server)
-  ;; :init
-  ;; (assq-delete-all 'gdscript-mode eglot-server-programs)
-  ;; (add-to-list 'eglot-server-programs '(gdscript-mode . ("netcat" "localhost" "6008"))) ;; GOD I hope this works
   :config
   (setq gdscript-docs-use-eww nil)
   (defun gdscript-eglot-contact (_interactive)
@@ -1013,7 +1010,7 @@
   (defun my/godot-project-setup ()
 	"Stuff to do when projectile switches to a Godot project."
 	(when (gdscript-util--find-project-configuration-file)
-	  (my/headless-godot-editor t)))
+	  (my/headless-godot-editor)))
   :hook
   (gdscript-mode . eglot-ensure)
   (gdscript-mode . company-mode)
