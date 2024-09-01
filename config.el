@@ -200,17 +200,18 @@
 (straight-use-package 'use-package)
 
 
+(setq package-check-signature nil)
 (use-package gnu-elpa-keyring-update
   :ensure t)
 
-(use-package auto-package-update
-  :custom
-  (auto-package-update-interval 7)
-  (setq auto-package-update-prompt-before-update t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe)
-  (auto-package-update-at-time "17:00"))
+;; (use-package auto-package-update
+;;   :custom
+;;   (auto-package-update-interval 7)
+;;   (setq auto-package-update-prompt-before-update t)
+;;   (auto-package-update-hide-results t)
+;;   :config
+;;   (auto-package-update-maybe)
+;;   (auto-package-update-at-time "17:00"))
 
 (defun my/vsplit-then-move-right ()
   "Split the current window right, then move into the new window."
