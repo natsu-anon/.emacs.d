@@ -679,10 +679,10 @@
 (global-set-key [f5] 'my/refresh-revert)
 
 (use-package vertico
-  :straight (vertico
-			 :type git
-			 :host github
-			 :repo "minad/vertico")
+  ;; :straight (vertico
+  ;; 			 :type git
+  ;; 			 :host github
+  ;; 			 :repo "minad/vertico")
   :after orderless
   ;; (evil-collection-vertico-setup)
   ;; :after 'evil-collection
