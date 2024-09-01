@@ -4,6 +4,7 @@
 # whitelist only what's needed
 !.gitignore
 !config.el
+!gdscript.el
 !ascii-art.txt
 !README.md
 !snippets/
