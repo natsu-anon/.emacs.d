@@ -1021,6 +1021,7 @@
 
 
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+(setq server-name "server")
 (server-start)
 ;; (setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
 (setq gc-cons-threshod (* 2 1000 1000))
