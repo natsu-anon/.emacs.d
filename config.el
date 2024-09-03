@@ -377,6 +377,8 @@
 		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
 		("<leader> b" . switch-to-buffer)
 		("<leader> r" . recentf)
+		("[ t" . tab-bar-switch-to-prev-tab)
+		("] t" . tab-bar-switch-to-next-tab)
 		:map evil-visual-state-map
 		("C-c #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
