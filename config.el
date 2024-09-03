@@ -291,8 +291,9 @@
   :ensure nil
   :init
   ;; Show the current function name in the header line
-  (define-prefix-command 'my-tab-prefix)
-  (global-set-key (kbd "C-t") 'my-tab-prefix)
+  ;; NOTE: use C-x t for tab stuff
+  ;; (define-prefix-command 'my-tab-prefix)
+  ;; (global-set-key (kbd "C-t") 'my-tab-prefix)
   (which-function-mode)
   (setq-default header-line-format
 				'((which-func-mode (" " which-func-format " "))))
@@ -321,8 +322,8 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t)
   :bind
-  ("C-t n" . tab-bar-new-tab)
-  ("C-t q" . tab-bar-close-tab)
+  ;; ("C-t n" . tab-bar-new-tab)
+  ;; ("C-t q" . tab-bar-close-tab)
   ("C-c b" . my/ibuffer-toggle)
   ("C-c l" . toggle-linums))
 
