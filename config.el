@@ -285,10 +285,23 @@
 	  (eldoc t))
 	(select-window (get-buffer-window (eldoc-doc-buffer))))
 
+(defun my/goto-help ()
+  "Go to the eldoc window in frame."
+  (interactive)
+  (select-window (get-buffer-window (help-buffer))))
+
 (defun my/goto-compile-buffer ()
   "Go to the compilation buffer in frame."
   (interactive)
-  (select-window (get-buffer-window "*compilation*")))
+  (cond ((get-buffer-window "*compilation*") (select-window (get-buffer-window "*compilation*")))
+		((buffer-live-p (get-buffer "*compilation*")) (set-window-buffer (selected-window) (get-buffer "*compilation*")))
+		(t (message "No compilation buffer!"))))
+
+(defun delete-compile-window-if-successful (buf desc)
+  "Bury a compilation buffer if succeeded without warnings"
+  (when (and (buffer-live-p buf) (string-match "finished" desc))
+	(delete-window (get-buffer-window buf))))
+(add-hook 'compilation-finish-functions #'delete-compile-window-if-successful)
 
 (use-package emacs
   :ensure nil
@@ -350,6 +363,7 @@
 		("<leader> x" . eval-last-sexp)
 		("g K" . my/goto-eldoc)
 		("g c" . my/goto-compile-buffer)
+		("g h" . my/goto-help)
 		;; ("g b" . scratch-buffer)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
