@@ -262,8 +262,6 @@
 (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
 (tab-bar-mode 1)                           ;; enable tab bar
 
-
-
 (defun rename-this-file (&optional new-name)
   "Rename buffer's current file to NEW-NAME."
   (interactive "*FRename current file to: ")
@@ -286,6 +284,11 @@
   (if (not (get-buffer-window (eldoc-doc-buffer)))
 	  (eldoc t))
 	(select-window (get-buffer-window (eldoc-doc-buffer))))
+
+(defun my/goto-compile-buffer ()
+  "Go to the compilation buffer in frame."
+  (interactive)
+  (select-window (get-buffer-window "*compilation*")))
 
 (use-package emacs
   :ensure nil
@@ -327,7 +330,6 @@
   ("C-c b" . my/ibuffer-toggle)
   ("C-c l" . toggle-linums))
 
-
 (setq evil-want-keybinding nil)
 (use-package evil
   :ensure t
@@ -347,6 +349,7 @@
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
 		("g K" . my/goto-eldoc)
+		("g c" . my/goto-compile-buffer)
 		;; ("g b" . scratch-buffer)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
