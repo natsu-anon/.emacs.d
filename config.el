@@ -213,17 +213,6 @@
 ;;   (auto-package-update-maybe)
 ;;   (auto-package-update-at-time "17:00"))
 
-(defun my/vsplit-then-move-right ()
-  "Split the current window right, then move into the new window."
-  (interactive)
-  (split-window-right)
-  (windmove-right))
-
-(defun my/split-then-move-down ()
-  "Split the current window below, then move into the new window."
-  (interactive)
-  (split-window-below)
-  (windmove-down))
 
 (defun my/shell-right ()
   "foo"
@@ -278,25 +267,6 @@
   (let ((command (buffer-substring point mark)))
 	(shell-command command)))
 
-(defun my/goto-eldoc ()
-  "Go to the eldoc window in frame."
-  (interactive)
-  (if (not (get-buffer-window (eldoc-doc-buffer)))
-	  (eldoc t))
-	(select-window (get-buffer-window (eldoc-doc-buffer))))
-
-(defun my/goto-help ()
-  "Go to the eldoc window in frame."
-  (interactive)
-  (select-window (get-buffer-window (help-buffer))))
-
-(defun my/goto-compile-buffer ()
-  "Go to the compilation buffer in frame."
-  (interactive)
-  (cond ((get-buffer-window "*compilation*") (select-window (get-buffer-window "*compilation*")))
-		((buffer-live-p (get-buffer "*compilation*")) (set-window-buffer (selected-window) (get-buffer "*compilation*")))
-		(t (message "No compilation buffer!"))))
-
 (defun delete-compile-window-if-successful (buf desc)
   "Bury a compilation buffer if succeeded without warnings"
   (when (and (buffer-live-p buf) (string-match "finished" desc))
@@ -326,6 +296,10 @@
 				   crm-separator)
 				  (car args))
 		  (cdr args)))
+  (defun kill-current-buffer ()
+	"kills the current buffer"
+	(interactive)
+	(kill-buffer (current-buffer)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
@@ -340,8 +314,21 @@
   :bind
   ;; ("C-t n" . tab-bar-new-tab)
   ;; ("C-t q" . tab-bar-close-tab)
+  ("C-c k" . kill-current-buffer)
   ("C-c b" . my/ibuffer-toggle)
   ("C-c l" . toggle-linums))
+
+(use-package compile
+  :ensure nil
+  :init
+  (setq compilation-scroll-output t)
+  (defun colorize-compilation-buffer ()
+	(let ((inhibit-read-only t))
+	  (ansi-color-apply-on-region (point-min) (point-max))))
+  :hook
+  (compilation-filter . colorize-compilation-buffer)
+  :bind
+  ("C-c r" . recompile))
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -356,6 +343,32 @@
   (evil-set-leader 'normal (kbd "SPC"))
   (evil-set-leader 'visual (kbd "SPC"))
   (evil-global-set-key 'normal (kbd "<leader> h") 'evil-help-prefix)
+  (defun my/goto-eldoc ()
+	"Go to the eldoc window in frame."
+	(interactive)
+	(if (not (get-buffer-window (eldoc-doc-buffer)))
+		(eldoc t))
+	(select-window (get-buffer-window (eldoc-doc-buffer))))
+  (defun my/goto-help ()
+	"Go to the eldoc window in frame."
+	(interactive)
+	(select-window (get-buffer-window (help-buffer))))
+  (defun my/goto-compile-buffer ()
+	"Go to the compilation buffer in frame."
+	(interactive)
+	(cond ((get-buffer-window "*compilation*") (select-window (get-buffer-window "*compilation*")))
+		  ((buffer-live-p (get-buffer "*compilation*")) (set-window-buffer (selected-window) (get-buffer "*compilation*")))
+		  (t (message "No compilation buffer!"))))
+  (defun my/vsplit-then-move-right ()
+	"Split the current window right, then move into the new window."
+	(interactive)
+	(split-window-right)
+	(windmove-right))
+  (defun my/split-then-move-down ()
+	"Split the current window below, then move into the new window."
+	(interactive)
+	(split-window-below)
+	(windmove-down))
   :bind
   ("C-c '" . evil-show-marks)
   ("C-c f" . evil-show-files)
@@ -379,6 +392,8 @@
 		("<leader> r" . recentf)
 		("[ t" . tab-bar-switch-to-prev-tab)
 		("] t" . tab-bar-switch-to-next-tab)
+		("] q" . next-error)
+		("[ q" . previous-error)
 		:map evil-visual-state-map
 		("C-c #" . my/rectangle-number-lines)
 		("<leader> x" . eval-region)
@@ -452,11 +467,12 @@
 		:map evil-visual-state-map
 		("<leader> y" . yas-expand)))
 
-
 (use-package evil-collection
   :after evil
   :ensure t
   :config
+  ;; prevent overwriting bindings for next-error and previous-error set earlier
+  (setq evil-collection-key-blacklist '("[ q" "] q"))
   (evil-collection-init))
 
 (use-package evil-nerd-commenter
@@ -508,7 +524,7 @@
   :bind
   ("C-x f" . find-name-dired)
   ("C-x D" . my/dired-recursive))
-(find-name-dired "." "*.el")
+;; (find-name-dired "." "*.el")
 
 (use-package tex-mode
   :ensure nil
@@ -662,7 +678,19 @@
 		("<leader> B" . projectile-switch-to-buffer)))
 
 (use-package rg
-  :ensure t)
+  :ensure t
+  :config
+  (setq grep-highlight-matches t)
+  (defun my/goto-rg ()
+	"Go to the rg buffer"
+	(interactive)
+	(cond ((get-buffer-window "*rg*") (select-window (get-buffer-window "*rg*")))
+		  ((buffer-live-p (get-buffer "*rg*")) (set-window-buffer (selected-window) (get-buffer "*rg*")))
+		  ((t (message "No rg buffer!")))))
+  :bind
+  ("C-c s" . rg)
+  (:map evil-normal-state-map
+			  ("g /" . my/goto-rg)))
 
 (use-package ag
   :init
@@ -771,11 +799,10 @@
   ("C-c d" . flymake-show-buffer-diagnostics)
   ("C-c D" . flymake-show-project-diagnostics)
   (:map evil-normal-state-map
-		("<leader> t" . my/flymake-diagnostics-at-point)
 		("[ d" . flymake-goto-prev-error)
 		("] d" . flymake-goto-next-error)
 		:map flymake-mode-map
-		("C-c t" . my/flymake-diagnostics-at-point))
+		("C-c C-d" . my/flymake-diagnostics-at-point))
   :hook
   (lisp-mode . flymake-mode))
 
