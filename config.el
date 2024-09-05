@@ -311,12 +311,17 @@
 		#'command-completion-default-include-p)
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t)
+  :bind-keymap
+  ("C-c h" . help-map)
   :bind
   ;; ("C-t n" . tab-bar-new-tab)
   ;; ("C-t q" . tab-bar-close-tab)
   ("C-c k" . kill-current-buffer)
   ("C-c b" . my/ibuffer-toggle)
   ("C-c l" . toggle-linums))
+
+
+;; (bind-keys :prefix-map help-map :prefix "C-c h")
 
 (use-package compile
   :ensure nil
@@ -380,6 +385,10 @@
 		;; ("g b" . scratch-buffer)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)
+		("C-h" . evil-window-left)
+		("C-j" . evil-window-down)
+		("C-k" . evil-window-up)
+		("C-l" . evil-window-right)
 		("<leader> h v" . describe-variable)
 		("<leader> h f" . describe-function)
 		("<leader> h k" . describe-key)
@@ -542,16 +551,6 @@
   :ensure t
   :hook (dired-mode . all-the-icons-dired-mode))
 
-(defun sp-wrap-single-quote (&optional arg)
-  "bruh."
-  (interactive "P")
-  (sp-wrap-with-pair "'"))
-
-(defun sp-wrap-double-quote (&optional arg)
-  "bruh."
-  (interactive "P")
-  (sp-wrap-with-pair "\""))
-
 ;; ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
   ;; :after evil
@@ -563,14 +562,24 @@
   :init
   ;; (smartparens-mode)
   :config
+  (defun sp-wrap-single-quote (&optional arg)
+	"bruh."
+	(interactive "P")
+	(sp-wrap-with-pair "'"))
+  (defun sp-wrap-double-quote (&optional arg)
+	"bruh."
+	(interactive "P")
+	(sp-wrap-with-pair "\""))
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
   (setq sp-highlight-pair-overlay nil)
   :bind
-  ("C-l" . sp-forward-sexp)
-  ("C-k" . sp-backward-sexp)
+  ("C-c C-l" . sp-forward-sexp)
+  ("C-c C-k" . sp-backward-sexp)
   (:map evil-insert-state-map
-		("C-k" . sp-backward-sexp) ; I shouldn't need this
+		("C-;" . sp-comment)
+		("C-l" . sp-forward-sexp)
+		("C-k" . sp-backward-sexp)
 		:map evil-normal-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
