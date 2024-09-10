@@ -51,15 +51,28 @@
   ;; NOTE: you only need this if using godot 3
   :custom (gdscript-eglot-version 4))
 
-(defun lsp--gdscript-ignore-errors (original-function &rest args)
-  "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
-  (if (string-equal major-mode "gdscript-mode")
-	  (let ((json-data (nth 0 args)))
-		(if (and (string= (gethash "jsonrpc" json-data "") "2.0")
-				 (not (gethash "id" json-data nil))
-				 (not (gethash "method" json-data nil)))
-			nil ; (message "Method not found")
-		  (apply original-function args)))
-	(apply original-function args)))
-;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
-(advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
+;; (defun lsp--gdscript-ignore-errors (original-function &rest args)
+;;   "Ignore the error message resulting from Godot not replying to the `JSONRPC' request."
+;;   (if (string-equal major-mode "gdscript-mode")
+;; 	  (let ((json-data (nth 0 args)))
+;; 		(if (and (string= (gethash "jsonrpc" json-data "") "2.0")
+;; 				 (not (gethash "id" json-data nil))
+;; 				 (not (gethash "method" json-data nil)))
+;; 			nil ; (message "Method not found")
+;; 		  (apply original-function args)))
+;; 	(apply original-function args)))
+;; ;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
+;; (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
+
+(use-package gdshader-mode
+  :straight (gdshader-mode :type git :host github :repo "bbbscarter/gdshader-mode")
+  ;; Optional customisations for company-mode completion.
+  :init
+  (defun gdshader-config()
+    (interactive)
+    (setq-local company-dabbrev-downcase nil)
+    (setq-local company-backends
+                '((company-keywords company-dabbrev))))
+  :hook (gdshader-mode . gdshader-config)
+  :config
+  (add-to-list 'company-keywords-alist (append '(gdshader-mode) gdshader-all-keywords)))
