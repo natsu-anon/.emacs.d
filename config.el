@@ -280,6 +280,7 @@
   ;; NOTE: use C-x t for tab stuff
   ;; (define-prefix-command 'my-tab-prefix)
   ;; (global-set-key (kbd "C-t") 'my-tab-prefix)
+  (setq find-program "fd")
   (which-function-mode)
   (setq-default header-line-format
 				'((which-func-mode (" " which-func-format " "))))
