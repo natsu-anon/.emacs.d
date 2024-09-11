@@ -24,6 +24,9 @@
 (toggle-scroll-bar -1)
 (customize-set-variable 'scroll-bar-mode nil)
 (customize-set-variable 'horizontal-scroll-bar-mode nil)
+(setq scroll-margin 8)
+(setq hscroll-margin 4)
+(setq scroll-step 1)
 (set-fringe-mode 0)
 (menu-bar-mode -1)
 ;; (setq display-time-day-and-date 0)
@@ -753,7 +756,7 @@
   :init
   (vertico-mode)
   ;; (vertico-mouse-mode)
-  (setq vertico-scroll-margin 0)
+  (setq vertico-scroll-margin 1)
   (setq vertico-count 20)
   (setq vertico-resize t)
   (setq vertico-cycle t)
