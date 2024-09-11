@@ -19,11 +19,11 @@
 (bind-keys :prefix-map gdscript-command-map
 		   :prefix "C-c g"
 		   :menu-name "GDScript commands"
-		   ("s" . gdscript-docs-online-search-api)
-		   ("e" . my/headless-godot-editor)
-		   ("k" . my/kill-headless-godot-editor)
+		   ("k" . gdscript-docs-online-search-api)
+		   ("s" . my/headless-godot-editor)
+		   ("q" . my/kill-headless-godot-editor)
 		   ("r" . gdscript-godot-run-project-debug)
-		   ("o" . gdscript-godot-open-project-in-editor)
+		   ("e" . gdscript-godot-open-project-in-editor)
 		   ("d" . gdscript-debug-make-server)) ;; this is for DAP
 
 (use-package gdscript-mode
