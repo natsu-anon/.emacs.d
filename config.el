@@ -502,15 +502,15 @@
   (interactive "GDired recursive (directory): ")
   (dired dirname "-laRgho"))
 
-;; (defun my/dired-create (&optional arg)
-;;   "foo"
-;;   (interactive "GNew File/Directory: ")
-;;   (if (or (file-exists-p arg) (f-directory-p arg))
-;; 	  (dired-goto-file arg)
-;; 	(if (directory-name-p arg)
-;; 		(dired-create-directory arg)
-;; 		(dired-create-empty-file arg)))
-;;   (revert-buffer-quick))
+(defun my/dired-create (&optional arg)
+  "foo"
+  (interactive "GNew File/Directory: ")
+  (if (or (file-exists-p arg) (f-directory-p arg))
+	  (dired-goto-file arg)
+	(if (directory-name-p arg)
+		(dired-create-directory arg)
+		(dired-create-empty-file arg)))
+  (revert-buffer-quick))
 
 (use-package dired
   :ensure nil
@@ -527,9 +527,9 @@
 	" " nil
 	"h" 'dired-up-directory
 	"l" 'dired-find-file
-	;; "+" 'my/dired-create
-	"z c" 'dired-kill-subdir
-	"z o" 'dired-maybe-insert-subdir)
+	"+" 'my/dired-create
+	"zc" 'dired-kill-subdir
+	"zo" 'dired-maybe-insert-subdir)
   (define-key dired-mode-map (kbd "SPC") nil)
   :bind
   ("C-x f" . find-name-dired)
