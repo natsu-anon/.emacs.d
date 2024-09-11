@@ -710,22 +710,22 @@
   (setq ag-highlight-search t)
   (setq ag-reuse-window t))
 
-(use-package dashboard
-  :ensure t
-  :config
-  (setq dashboard-set-navigator t)
-  (setq dashboard-startup-banner "~/.emacs.d/ascii-art.txt")
-  (setq dashboard-set-footer t)
-  (setq dashboard-footer-messages '("M-x 'list-packages' 'U' 'x'"))
-  (setq dashboard-center-content t)
-  ;; (setq dashboard-icon-type 'all-the-icons)
-  ;; (setq dashboard-set-heading-icons t)
-  ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
-  (setq dashboard-items '((bookmarks . 10)
-						  (projects . 20)))
-  ;; (add-to-list 'dashboard-items '(agenda) t)
-  (dashboard-setup-startup-hook))
+;; (use-package dashboard
+;;   :ensure t
+;;   :config
+;;   (setq dashboard-set-navigator t)
+;;   (setq dashboard-startup-banner "~/.emacs.d/ascii-art.txt")
+;;   (setq dashboard-set-footer t)
+;;   (setq dashboard-footer-messages '("M-x 'list-packages' 'U' 'x'"))
+;;   (setq dashboard-center-content t)
+;;   ;; (setq dashboard-icon-type 'all-the-icons)
+;;   ;; (setq dashboard-set-heading-icons t)
+;;   ;; (setq dashboard-set-file-icons t)
+;;   (setq dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
+;;   (setq dashboard-items '((bookmarks . 10)
+;; 						  (projects . 20)))
+;;   ;; (add-to-list 'dashboard-items '(agenda) t)
+;;   (dashboard-setup-startup-hook))
 
 (defun my/refresh-revert ()
   "Refresh the dashboard or revert the current buffer."
@@ -1080,8 +1080,17 @@
   (setq doom-modeline-modal-icon t))
 
 
-(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;; (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
 (setq server-name "server")
 (server-start)
+(setq initial-scratch-message "\
+;; M-x list-packages then 'U' and 'x' to update packages
+;; M-x projectile-switch-project
+;; F1 for help
+;;
+;; DON'T FORGET TO SMILE
+
+")
 ;; (setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
+;; (setq initial-buffer-choice #'stratch-buffer)
 (setq gc-cons-threshod (* 2 1000 1000))
