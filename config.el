@@ -522,6 +522,8 @@
 		 (dired-mode . relative-linums)
 		 (dired-mode . display-line-numbers-mode))
   :config
+  (setq dired-auto-revert-buffer t)
+  (setq dired-do-revert-buffer t)
   (setq dired-dwim-target t)
   (evil-collection-define-key 'normal 'dired-mode-map
 	" " nil
