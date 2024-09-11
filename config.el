@@ -675,11 +675,12 @@
   ;; :commands projectile-command-map
   :diminish projectile-mode
   :init
-  (setq projectile-completion-system 'auto)
-  (setq projectile-switch-project-action #'projectile-dired)
   (define-prefix-command 'projectile-prefix)
   (projectile-mode)
   :config
+  (setq projectile-completion-system 'auto)
+  ;; (setq projectile-switch-project-action #'projectile-dired)
+  (setq projectile-switch-project-action (lambda () (projectile-dired)(projectile-vc)))
   (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map) ;; why here?
   (projectile-mode 1)
   :bind
