@@ -502,15 +502,15 @@
   (interactive "GDired recursive (directory): ")
   (dired dirname "-laRgho"))
 
-(defun my/dired-create (&optional arg)
-  "foo"
-  (interactive "GNew File/Directory: ")
-  (if (or (file-exists-p arg) (f-directory-p arg))
-	  (dired-goto-file arg)
-	(if (directory-name-p arg)
-		(dired-create-directory arg)
-		(dired-create-empty-file arg)))
-  (revert-buffer-quick))
+;; (defun my/dired-create (&optional arg)
+;;   "foo"
+;;   (interactive "GNew File/Directory: ")
+;;   (if (or (file-exists-p arg) (f-directory-p arg))
+;; 	  (dired-goto-file arg)
+;; 	(if (directory-name-p arg)
+;; 		(dired-create-directory arg)
+;; 		(dired-create-empty-file arg)))
+;;   (revert-buffer-quick))
 
 (use-package dired
   :ensure nil
@@ -527,7 +527,7 @@
 	" " nil
 	"h" 'dired-up-directory
 	"l" 'dired-find-file
-	"c" 'my/dired-create
+	;; "+" 'my/dired-create
 	"z c" 'dired-kill-subdir
 	"z o" 'dired-maybe-insert-subdir)
   (define-key dired-mode-map (kbd "SPC") nil)
@@ -950,7 +950,7 @@
 		("<leader> m" . consult-bookmark)
 		("<leader> s" . my/normal-rg)
 		("<leader> S" . consult-ripgrep)
-		("<leader> j" . consult-line)
+		   ("<leader> j" . consult-line)
 		("<leader> J" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
