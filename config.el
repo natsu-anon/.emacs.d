@@ -779,10 +779,26 @@
   (:map evil-normal-state-map
 			  ("g /" . my/goto-rg)))
 
-(use-package ag
-  :init
-  (setq ag-highlight-search t)
-  (setq ag-reuse-window t))
+;; (use-package ag
+;;   :init
+;;   (setq ag-highlight-search t)
+;;   (setq ag-reuse-window t))
+
+;; NOTE: I would like it but it opens up too many buffers while navigating between results
+;; (use-package deadgrep
+;;   :ensure t
+;;   :config
+;;   (setq deadgrep-max-buffers 1)
+;;   (setq grep-highlight-matches t)
+;;   (defun my/goto-deadgrep ()
+;; 	"go to the \"first\" deadgrep buffer"
+;; 	(interactive)
+;; 	(let ((buf (car (deadgrep--buffers))))
+;; 	  (cond ((get-buffer-window buf) (select-window (get-buffer-window buf)))
+;; 			((buffer-live-p buf) (set-window-buffer (selected-window) buf)))
+;; 			(t (message "No deadgrep buffer!")))))
+;;   :bind
+;;   ("C-c s" . deadgrep))
 
 ;; (use-package dashboard
 ;;   :ensure t
