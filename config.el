@@ -515,8 +515,17 @@
 (use-package evil-nerd-commenter
   :after evil
   :ensure t
+  :config
+  (defun append-comment ()
+	"append comment at eol and enter insert mode"
+	(interactive)
+	(atomic-change-group
+	  (end-of-line)
+	  (sp-comment)
+	  (evil-append-line nil)))
   :bind
   (:map evil-normal-state-map
+		("<leader> c a" . append-comment)
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)
 		:map evil-visual-state-map
