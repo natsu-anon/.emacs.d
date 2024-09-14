@@ -574,6 +574,18 @@
   ("C-x D" . my/dired-recursive))
 ;; (find-name-dired "." "*.el")
 
+(use-package comint
+  :ensure nil
+  :config
+  (defun append-at-last-prompt ()
+	"jump to last comint prompt"
+	(interactive)
+	(goto-char (cdr comint-last-prompt))
+	(evil-append-line nil))
+  (evil-collection-define-key 'normal 'comint-mode-map
+	"q" 'quit-window
+	"A" 'append-at-last-prompt))
+
 (use-package tex-mode
   :ensure nil
   :hook
