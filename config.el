@@ -598,11 +598,6 @@
   ("C-x D" . my/dired-recursive))
 ;; (find-name-dired "." "*.el")
 
-
-(use-package tex-mode
-  :ensure nil
-  :hook
-  (tex-mode . company-mode))
 ;; NOTE: just not working well with evil & windows :(
 ;; (use-package dirvish
 ;;   :ensure t
@@ -628,6 +623,11 @@
 (use-package all-the-icons-dired
   :ensure t
   :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package tex-mode
+  :ensure nil
+  :hook
+  (tex-mode . company-mode))
 
 ;; ;; see `https://github.com/Fuco1/smartparens/wiki'
 (use-package smartparens
