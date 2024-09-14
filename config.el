@@ -552,6 +552,7 @@
 		:map evil-visual-state-map
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)
+		("<leader> c r" . evilnc-comment-or-uncomment-region)
 		("<leader> c b" . evilnc-comment-box)))
 
 (defun my/dired-recursive (&optional dirname)
@@ -582,6 +583,8 @@
   (setq dired-auto-revert-buffer t)
   (setq dired-do-revert-buffer t)
   (setq dired-dwim-target t)
+  (setq dired-mouse-drag-files t)                   ; added in Emacs 29
+  (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
   (evil-collection-define-key 'normal 'dired-mode-map
 	" " nil
 	"h" 'dired-up-directory
