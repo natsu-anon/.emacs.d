@@ -423,29 +423,6 @@
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
 
-(use-package comint
-  :ensure nil
-  :config
-  (defun append-at-last-prompt ()
-	"jump to last comint prompt"
-	(interactive)
-	(goto-char (cdr comint-last-prompt))
-	(evil-append-line nil))
-  (evil-collection-define-key 'normal 'comint-mode-map
-	"q" 'quit-window
-	"A" 'append-at-last-prompt))
-
-(use-package shell-here
-  :ensure t
-  :after evil
-  :bind (:map evil-normal-state-map
-			  ("g s" . shell-here)))
-
-(use-package capf-autosuggest
-  :ensure t
-  :hook
-  (shell-mode . capf-autosuggest-mode))
-
 ;; temporarily highlights modified regions
 (use-package evil-goggles
   :ensure t
@@ -532,6 +509,31 @@
   ;; prevent overwriting bindings for next-error and previous-error set earlier
   (setq evil-collection-key-blacklist '("[ q" "] q"))
   (evil-collection-init))
+
+
+;; put it after evil-collection PLS
+(use-package comint
+  :ensure nil
+  :config
+  (defun append-at-last-prompt ()
+	"jump to last comint prompt"
+	(interactive)
+	(goto-char (cdr comint-last-prompt))
+	(evil-append-line nil))
+  (evil-collection-define-key 'normal 'comint-mode-map
+	"q" 'quit-window
+	"A" 'append-at-last-prompt))
+
+(use-package shell-here
+  :ensure t
+  :after evil
+  :bind (:map evil-normal-state-map
+			  ("g s" . shell-here)))
+
+(use-package capf-autosuggest
+  :ensure t
+  :hook
+  (shell-mode . capf-autosuggest-mode))
 
 (use-package evil-nerd-commenter
   :after evil
