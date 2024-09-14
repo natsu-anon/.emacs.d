@@ -1001,7 +1001,7 @@
 		("<leader> m" . consult-bookmark)
 		("<leader> s" . my/normal-rg)
 		("<leader> S" . consult-ripgrep)
-		   ("<leader> j" . consult-line)
+		("<leader> j" . consult-line)
 		("<leader> J" . consult-line-multi)
 		("<leader> i" . consult-imenu)
 		("<leader> I" . consult-imenu-multi)
