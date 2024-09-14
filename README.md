@@ -14,8 +14,8 @@
 
 ``` emacs-lisp
 (load-file "~/.emacs.d/config.el")
-;; (load-file "~/.emacs.d/gdscript.el") IF YOU WANT GDSCRIPT-MODE
 (load-file "~/.emacs.d/local.el")
+;; (load-file "~/.emacs.d/gdscript.el") IF YOU WANT GDSCRIPT-MODE
 ```
 
 Which will load `config.el`, the actual config, and `local.el`, local settings (which I use for looks).
