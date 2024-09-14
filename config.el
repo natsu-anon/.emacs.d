@@ -539,6 +539,9 @@
   :after evil
   :ensure t
   :config
+  ;; package wasn't automatically addingin the comment text object; do it manually
+  (define-key evil-inner-text-objects-map evilnc-comment-text-object 'evilnc-inner-commenter)
+  (define-key evil-outer-text-objects-map evilnc-comment-text-object 'evilnc-outer-commenter)
   (defun append-comment ()
 	"append comment at eol and enter insert mode"
 	(interactive)
@@ -546,16 +549,21 @@
 	  (end-of-line)
 	  (sp-comment)
 	  (evil-append-line nil)))
+  (defun my/visual-comment-or-uncomment-region (&optional start end)
+	"comments out a region"
+	(interactive "r")
+	(evilnc-comment-or-uncomment-region start end))
   :bind
   (:map evil-normal-state-map
 		("<leader> c a" . append-comment)
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)
+		("<leader> c p" . evilnc-comment-or-uncomment-paragraphs)
+		("<leader> c b" . evilnc-comment-box) ;; tbh this works better here for some reason
 		:map evil-visual-state-map
 		("<leader> c i" . evilnc-comment-or-uncomment-lines)
 		("<leader> c c" . evilnc-copy-and-comment-lines)
-		("<leader> c r" . evilnc-comment-or-uncomment-region)
-		("<leader> c b" . evilnc-comment-box)))
+		("<leader> c r" . my/visual-comment-or-uncomment-region)))
 
 (defun my/dired-recursive (&optional dirname)
   "Recursively open a file in dired."
