@@ -9,6 +9,10 @@
 ;; NOTE see 'https://irreal.org/blog' for some emacs stuff
 ;; NOTE see 'https://codelearn.me/' for more emacs stuff
 
+
+;; NOTE: using --eval on windows: emacs -Q --batch --eval '(message \"Hi!\")'
+
+
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
 
