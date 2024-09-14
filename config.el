@@ -603,6 +603,20 @@
   :ensure nil
   :hook
   (tex-mode . company-mode))
+;; NOTE: just not working well with evil & windows :(
+;; (use-package dirvish
+;;   :ensure t
+;;   :init
+;;   (setq dired-mouse-drag-files t)                   ; added in Emacs 29
+;;   (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
+;;   (dirvish-override-dired-mode)
+;;   :config
+;;   ;; (dirvish-peek-mode) ; Preview files in minibuffer
+;;   ;; (dirvish-side-follow-mode) ; similar to `treemacs-follow-mode'
+;;   (setq dirvish-mode-line-format '(:left (sort symlink) :right (omit yank index)))
+;;   (setq dirvish-attributes '(all-the-icons file-time file-size collapse subtree-state vc-state git-msg))
+;;   (setq delete-by-moving-to-trash t)
+;;   (setq dired-listing-switches "-l --almost-all --human-readable --group-directories-first --no-group") (dirvish-override-dired-mode))
 
 (use-package dired-hide-dotfiles
   :ensure t
