@@ -64,15 +64,23 @@
 ;; ;; Runs the function `lsp--gdscript-ignore-errors` around `lsp--get-message-type` to suppress unknown notification errors.
 ;; (advice-add #'lsp--get-message-type :around #'lsp--gdscript-ignore-errors)
 
+;; I am just extremely unimpressed tbqh
 (use-package gdshader-mode
   :straight (gdshader-mode :type git :host github :repo "bbbscarter/gdshader-mode")
+  :after company
   ;; Optional customisations for company-mode completion.
-  :init
+  :config
   (defun gdshader-config()
     (interactive)
     (setq-local company-dabbrev-downcase nil)
     (setq-local company-backends
                 '((company-keywords company-dabbrev))))
-  :hook (gdshader-mode . gdshader-config)
-  :config
-  (add-to-list 'company-keywords-alist (append '(gdshader-mode) gdshader-all-keywords)))
+  (add-to-list 'company-keywords-alist (append '(gdshader-mode) gdshader-all-keywords))
+  (with-eval-after-load 'eglot
+	(add-to-list 'eglot-server-programs
+				 '(gdshader-mode . ("gdshader-lsp"))))
+  :hook
+  (gdshader-mode . gdshader-config)
+  (gdsahder-mode . eglot-ensure))
+
+;; (executable-find "gdshader-lsp")
