@@ -437,24 +437,45 @@
   (evil-goggles-use-diff-faces))
 
 (use-package org
-  :after evil
-  :ensure t
+  :ensure nil
   :init
-  (setq org-M-RET-may-split-line nil)
-  :config
   (define-prefix-command 'my-org-prefix)
-  (evil-global-set-key 'normal (kbd "<leader> u") 'my-org-prefix)
+  (global-set-key (kbd "C-a") 'my-org-prefix)
+  :config
+  (setq org-M-RET-may-split-line nil)
+  ;; (evil-global-set-key 'normal (kbd "<leader> a") 'my-org-prefix)
   :bind
-  (:map evil-normal-state-map
-		("<leader> u h" . org-do-promote)
-		("<leader> u l" . org-do-demote)
-		("<leader> u #" . org-update-checkbox-count)
-		("<leader> u c" . org-toggle-checkbox)
-		("<leader> u i" . org-insert-item)
-		("<leader> u A" . org-insert-heading)
-		("<leader> u a" . org-insert-subheading)
-		("<leader> u t" . org-insert-todo-subheading)
-		("<leader> u T" . org-insert-todo-heading)))
+  (:map org-mode-map
+		("C-a h" . org-metaleft)
+		("C-a j" . org-metadown)
+		("C-a k" . org-metaup)
+		("C-a l" . org-metaright)
+		("C-a H" . org-shiftmetaleft)
+		("C-a J" . org-shiftmetadown)
+		("C-a K" . org-shiftmetaup)
+		("C-a L" . org-shiftmetaright)
+		("C-a #" . org-update-checkbox-count)
+		("C-a c" . org-toggle-checkbox)
+		("C-a i" . org-insert-item)
+		("C-a A" . org-insert-heading)
+		("C-a a" . org-insert-subheading)
+		("C-a t" . org-insert-todo-subheading)
+		("C-a T" . org-insert-todo-heading)))
+  ;; ("C-a h" . org-meta-left)
+  ;; ("C-a j" . org-meta-down)
+  ;; ("C-a k" . org-meta-up)
+  ;; ("C-a l" . org-meta-right)
+  ;; ("C-a H" . org-shiftmeta-left)
+  ;; ("C-a J" . org-shiftmeta-down)
+  ;; ("C-a K" . org-shiftmeta-up)
+  ;; ("C-a L" . org-shiftmeta-right)
+  ;; ("C-a #" . org-update-checkbox-count)
+  ;; ("C-a c" . org-toggle-checkbox)
+  ;; ("C-a i" . org-insert-item)
+  ;; ("C-a A" . org-insert-heading)
+  ;; ("C-a a" . org-insert-subheading)
+  ;; ("C-a t" . org-insert-todo-subheading)
+  ;; ("C-a T" . org-insert-todo-heading))
 
 (use-package auto-complete
   :ensure t
