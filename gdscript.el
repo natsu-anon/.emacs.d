@@ -44,7 +44,14 @@
 	"Stuff to do when projectile switches to a Godot project."
 	(when (gdscript-util--find-project-configuration-file)
 	  (my/headless-godot-editor)))
+  ;; NOTE: not working :^(
+  ;; (defun quit-window-but-message ()
+  ;; 	"quit-window then message that the buffer is buried"
+  ;; 	(message "Buried %s" (buffer-name))
+  ;; 	;; (select-window (get-buffer-window (buffer-name))))
+  ;; 	(quit-window nil (get-buffer-window (buffer-name))))
   :hook
+  ;; (godot-mode . quit-window-but-message) ; automatically bury godot comint buffers BECAUSE GOD
   (gdscript-mode . eglot-ensure)
   (gdscript-mode . company-mode)
   (projectile-after-switch-project . my/godot-project-setup)
