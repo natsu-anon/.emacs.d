@@ -727,8 +727,7 @@
   (projectile-mode)
   :config
   (setq projectile-completion-system 'auto)
-  ;; (setq projectile-switch-project-action #'projectile-dired)
-  (setq projectile-switch-project-action (lambda () (projectile-dired)(projectile-vc)))
+  (setq projectile-switch-project-action #'projectile-dired)
   (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map) ;; why here?
   (projectile-mode 1)
   :bind
