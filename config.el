@@ -1159,7 +1159,7 @@
 		doom-themes-enable-italic t)
   ;; load theme in `local.el' now
   (doom-themes-visual-bell-config)
-  (doom-themes-neotree-config) ;; enable custom neotree theme (all-the-icons must be installed!)
+  ;; (doom-themes-neotree-config) ;; enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-org-config))
 
 (use-package doom-modeline
