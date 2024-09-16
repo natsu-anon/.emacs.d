@@ -441,6 +441,7 @@
   (global-set-key (kbd "C-a") 'my-org-prefix)
   :config
   (setq org-M-RET-may-split-line nil)
+  (setq org-image-actual-width nil)
   ;; (evil-global-set-key 'normal (kbd "<leader> a") 'my-org-prefix)
   :bind
   (:map org-mode-map
@@ -457,6 +458,7 @@
 		("C-a i" . org-insert-item)
 		("C-a A" . org-insert-heading)
 		("C-a a" . org-insert-subheading)
+		("C-a C-t" . org-todo)
 		("C-a t" . org-insert-todo-subheading)
 		("C-a T" . org-insert-todo-heading)))
   ;; ("C-a h" . org-meta-left)
