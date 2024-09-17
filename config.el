@@ -246,12 +246,6 @@
 	  (pop-to-buffer "*Ibuffer*")
 	  (ibuffer-mark-unsaved-buffers))))
 
-(defun my/rectangle-number-lines (&optional point mark)
-  "GOD I NEEDED THIS."
-  (interactive "r")
-  ;; (universal-argument) ;; lmao doesn't work GOOD TO KNOW THO--BOUND TO C-u BY DEFAULT--ITS NIFTY!
-  (rectangle-number-lines point mark (read-number "First digit: " 0) (read-string "Format: " "%d")))
-
 ;; tab-bar memels
 (setq tab-bar-show 1)                      ;; hide bar if <= 1 tabs open
 (setq tab-bar-close-button-show nil)       ;; hide tab close / X button
@@ -385,6 +379,16 @@
 	(interactive)
 	(split-window-below)
 	(windmove-down))
+  ;; (defun my/rectangle-number-lines (&optional point mark)
+  ;; 	"GOD I NEEDED THIS."
+  ;; 	(interactive "r")
+  ;; 	;; (universal-argument) ;; lmao doesn't work GOOD TO KNOW THO--BOUND TO C-u BY DEFAULT--ITS NIFTY!
+  ;; 	(rectangle-number-lines point mark (read-number "First digit: " 0) (read-string "Format: " "%d")))
+  (evil-define-motion my/visual-rectangle-number-lines (count)
+	"breh"
+	:type block
+	:jump t
+	(rectangle-number-lines evil-visual-beginning evil-visual-end (or count 0) "%d"))
   :bind
   ("C-c '" . evil-show-marks)
   ("C-c f" . evil-show-files)
@@ -415,7 +419,7 @@
 		("] q" . next-error)
 		("[ q" . previous-error)
 		:map evil-visual-state-map
-		("C-c #" . my/rectangle-number-lines)
+		("#" . my/visual-rectangle-number-lines)
 		("<leader> x" . eval-region)
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
