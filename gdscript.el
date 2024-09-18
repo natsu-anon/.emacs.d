@@ -16,10 +16,22 @@
   (interactive)
   (kill-buffer "*Headless Godot*"))
 
+(defun my/gdscript-docs-online-search-api (&optional arg)
+  "bruh."
+  (interactive (list
+				(read-string
+				 (format "Search Godot Docs (%s): " (symbol-at-point))
+				 nil
+				 nil
+				 (symbol-at-point))))
+  (if (symbolp arg)
+	  (gdscript-docs-online-search-api (symbol-name arg))
+	(gdscript-docs-online-search-api arg)))
+
 (bind-keys :prefix-map gdscript-command-map
 		   :prefix "C-c g"
 		   :menu-name "GDScript commands"
-		   ("k" . gdscript-docs-online-search-api)
+		   ("k" . my/gdscript-docs-online-search-api)
 		   ("s" . my/headless-godot-editor)
 		   ("q" . my/kill-headless-godot-editor)
 		   ("r" . gdscript-godot-run-project-debug)
