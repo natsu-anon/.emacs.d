@@ -528,7 +528,10 @@
 	(evil-append-line nil))
   (evil-collection-define-key 'normal 'comint-mode-map
 	"q" 'quit-window
-	"A" 'append-at-last-prompt))
+	"A" 'append-at-last-prompt)
+  (evil-collection-define-key 'insert 'comint-mode-map
+	"C-n" 'comint-next-input ; this is the default btw
+	"C-p" 'comint-previous-input)) ;; WHY isnt this working?
 
 (use-package shell-here
   :ensure t
