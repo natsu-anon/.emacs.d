@@ -906,14 +906,35 @@
 
 (use-package flymake
   :config
-  (defun my/flymake-diagnostics-at-point ()
+  (defun my/momentary-diagnostics-at-point ()
 	(interactive)
-	;; (momentary-string-display (flymake-diagnostics (point)) (point)))
-	(let ((text (flymake-diagnostic-text (car (flymake-diagnostics (point))))))
-	  (put-text-property 0 (length text) 'face 'font-lock-warning-face text)
-	  (save-excursion
-		(end-of-line)
-		(momentary-string-display (format " %s" text) (point) nil ""))))
+	(mapc (lambda (diagnostic)
+			(let ((text (flymake-diagnostic-text diagnostic))
+				  (end (flymake-diagnostic-end diagnostic)))
+			  (put-text-property 0 (length text) 'face 'font-lock-warning-face text)
+			  (save-excursion
+				(end-of-line)
+				(momentary-string-display (concat " " text) (point) nil ""))))
+		  (flymake-diagnostics (point))))
+  ;; NOTE: overlays!!!
+  ;; (defun wip/inlay-diagnostics-in-point (&optional point mark)
+  ;; 	(interactive "r")
+  ;; 	;; (my/delete-all-flymake-overlays)
+  ;; 	(mapc #'delete-overlay (overlay-lists))
+  ;; 	(mapc (lambda (diagnostic)
+  ;; 			(let ((text (flymake-diagnostic-text diagnostic))
+  ;; 				  (end (flymake-diagnostic-end diagnostic)))
+  ;; 			  (put-text-property 0 (length text) 'face 'font-lock-warning-face text)
+  ;; 			  (save-excursion
+  ;; 				(goto-char end)
+  ;; 				(end-of-line)
+  ;; 				(let ((ov (make-overlay (point) (point) (current-buffer))))
+  ;; 				  ;; (setq my/flymake-overlays (cons ov my/flymake-overlays))
+  ;; 				  (overlay-put ov 'intangible t)
+  ;; 				  ;; (overlay-put ov 'face_foreground font-lock-warning-face)
+  ;; 				  (overlay-put ov 'before-string (concat " " text))
+  ;; 				  ))))
+  ;; 		  (flymake-diagnostics point mark)))
   :bind
   ("C-c d" . flymake-show-buffer-diagnostics)
   ("C-c D" . flymake-show-project-diagnostics)
@@ -1118,13 +1139,22 @@
   (setq eldoc-echo-area-use-multiline-p nil)
   (setq read-process-output-max (* 1024 1024))
   (add-to-list 'eglot-server-programs '((c++-mode c-mode) "clangd"))
+  ;; (evil-collection-define-key 'normal 'eglot)
+  ;; (defun my/diagnostics-subline (&optional point mark)
+  ;; 	(interactive "r")
+  ;; 	(message "%s" (eglot--make-diag (current-buffer) point mark nil nil)))
+  ;; (defun my/diagnostics-in-buffer (&optional point mark)
+  ;; 	(interactive "r")
+  ;; 	(message "%s x %s" point mark))
   :bind
   (:map evil-normal-state-map
 		("<leader> l r" . eglot-rename)
 		("<leader> l q" . eglot-code-actions-quickfix)
 		("<leader> l a" . eglot-code-actions)
+		("<leader> l a" . eglot-code-actions)
 		;; ("<leader> l i" . eglot-inlay-hints-mode)
 		("<leader> l =" . eglot-format-buffer)
+		("<leader> l d" . my/momentary-diagnostics-at-point)
 		:map evil-visual-state-map
 		("<leader> l a" . eglot-code-actions)
 		("<leader> l = " . eglot-format)))
