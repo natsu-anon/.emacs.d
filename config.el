@@ -1200,3 +1200,4 @@
 ;; (setq initial-buffer-choice (lambda () (get-buffer "*scratch*")))
 ;; (setq initial-buffer-choice #'stratch-buffer)
 (setq gc-cons-threshod (* 2 1000 1000))
+(provide 'my/config)
