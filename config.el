@@ -673,7 +673,7 @@
   (:map evil-insert-state-map
 		("C-;" . sp-comment)
 		("C-l" . sp-forward-sexp)
-		("C-k" . sp-backward-sexp)
+		("C-h" . sp-backward-sexp)
 		:map evil-normal-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
