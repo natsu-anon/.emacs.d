@@ -776,10 +776,16 @@
   (setq projectile-switch-project-action #'projectile-dired)
   (evil-global-set-key 'normal (kbd "<leader> p") 'projectile-command-map) ;; why here?
   (projectile-mode 1)
+  (defun my/find-other-file()
+	"Use projectile-find-other-file if in a project, o.w. ido-find-alternate-file"
+	(interactive)
+	(if (projectile-project-p)
+		(projectile-find-other-file)
+	  (ido-find-alternate-file)))
   :bind
   ("C-c p" . projectile-command-map)
   (:map evil-normal-state-map
-		("g a" . projectile-find-other-file)
+		("g a" . my/find-other-file)
 		("<leader> o" . projectile-find-file)
 		("<leader> B" . projectile-switch-to-buffer)))
 
