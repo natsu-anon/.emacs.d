@@ -447,12 +447,15 @@
   (setq org-M-RET-may-split-line nil)
   (setq org-image-actual-width nil)
   ;; (evil-global-set-key 'normal (kbd "<leader> a") 'my-org-prefix)
+  ;; (evil-collection-define-key 'normal 'org-mode-map
+  ;; 	"<return>" 'org-open-at-point)
   :bind
   (:map org-mode-map
-		("C-a h" . org-metaleft)
-		("C-a j" . org-metadown)
-		("C-a k" . org-metaup)
-		("C-a l" . org-metaright)
+		("C-a C-o" . org-open-at-point)
+		("C-a C-h" . org-metaleft)
+		("C-a C-j" . org-metadown)
+		("C-a C-k" . org-metaup)
+		("C-a C-l" . org-metaright)
 		("C-a H" . org-shiftmetaleft)
 		("C-a J" . org-shiftmetadown)
 		("C-a K" . org-shiftmetaup)
@@ -528,10 +531,10 @@
 	(evil-append-line nil))
   (evil-collection-define-key 'normal 'comint-mode-map
 	"q" 'quit-window
-	"A" 'append-at-last-prompt)
-  (evil-collection-define-key 'insert 'comint-mode-map
-	"C-n" 'comint-next-input ; this is the default btw
-	"C-p" 'comint-previous-input)) ;; WHY isnt this working?
+	"A" 'append-at-last-prompt))
+  ;; (evil-collection-define-key 'insert 'comint-mode-map
+  ;; 	"C-n" 'comint-next-input ; this is the default btw
+  ;; 	"C-p" 'comint-previous-input)) ;; WHY isnt this working?
 
 (use-package shell-here
   :ensure t
@@ -672,7 +675,7 @@
   (setq sp-highlight-pair-overlay nil)
   :bind
   ("C-c C-l" . sp-forward-sexp)
-  ("C-c C-k" . sp-backward-sexp)
+  ("C-c C-h" . sp-backward-sexp)
   (:map evil-insert-state-map
 		("C-;" . sp-comment)
 		("C-l" . sp-forward-sexp)
