@@ -36,6 +36,16 @@ In order to get icons working you _MUST_ run `all-the-icons-install-fonts`, if y
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; works for clients as well
 ```
 
+## USING CYGWIN AS SHELL ON WINDOWS
+	
+Include the following in  `local.el`
+
+``` emacs-lisp
+(setq shell-file-name "c:/cygwin64/bin/bash")
+(setq explicit-shell-file-name shell-file-name)
+(setq explicit-bash-args `("--noediting" "-i"))
+```
+
 ### UPDATING PACKAGES
 
 Don't do it automatically, packages change.
