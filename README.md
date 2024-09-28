@@ -54,7 +54,7 @@ HOWTO:
 2. Mark pacakges to update with `U`
 3. Execute the upgrade with `x`
 
-## HOW TO USE TRAMP ON WINDOWS
+<!-- ## HOW TO USE TRAMP ON WINDOWS -->
 
 ### Project `.gitignore`
 
