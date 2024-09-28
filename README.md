@@ -68,89 +68,93 @@ add the following to your projects' `.gitignore` to ignore all the emacs backups
 .dir-locals.el
 ```
 
-### making flycheck play with node well:
+<!----------------------------------->
+<!-- I don't even USE this anymore -->
+<!----------------------------------->
 
-- Go to root directory of project and run `npm instal install eslint --save-dev`
-  + If you're also using @babel stuff (you are if you copy the `.eslintrc.json` from below) you might also have to run `npm install @babel/core @babel/eslint-parser @babel/preset-env --save-dev`
-- After that run `eslint --init` or `npx eslint --init`
-- just do the basic setup, and save as a `json`
-- after that replace `.eslintrc.json` with the following:
+<!-- ### making flycheck play with node well: -->
 
-``` json
-{
-    "env": {
-        "browser": false,
-        "es2021": true,
-		"node": true
-    },
-    "parser": "@babel/eslint-parser",
-    "parserOptions": {
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
-	"rules": {
-		"getter-return": "error",
-		"no-cond-assign": "error",
-		"no-constant-condition": "error",
-		"no-dupe-args": "error",
-		"no-dupe-else-if": "error",
-		"no-dupe-keys": "error",
-		"no-duplicate-case": "error",
-		"no-empty": "warn",
-		"no-extra-boolean-cast": "warn",
-		"no-func-assign": "error",
-		"no-import-assign": "error",
-		"no-setter-return": "error",
-		"no-sparse-arrays": "warn",
-		"no-unreachable": "warn",
-		"no-unsafe-finally": "warn",
-		"no-unsafe-negation": "error",
-		"use-isnan": "error",
-		"eqeqeq": [ "warn", "smart" ],
-		"no-multi-spaces": "warn",
-		"no-redeclare": "error",
-		"no-useless-escape": "warn",
-		"no-with": "error",
-		"no-undef": "error",
-		"no-unused-vars": [ "warn", { "vars": "local", "args": "all" }],
-		"wrap-iife": ["warn", "inside"],
-		"object-curly-spacing": ["warn", "always"],
-		"quotes": ["warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
-		"semi": ["error", "always"],
-		"no-const-assign": "error",
-		"arrow-spacing": "warn",
-		"no-confusing-arrow": "warn",
-		"no-dupe-class-members": "error",
-		"no-duplicate-imports": "warn",
-		"no-var": "warn",
-		"no-confusing-arrow": "warn",
-		"constructor-super": "error",
-		"no-this-before-super": "error",
-		"prefer-const": "warn",
-		"require-yield": "warn",
-		"arrow-parens": ["warn", "as-needed"]
-	}
-}
-```
-- create `.babelrc` with the following:
+<!-- - Go to root directory of project and run `npm instal install eslint --save-dev` -->
+<!--   + If you're also using @babel stuff (you are if you copy the `.eslintrc.json` from below) you might also have to run `npm install @babel/core @babel/eslint-parser @babel/preset-env --save-dev` -->
+<!-- - After that run `eslint --init` or `npx eslint --init` -->
+<!-- - just do the basic setup, and save as a `json` -->
+<!-- - after that replace `.eslintrc.json` with the following: -->
 
-``` json
-{
-	"presets": [
-		[ "@babel/preset-env",
-		  {
-			  "shippedProposals": true
-		  }]
-	]
-}
+<!-- ``` json -->
+<!-- { -->
+<!--     "env": { -->
+<!--         "browser": false, -->
+<!--         "es2021": true, -->
+<!-- 		"node": true -->
+<!--     }, -->
+<!--     "parser": "@babel/eslint-parser", -->
+<!--     "parserOptions": { -->
+<!--         "ecmaVersion": 12, -->
+<!--         "sourceType": "module" -->
+<!--     }, -->
+<!-- 	"rules": { -->
+<!-- 		"getter-return": "error", -->
+<!-- 		"no-cond-assign": "error", -->
+<!-- 		"no-constant-condition": "error", -->
+<!-- 		"no-dupe-args": "error", -->
+<!-- 		"no-dupe-else-if": "error", -->
+<!-- 		"no-dupe-keys": "error", -->
+<!-- 		"no-duplicate-case": "error", -->
+<!-- 		"no-empty": "warn", -->
+<!-- 		"no-extra-boolean-cast": "warn", -->
+<!-- 		"no-func-assign": "error", -->
+<!-- 		"no-import-assign": "error", -->
+<!-- 		"no-setter-return": "error", -->
+<!-- 		"no-sparse-arrays": "warn", -->
+<!-- 		"no-unreachable": "warn", -->
+<!-- 		"no-unsafe-finally": "warn", -->
+<!-- 		"no-unsafe-negation": "error", -->
+<!-- 		"use-isnan": "error", -->
+<!-- 		"eqeqeq": [ "warn", "smart" ], -->
+<!-- 		"no-multi-spaces": "warn", -->
+<!-- 		"no-redeclare": "error", -->
+<!-- 		"no-useless-escape": "warn", -->
+<!-- 		"no-with": "error", -->
+<!-- 		"no-undef": "error", -->
+<!-- 		"no-unused-vars": [ "warn", { "vars": "local", "args": "all" }], -->
+<!-- 		"wrap-iife": ["warn", "inside"], -->
+<!-- 		"object-curly-spacing": ["warn", "always"], -->
+<!-- 		"quotes": ["warn", "single", { "avoidEscape": true, "allowTemplateLiterals": true }], -->
+<!-- 		"semi": ["error", "always"], -->
+<!-- 		"no-const-assign": "error", -->
+<!-- 		"arrow-spacing": "warn", -->
+<!-- 		"no-confusing-arrow": "warn", -->
+<!-- 		"no-dupe-class-members": "error", -->
+<!-- 		"no-duplicate-imports": "warn", -->
+<!-- 		"no-var": "warn", -->
+<!-- 		"no-confusing-arrow": "warn", -->
+<!-- 		"constructor-super": "error", -->
+<!-- 		"no-this-before-super": "error", -->
+<!-- 		"prefer-const": "warn", -->
+<!-- 		"require-yield": "warn", -->
+<!-- 		"arrow-parens": ["warn", "as-needed"] -->
+<!-- 	} -->
+<!-- } -->
+<!-- ``` -->
+<!-- - create `.babelrc` with the following: -->
 
-```
-- finally create `.dir-locals.el` with the following:
+<!-- ``` json -->
+<!-- { -->
+<!-- 	"presets": [ -->
+<!-- 		[ "@babel/preset-env", -->
+<!-- 		  { -->
+<!-- 			  "shippedProposals": true -->
+<!-- 		  }] -->
+<!-- 	] -->
+<!-- } -->
 
-``` emacs-lisp
-((js-mode . ((eval . (progn
-				  (make-local-variable 'exec-path)
-				  (add-to-list 'exec-path "/path/to/repo/node_modules/.bin/"))))))
-```
-idk why but I haven't gotten it to work well when emacs is started in i3 (not the client, but emacs itself)
-try starting the server in a different DE/WM session then going into i3
+<!-- ``` -->
+<!-- - finally create `.dir-locals.el` with the following: -->
+
+<!-- ``` emacs-lisp -->
+<!-- ((js-mode . ((eval . (progn -->
+<!-- 				  (make-local-variable 'exec-path) -->
+<!-- 				  (add-to-list 'exec-path "/path/to/repo/node_modules/.bin/")))))) -->
+<!-- ``` -->
+<!-- idk why but I haven't gotten it to work well when emacs is started in i3 (not the client, but emacs itself) -->
+<!-- try starting the server in a different DE/WM session then going into i3 -->
