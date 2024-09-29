@@ -644,7 +644,9 @@
 
 (use-package all-the-icons-dired
   :ensure t
-  :hook (dired-mode . all-the-icons-dired-mode))
+  :hook
+  (dired-mode . all-the-icons-dired-mode)
+  (wdired-mode . (lambda () (message "disable pls") (all-the-icons-dired-mode -1))))
 
 (use-package tex-mode
   :ensure nil
