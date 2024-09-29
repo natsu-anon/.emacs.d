@@ -305,6 +305,12 @@
 	"kills the current buffer"
 	(interactive)
 	(kill-buffer (current-buffer)))
+  (defun eww-clipboard ()
+	"eww WHATEVER is in the clipboard"
+	(interactive)
+	(let ((select-enable-clipboard t)
+		  (gui--last-selected-text-clipboard nil))
+	  (eww (current-kill 0))))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
