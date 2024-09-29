@@ -1243,6 +1243,7 @@
 ;; M-x list-packages then 'U' and 'x' to update packages
 ;; M-x projectile-switch-project
 ;; F1 for help
+;; dired-hide-details-mode to toggle details
 ;;
 ;; DON'T FORGET TO SMILE
 
