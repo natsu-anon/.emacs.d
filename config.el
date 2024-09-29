@@ -601,9 +601,9 @@
 (use-package dired
   :ensure nil
   :commands (dired dired-jump)
-  :custom ((dired-listing-switches "-lagho --group-directories-first"))
-  :hook ((dired-mode . dired-hide-details-mode)
-		 (dired-mode . dired-omit-mode)
+  :custom ((dired-listing-switches "-alh --group-directories-first"))
+  :hook ((dired-mode . dired-omit-mode)
+		 (dired-mode . dired-hide-details-mode)
 		 ;; (dired-mode . (display-line-numbers . 'visual))
 		 (dired-mode . relative-linums)
 		 (dired-mode . display-line-numbers-mode))
@@ -648,11 +648,11 @@
   (evil-collection-define-key 'normal 'dired-mode-map
 	"H" 'dired-hide-dotfiles-mode))
 
-(use-package all-the-icons-dired
-  :ensure t
-  :hook
-  (dired-mode . all-the-icons-dired-mode)
-  (wdired-mode . (lambda () (message "disable pls") (all-the-icons-dired-mode -1))))
+;; (use-package all-the-icons-dired
+;;   :ensure t
+;;   :hook
+;;   (dired-mode . all-the-icons-dired-mode)
+;;   (wdired-mode . (lambda () (message "disable pls") (all-the-icons-dired-mode -1))))
 
 (use-package tex-mode
   :ensure nil
