@@ -868,6 +868,9 @@
 
 (global-set-key [f5] 'my/refresh-revert)
 
+;; NOTE: IF THINGS GO BAD USE IDO
+;; (ido-mode 1)
+;; (setq ido-everywhere t)
 (use-package vertico
   ;; :straight (vertico
   ;; 			 :type git
