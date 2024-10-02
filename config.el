@@ -709,6 +709,17 @@
 		("<leader> ]" . sp-wrap-square)
 		("<leader> [" . sp-wrap-square)))
 
+;; EHHHHHHH
+(use-package compiler-explorer
+  :straight (compiler-explorer
+			 :type git
+			 :host github
+			 :repo "mkcms/compiler-explorer.el")
+  :ensure t)
+
+(use-package disaster
+  :ensure t)
+
 (use-package lua-mode
   :ensure t
   :diminish lua-mode
