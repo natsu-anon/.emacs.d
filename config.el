@@ -271,11 +271,12 @@
   (let ((command (buffer-substring point mark)))
 	(shell-command command)))
 
+;; NOTE: unused atm
 (defun delete-compile-window-if-successful (buf desc)
   "Bury a compilation buffer if succeeded without warnings"
   (when (and (buffer-live-p buf) (string-match "finished" desc))
 	(delete-window (get-buffer-window buf))))
-(add-hook 'compilation-finish-functions #'delete-compile-window-if-successful)
+;; (add-hook 'compilation-finish-functions #'delete-compile-window-if-successful)
 
 (use-package emacs
   :ensure nil
