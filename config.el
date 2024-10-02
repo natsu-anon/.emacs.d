@@ -1227,6 +1227,16 @@
   ;; (doom-themes-neotree-config) ;; enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-org-config))
 
+;; I like this but no flymake integration (I am a brainlet & need it)
+(use-package timu-line
+  :ensure t
+  ;; :init
+  ;; (timu-mode-line 1)
+  :config
+  (setq timu-line-show-eglot-indicator t)
+  (setq timu-line-show-evil-state t)
+  (setq timu-line-show-tramp-host t))
+
 (use-package doom-modeline
   :ensure t
   :init
@@ -1236,13 +1246,14 @@
   (setq doom-modeline-bar-width 4)
   (setq doom-modeline-window-width-limit fill-column)
   (setq doom-modeline-support-imenu t)
-  (setq doom-modeline-battery t)
+  (setq doom-modeline-battery nil)
   (setq doom-modeline-project-detection 'project)
   (setq doom-modeline-buffer-file-name-style 'truncate-upto-project)
-  (setq doom-modeline-buffer-state-icon t)
-  (setq doom-modeline-icon t)
+  (setq doom-modeline-icon nil)
+  (setq doom-modeline-buffer-state-icon nil)
   (setq doom-modeline-enable-word-count t)
-  (setq doom-modeline-modal-icon t))
+  (setq doom-modeline-modal t)
+  (setq doom-modeline-modal-icon nil))
 
 
 ;; (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
