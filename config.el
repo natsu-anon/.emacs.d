@@ -1182,7 +1182,10 @@
 		("<leader> l d" . my/momentary-diagnostics-at-point)
 		:map evil-visual-state-map
 		("<leader> l a" . eglot-code-actions)
-		("<leader> l = " . eglot-format)))
+		("<leader> l = " . eglot-format))
+  :hook
+  (c-mode . eglot-ensure)
+  (c++-mode . eglot-ensure))
 
 (use-package company
   :after eglot
@@ -1197,6 +1200,7 @@
   :hook
   (company-mode . disable-auto-complete-mode)
   (lisp-mode . company-mode)
+  (c-mode . company-mode)
   (c++-mode . company-mode))
 
 ;;;;;;;;;;;;;;;;
