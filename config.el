@@ -724,25 +724,27 @@
 (use-package company
   :after eglot
   :config
-  (defun disable-auto-complete-mode ()
-	"disables auto-complete so that way company mode takes over"
-	(auto-complete-mode -1)
-	(message "auto-complete-mode disabled in current buffer!"))
+  ;; (defun disable-auto-complete-mode ()
+  ;; 	"disables auto-complete so that way company mode takes over"
+  ;; 	(auto-complete-mode -1)
+  ;; 	(message "auto-complete-mode disabled in current buffer!"))
   (setq company-idle-delay 0.00)
   (setq company-tooltip-idle-delay 0.00)
-  :hook
-  (company-mode . disable-auto-complete-mode)
-  (lisp-mode . company-mode)
-  (c-mode . company-mode)
-  (c++-mode . company-mode))
+  (global-company-mode))
+  ;; :hook
+  ;; (prog-mode . company-mode)
+  ;; (company-mode . disable-auto-complete-mode)
+  ;; (lisp-mode . company-mode)
+  ;; (c-mode . company-mode)
+  ;; (c++-mode . company-mode))
 
 
-(use-package auto-complete
-  :bind ("<f7>" . auto-complete-mode)
-  :diminish auto-complete-mode
-  :hook (prog-mode . auto-complete-mode)
-  :config
-  (ac-config-default))
+;; (use-package auto-complete
+;;   :bind ("<f7>" . auto-complete-mode)
+;;   :diminish auto-complete-mode
+;;   :hook (prog-mode . auto-complete-mode)
+;;   :config
+;;   (ac-config-default))
 
 
 (use-package yasnippet
@@ -922,10 +924,10 @@
 (use-package all-the-icons) ;; you HAVE to install the fonts for windows (run all-the-icons-install-fonts)
 
 
-(use-package all-the-icons-ibuffer
-  :after all-the-icons
-  :hook
-  (ibuffer-mode . all-the-icons-ibuffer-mode))
+;; (use-package all-the-icons-ibuffer
+;;   :after all-the-icons
+;;   :hook
+;;   (ibuffer-mode . all-the-icons-ibuffer-mode))
 
 
 
@@ -1179,36 +1181,36 @@
   (setq marginalia-align 'right))
 
 
-(use-package all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode))
+;; (use-package all-the-icons-completion
+;;   :after (marginalia all-the-icons)
+;;   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+;;   :init
+;;   (all-the-icons-completion-mode))
 
 
 (defun my/completing-read (prompt default)
   (completing-read prompt `(,default)))
 
 
-(defun my/consult-rg (query)
-  (if (projectile-project-p)
-	  (consult-ripgrep (project-root (project-current)) query)
-	(if (file-name-directory buffer-file-name)
-		(consult-ripgrep (file-name-directory buffer-file-name) query)
-	  (consult-ripgrep default-directory query))))
+;; (defun my/consult-rg (query)
+;;   (if (projectile-project-p)
+;; 	  (consult-ripgrep (project-root (project-current)) query)
+;; 	(if (file-name-directory buffer-file-name)
+;; 		(consult-ripgrep (file-name-directory buffer-file-name) query)
+;; 	  (consult-ripgrep default-directory query))))
 
 
-(defun my/normal-rg ()
-  (interactive)
-  ;; (my/consult-rg (my/completing-read "ripgrep: " (if (symbol-at-point) (symbol-at-point) ""))))
-  (my/consult-rg (if (thing-at-point 'symbol t) (thing-at-point 'symbol t) "")))
+;; (defun my/normal-rg ()
+;;   (interactive)
+;;   ;; (my/consult-rg (my/completing-read "ripgrep: " (if (symbol-at-point) (symbol-at-point) ""))))
+;;   (my/consult-rg (if (thing-at-point 'symbol t) (thing-at-point 'symbol t) "")))
 
 
-(defun my/visual-rg ()
-  (interactive)
-  (let ((query (buffer-substring-no-properties (region-beginning) (region-end))))
-	(evil-force-normal-state)
-	(my/consult-rg query)))
+;; (defun my/visual-rg ()
+;;   (interactive)
+;;   (let ((query (buffer-substring-no-properties (region-beginning) (region-end))))
+;; 	(evil-force-normal-state)
+;; 	(my/consult-rg query)))
 
 
 ;; (use-package consult
