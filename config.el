@@ -1394,7 +1394,9 @@
   (setq timu-line-show-evil-state t)
   (setq timu-line-show-tramp-host t))
 
+(use-package nerd-icons) ;; doom-modeline NEEDS this
 (use-package doom-modeline
+  :after nerd-icons
   :init
   (doom-modeline-mode 1)
   :config
