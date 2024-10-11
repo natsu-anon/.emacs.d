@@ -85,7 +85,7 @@
 	(setq display-line-numbers-type t)))
 
 (defun relative-linums ()
-  (interative)
+  (interactive)
   (setq display-line-numbers-type 'relative))
 
 (defun obs-1080p ()
