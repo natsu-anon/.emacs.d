@@ -531,13 +531,10 @@
 
 
 ;; NOTE: also check out multi-occur it looks BASE
-(use-package occur
+(use-package replace
   :ensure nil
-  :defer t
+  :after evil
   :config
-  (defun focus-occur ()
-	"focuses the occur buffer."
-	(select-window (get-buffer-window "*Occur*")))
   (defun file-buffers-occur (&optional str)
 	"aaa"
 	(interactive "sFile Buffer(s) Occur: ")
@@ -545,9 +542,7 @@
   :bind
   (:map evil-normal-state-map
 		("<leader> o" . occur)
-		("<leader> o" . file-buffers-occur))
-  :hook
-  (occur . focus-occur))
+		("<leader> O" . file-buffers-occur)))
 
 (use-package tex-mode
   :ensure nil
