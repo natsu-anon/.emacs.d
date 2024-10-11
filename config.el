@@ -361,6 +361,7 @@
   (setq compilation-ask-about-save nil
 		compilation-save-buffers-predicate (lambda ()
 											 (string-prefix-p compilation-directory (file-truename (buffer-file-name)))))
+  (setq compilation-skip-threshold 2)
   (defun colorize-compilation-buffer ()
 	(let ((inhibit-read-only t))
 	  (ansi-color-apply-on-region (point-min) (point-max))))
@@ -368,10 +369,16 @@
 	"compile but no default & no history (recompile still remembers).  So you can run console commands ezpz via config."
 	(interactive "sCMPL> ")
 	(compile command))
+  (defun set-compilation-skip-level ()
+	"Sets the compilation skip level (for next-error & prev-error). Accepts 'errors 'warnings+ and 'all."
+	(interactive)
+	(let ((lvl (completing-read "set compilation skip threshold (for next-error & prev-error): " '(errors errors-and-warnings all))))
+	  (setq compilation-skip-threshold (pcase lvl (errors 2) (errors-and-warnings 1) (all 0)))))
   :hook
   (compilation-filter . colorize-compilation-buffer)
   :bind
   ("C-x c" . goldfishbrain-compile)
+  ("C-x C" . set-compilation-skip-level)
   ("C-c r" . recompile))
 
 
