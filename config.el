@@ -516,6 +516,15 @@
       (let (search-nonincremental-instead)
         (ignore-errors (isearch-done t t)))
       (occur query)))
+  (defun my/multi-occur-from-isearch ()
+    (interactive)
+    (let ((query (if isearch-regexp
+               isearch-string
+             (regexp-quote isearch-string))))
+      (isearch-update-ring isearch-string isearch-regexp)
+      (let (search-nonincremental-instead)
+        (ignore-errors (isearch-done t t)))
+      (multi-occur (seq-filter #'buffer-file-name (buffer-list)) query)))
   :bind
   ("C-j" . isearch-repeat-forward)
   ("C-k" . isearch-repeat-backward)
@@ -526,11 +535,13 @@
 		("<leader> S" . isearch-backward))
   (:map isearch-mode-map
 		("C-o" . my/occur-from-isearch)
+		("C-O" . my/multi-occur-from-isearch)
 		("C-j" . isearch-repeat-forward)
 		("C-k" . isearch-repeat-backward)))
 
 
-;; NOTE: also check out multi-occur it looks BASE
+;; NOTE: also check out multi-occur it looks BASED
+;; NOTE: IT IS BASED -- THE NOTE & TODO AGGREGATOR I ALWAYS NEEDED
 (use-package replace
   :ensure nil
   :after evil
