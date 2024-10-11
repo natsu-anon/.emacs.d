@@ -692,7 +692,7 @@
 		("<leader> f" . find-file)
 		("<leader> b" . switch-to-buffer)
 		("<leader> r" . recentf)
-		("<leader> K" . kill-buffer-and-window) ;; not bad tbqh
+		("Z Q" . kill-current-buffer) ;; not bad tbqh
 		("[ t" . tab-bar-switch-to-prev-tab)
 		("] t" . tab-bar-switch-to-next-tab)
 		("] q" . next-error)
@@ -703,6 +703,8 @@
 		("<leader> h" . evil-first-non-blank)
 		("<leader> l" . evil-end-of-line)
 		("<leader> !" . my/shell-command-region)
+		("] q" . next-error)
+		("[ q" . previous-error)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
 
