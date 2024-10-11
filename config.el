@@ -849,8 +849,7 @@
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
   (setq sp-highlight-pair-overlay nil)
-  (smartparens-global-mode t)
-  :hook
+  (smartparens-global-mode 1)
   :bind
   ("C-c C-l" . sp-forward-sexp)
   ("C-c C-h" . sp-backward-sexp)
