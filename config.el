@@ -201,7 +201,7 @@
 ;; VANILLA (stop using use-package for these eventually) ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; dired is next section
+;; dired HAS to be after evil & evil collection
 
 ;; HAND OVER THE RELATIVE LINUMS NOW!
 ;;(add-hook 'prog-mode-hook 'relative-linums)
@@ -570,60 +570,9 @@
   (tex-mode . company-mode))
 
 
-;;;;;;;;;;;
-;; DIRED ;;
-;;;;;;;;;;;
-
-
-(defun my/dired-recursive (&optional dirname)
-  "Recursively open a file in dired."
-  (interactive "GDired recursive (directory): ")
-  (dired dirname "-laRgho"))
-
-;; this is dumb
-;; (defun my/dired-create (&optional arg)
-;;   "foo"
-;;   (interactive "GNew File/Directory: ")
-;;   (if (or (file-exists-p arg) (f-directory-p arg))
-;; 	  (dired-goto-file arg)
-;; 	(if (directory-name-p arg)
-;; 		(dired-create-directory arg)
-;; 		(dired-create-empty-file arg)))
-;;   (revert-buffer-quick))
-
-
-(use-package dired
-  :ensure nil
-  :after evil-collection
-  :commands (dired dired-jump)
-  :custom ((dired-listing-switches "-alh --group-directories-first"))
-  :hook ((dired-mode . dired-omit-mode)
-		 (dired-mode . dired-hide-details-mode)
-		 ;; (dired-mode . (display-line-numbers . 'visual))
-		 (dired-mode . relative-linums)
-		 (dired-mode . display-line-numbers-mode))
-  :config
-  (setq dired-auto-revert-buffer t)
-  (setq dired-do-revert-buffer t)
-  (setq dired-dwim-target t)
-  (setq dired-mouse-drag-files t)                   ; added in Emacs 29
-  (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
-  (evil-collection-define-key 'normal 'dired-mode-map
-	" " nil
-	"h" 'dired-up-directory
-	"l" 'dired-find-file
-	"zc" 'dired-kill-subdir
-	"zo" 'dired-maybe-insert-subdir)
-  (define-key dired-mode-map (kbd "SPC") nil)
-  :bind
-  ("C-x f" . find-name-dired)
-  ("C-x D" . my/dired-recursive))
-
-
-;;;;;;;;;;;;;;;;;
-;; END VANILLA ;;
-;;;;;;;;;;;;;;;;;
-
+;;;;;;;;;;
+;; EVIL ;;
+;;;;;;;;;;
 
 (setq evil-want-keybinding nil)
 (use-package evil
@@ -711,6 +660,56 @@
 		("C-w S" . my/split-then-move-down)))
 
 
+(use-package evil-collection
+  :after evil
+  :config
+  ;; prevent overwriting bindings for next-error and previous-error set earlier
+  (setq evil-collection-key-blacklist '("[ q" "] q"))
+  (evil-collection-init))
+
+
+;;;;;;;;;;;
+;; DIRED ;;
+;;;;;;;;;;;
+
+
+(use-package dired
+  :ensure nil
+  :commands (dired dired-jump)
+  :custom ((dired-listing-switches "-alh --group-directories-first"))
+  :hook ((dired-mode . dired-omit-mode)
+		 (dired-mode . dired-hide-details-mode)
+		 ;; (dired-mode . (display-line-numbers . 'visual))
+		 (dired-mode . relative-linums)
+		 (dired-mode . display-line-numbers-mode))
+  :init
+  (defun my/dired-recursive (&optional dirname)
+	"Recursively open a file in dired."
+	(interactive "GDired recursive (directory): ")
+	(dired dirname "-laRgho"))
+  :config
+  (setq dired-auto-revert-buffer t)
+  (setq dired-do-revert-buffer t)
+  (setq dired-dwim-target t)
+  (setq dired-mouse-drag-files t)                   ; added in Emacs 29
+  (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
+  (evil-collection-define-key 'normal 'dired-mode-map
+	" " nil
+	"h" 'dired-up-directory
+	"l" 'dired-find-file
+	"zc" 'dired-kill-subdir
+	"zo" 'dired-maybe-insert-subdir)
+  (define-key dired-mode-map (kbd "SPC") nil)
+  :bind
+  ("C-x f" . find-name-dired)
+  ("C-x D" . my/dired-recursive))
+
+
+;;;;;;;;;;
+;; REST ;;
+;;;;;;;;;;
+
+
 ;; temporarily highlights modified regions
 (use-package evil-goggles
   :config
@@ -764,13 +763,6 @@
 		:map evil-visual-state-map
 		("<leader> y" . yas-expand)))
 
-
-(use-package evil-collection
-  :after evil
-  :config
-  ;; prevent overwriting bindings for next-error and previous-error set earlier
-  (setq evil-collection-key-blacklist '("[ q" "] q"))
-  (evil-collection-init))
 
 
 (use-package shell-here
