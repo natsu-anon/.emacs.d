@@ -537,6 +537,8 @@
   ("C-k" . isearch-repeat-backward)
   ("C-s o" . isearch-forward-symbol-at-point)
   ("C-s ." . isearch-forward-thing-at-point)
+  ("C-s s" . isearch-forward)
+  ("C-s S" . isearch-backward)
   (:map evil-normal-state-map
 		("<leader> s" . isearch-forward)
 		("<leader> S" . isearch-backward))
