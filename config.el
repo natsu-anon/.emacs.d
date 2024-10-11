@@ -1165,7 +1165,7 @@
 		:map flymake-mode-map
 		("C-c C-d" . my/flymake-diagnostics-at-point))
   :hook
-  (lisp-mode . flymake-mode))
+  (prog-mode . flymake-mode))
 
 
 ;; Enable rich annotations using the Marginalia package
