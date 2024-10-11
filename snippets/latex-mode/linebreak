@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: linebreak
+# key: lb
+# --
+\linebreak{}
