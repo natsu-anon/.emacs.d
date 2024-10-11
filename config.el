@@ -1007,7 +1007,7 @@
 		  ((buffer-live-p (get-buffer "*rg*")) (set-window-buffer (selected-window) (get-buffer "*rg*")))
 		  ((t (message "No rg buffer!")))))
   :bind
-  ("C-c s" . rg)
+  ("C-x s" . rg)
   (:map evil-normal-state-map
 			  ("g /" . my/goto-rg)))
 
