@@ -1344,9 +1344,10 @@
   (global-hl-line-mode t))
 
 
-(use-package solaire-mode
-  :diminish solaire-global-mode
-  :hook (after-init . solaire-global-mode))
+;; not using it because of dimmer, which I like more
+;; (use-package solaire-mode
+;;   :diminish solaire-global-mode
+;;   :hook (after-init . solaire-global-mode))
 
 
 (use-package dimmer
