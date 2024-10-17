@@ -1310,26 +1310,26 @@
 ;; 		("<leader> s" . my/visual-rg)))
 
 
-;; UNUSED--use eglot (I just have this for a rainy day)
-(use-package lsp-mode
-  :after evil
-  :init
-  ;; (setq lsp-keymap-prefix "SPC l") ;; DONT DO THIS ITS AN AWFUL MISTAKE
-  (setq lsp-keymap-prefix "C-l")
-  :config
-  (setq lsp-response-timeout 1)
-  (setq read-cess-output-max (* 1024 1024))
-  (setq lsp-idle-delay 0.01)
-  (setq lsp-progress-spinner-type 'rotating-line)
-  :commands (lsp lsp-deferred))
+;; ;; UNUSED--use eglot (I just have this for a rainy day)
+;; (use-package lsp-mode
+;;   :after evil
+;;   :init
+;;   ;; (setq lsp-keymap-prefix "SPC l") ;; DONT DO THIS ITS AN AWFUL MISTAKE
+;;   (setq lsp-keymap-prefix "C-l")
+;;   :config
+;;   (setq lsp-response-timeout 1)
+;;   (setq read-cess-output-max (* 1024 1024))
+;;   (setq lsp-idle-delay 0.01)
+;;   (setq lsp-progress-spinner-type 'rotating-line)
+;;   :commands (lsp lsp-deferred))
 
 
-(use-package lsp-ui
-  :after lsp-mode
-  :commands (lsp-ui-mode lsp-ui-doc-mode)
-  :hook
-  (lsp-mode . lsp-ui-mode)
-  (lsp-mode . lsp-ui-doc-mode))
+;; (use-package lsp-ui
+;;   :after lsp-mode
+;;   :commands (lsp-ui-mode lsp-ui-doc-mode)
+;;   :hook
+;;   (lsp-mode . lsp-ui-mode)
+;;   (lsp-mode . lsp-ui-doc-mode))
 
 
 
@@ -1367,16 +1367,11 @@
 
 
 (use-package doom-themes
-  :straight (doom-themes
-			 :type git
-			 :host github
-			 :repo "doomemacs/themes")
   :config
   (setq doom-themes-enable-bold t
 		doom-themes-enable-italic t)
   ;; load theme in `local.el' now
   (doom-themes-visual-bell-config)
-  ;; (doom-themes-neotree-config) ;; enable custom neotree theme (all-the-icons must be installed!)
   (doom-themes-org-config))
 
 ;; I like this but no flymake integration (I am a brainlet & need it)
