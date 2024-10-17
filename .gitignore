@@ -13,6 +13,8 @@
 !unreal-engine-mode/**
 !ue-assist-mode/
 !ue-assist-mode/**
+!coil-mode/
+!coil-mode/**
 
 **/.yas-compiled-snippets.el
 **/*~
