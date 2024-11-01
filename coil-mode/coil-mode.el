@@ -55,12 +55,10 @@
 	(fmakunbound #'coil-new-source)
 	(fmakunbound #'coil-new-source-from-buffer)))
 
-  (downcase (file-name-extension "main.cpp"))
-
-(defcustom coil-mode-keymap-prefix "C-c c"
-  "coil-mode keymap prefix."
-  :group 'coil-mode
-  :type 'string)
+;; (defcustom coil-mode-keymap-prefix "C-c C-c"
+;;   "coil-mode keymap prefix."
+;;   :group 'coil-mode
+;;   :type 'string)
 
 (defvar coil-mode-map
   (let ((map (make-sparse-keymap)))
