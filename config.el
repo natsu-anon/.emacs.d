@@ -543,6 +543,7 @@
 		("<leader> s" . isearch-forward)
 		("<leader> S" . isearch-backward))
   (:map isearch-mode-map
+		("C-w" . isearch-yank-word)
 		("C-o" . my/occur-from-isearch)
 		("C-O" . my/multi-occur-from-isearch)
 		("C-j" . isearch-repeat-forward)
