@@ -750,13 +750,21 @@
 
 (use-package yasnippet
   ;; :after evil
+  :defer t
   :init
   (setq yas-indent-line 'fixed)
-  (defcustom yas-cpp-class nil
-	"Class name of current CPP for yasnippet."
-	:type 'string
-	:local t)
-  (yas-global-mode 1)
+  ;; (defcustom yas-cpp-class nil
+  ;; 	"Class name of current CPP for yasnippet."
+  ;; 	:type 'string
+  ;; 	:local t)
+  :config
+  (yas-reload-all)
+  :hook
+  (c-mode . yas-minor-mode)
+  (tex-mode . yas-minor-mode)
+  (latex-mode . yas-minor-mode)
+  (gdscript-mode . yas-minor-mode)
+  ;; (c++-mode . yas-minor-mode)
   :bind
   ("M-y". yas-expand)
   ("M-f". yas-expand)
