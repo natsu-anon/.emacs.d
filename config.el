@@ -377,9 +377,10 @@
   :hook
   (compilation-filter . colorize-compilation-buffer)
   :bind
-  ("C-x c" . goldfishbrain-compile)
+  ("C-x >" . goldfishbrain-compile)
   ("C-x C" . set-compilation-skip-level)
-  ("C-c r" . recompile))
+  ("C-c m" . compile)
+  ("C-c n" . recompile))
 
 
 (use-package org
@@ -853,6 +854,7 @@
   (sp-local-pair 'emacs-lisp-mode "`" "'")
   (setq sp-highlight-pair-overlay nil)
   (smartparens-global-mode 1)
+  (show-smartparens-global-mode 1)
   :bind
   ("C-c C-l" . sp-forward-sexp)
   ("C-c C-h" . sp-backward-sexp)
