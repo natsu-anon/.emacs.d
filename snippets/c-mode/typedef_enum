@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: typdef-enum
+# key: tdenum
+# --
+typedef enum $1_t
+{
+	$0
+} $1_t;
