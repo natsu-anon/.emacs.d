@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: typdef-struct
-# key: tdstruct
+# key: @s
 # --
 typedef struct $1_t
 {
