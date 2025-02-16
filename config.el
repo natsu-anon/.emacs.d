@@ -465,6 +465,7 @@
 		("<leader> l a" . eglot-code-actions)
 		("<leader> l = " . eglot-format))
   :hook
+  (eglot-managed-mode . (lambda () (eglot-inlay-hints-mode 0))) ;; hints are ok as a treat
   (c-mode . eglot-ensure)
   (c++-mode . eglot-ensure))
 
