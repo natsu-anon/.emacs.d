@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: header-guard
-# key: header_guard
+# key: @h
 # --
 #ifndef $1_H
 #define $1_H
