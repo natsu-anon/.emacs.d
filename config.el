@@ -136,6 +136,11 @@
 		(find-file new-name)
 		(kill-buffer old-buffer)))))
 
+(defun find-kill (&optional file-name)
+  "Add relative FILE-NAME to the killring."
+  (interactive "fkill relative file: ")
+  (kill-new (f-relative file-name) t))
+
 (defun my/shell-command-region (&optional point mark)
   (interactive "r")
   (let ((command (buffer-substring point mark)))
