@@ -225,7 +225,7 @@
 
 ;; read this `https://www.emacswiki.org/emacs/IndentingC'
 (setq-default tab-width 4)
-(setq c-default-style "linux")
+(setq c-default-style "bsd")
 (setq c-basic-offset 4)
 
 ;; enable local variables PLEASE
