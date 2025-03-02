@@ -225,7 +225,7 @@
 
 ;; read this `https://www.emacswiki.org/emacs/IndentingC'
 (setq-default tab-width 4)
-(setq c-default-style "bsd")
+(setq c-default-style '((c-mode . "bsd"))) ;; bsd aka Allman but I also like k&r.  I go through moods tbqh
 (setq c-basic-offset 4)
 
 ;; enable local variables PLEASE
