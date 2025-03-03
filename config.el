@@ -18,6 +18,10 @@
 ;; Make startup faster by reducing the frequency of gc.  Default is 800kb -- measured in bytes.
 (setq gc-cons-threshod (* 50 1000 1000))
 
+;; make buffers use LF (Unix-style) end of lines by default
+(setq-default buffer-file-coding-system 'utf-8-unix)
+(prefer-coding-system 'utf-8-unix)
+
 ;;;;;;;;;;;;;;;;
 ;; DEFUN HELL ;;
 ;;;;;;;;;;;;;;;;
@@ -225,7 +229,7 @@
 
 ;; read this `https://www.emacswiki.org/emacs/IndentingC'
 (setq-default tab-width 4)
-(setq c-default-style '((c-mode . "bsd"))) ;; bsd aka Allman but I also like k&r.  I go through moods tbqh
+(setq c-default-style "bsd") ;; bsd aka Allman but I also like k&r.  I go through moods tbqh
 (setq c-basic-offset 4)
 
 ;; enable local variables PLEASE
@@ -457,6 +461,7 @@
   ;; (defun my/diagnostics-in-buffer (&optional point mark)
   ;; 	(interactive "r")
   ;; 	(message "%s x %s" point mark))
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider))
   :bind
   (:map evil-normal-state-map
 		("<leader> l r" . eglot-rename)
