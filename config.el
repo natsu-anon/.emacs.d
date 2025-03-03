@@ -496,7 +496,6 @@
   (:map evil-normal-state-map
 		("<leader> h p" . posix-man)))
 
-
 ;; put it after evil-collection PLS
 (use-package comint
   :ensure nil
@@ -902,6 +901,9 @@
 			 :type git
 			 :host github
 			 :repo "mkcms/compiler-explorer.el"))
+
+(use-package glsl-mode
+  :ensure t)
 
 
 (use-package disaster)
