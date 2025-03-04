@@ -876,7 +876,7 @@
 		("C-'" . sp-wrap-single-quote)
 		("C-\"" . sp-wrap-double-quote)
 		("C-)" . sp-wrap-round)
-		("C-}" . {{sp-wrap-curly}})
+		("C-}" . sp-wrap-curly)
 		("C-]" . sp-wrap-square)
 		("C-," . sp-unwrap-sexp)
 		:map evil-normal-state-map
