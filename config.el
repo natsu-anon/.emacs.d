@@ -1400,6 +1400,8 @@
   (doom-themes-visual-bell-config)
   (doom-themes-org-config))
 
+(use-package kaolin-themes)
+
 ;; I like this but no flymake integration (I am a brainlet & need it)
 (use-package timu-line
   ;; :init
