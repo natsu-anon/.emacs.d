@@ -1,11 +1,11 @@
  (defvar python-executable "python"
-   "path to python executable to use, defaults to 'python'")
+   "Path to python executable to use, defaults to 'python'")
 
  (defvar chot-script "chot.py"
-   "path to chot script to use, defaults to 'chot.py'")
+   "Path to chot script to use, defaults to 'chot.py'")
 
 (defun chot (&optional url port)
-  "View a youtube livestream chat in a seperate buffer; Windows version uses ports"
+  "View a youtube livestream chat at URL in a seperate buffer; Windows version uses PORT."
   (interactive"surl: \nnport(Windows only): ")
   (message "chotting on port: %d" port)
   (get-buffer-create "*chot*")
