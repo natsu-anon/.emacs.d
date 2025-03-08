@@ -3,7 +3,20 @@ import time
 import sys
 import socket
 
-def main(id, port, verbose=True):
+def stdout(id):
+    chat = pytchat.create(video_id=id)
+    print("## CHOTTING ##\n")
+    while chat.is_alive():
+        try:
+            for c in chat.get().sync_items():
+                print(f"<{c.author.name}> {c.message}")
+            time.sleep(0.2)
+        except KeyboardInterrupt:
+            chat.terminate()
+            break
+    exit(0)
+
+def ports(id, port, verbose=True):
     s = socket.socket()
     chat = pytchat.create(video_id=id)
     s.bind(('localhost', int(port)))
@@ -29,4 +42,7 @@ def main(id, port, verbose=True):
     exit(0)
 
 if __name__=='__main__':
-    main(sys.argv[1], sys.argv[2], True if len(sys.argv) == 4 and sys.argv[3] == '-v' else False)
+    if (len(sys.argv) == 2):
+        stdout(sys.argv[1])
+    else:
+        ports(sys.argv[1], sys.argv[2], True if len(sys.argv) == 4 and sys.argv[3] == '-v' else False)
