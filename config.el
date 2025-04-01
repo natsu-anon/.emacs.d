@@ -1154,7 +1154,7 @@
 			  (put-text-property 0 (length text) 'face 'font-lock-warning-face text)
 			  (save-excursion
 				(end-of-line)
-				(momentary-string-display (concat " " text) (point) nil ""))))
+				(momentary-string-display (concat "\n" text) (point) nil ""))))
 		  (flymake-diagnostics (point))))
   ;; NOTE: overlays!!!
   ;; (defun wip/inlay-diagnostics-in-point (&optional point mark)
