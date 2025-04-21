@@ -668,6 +668,7 @@
 		("<leader> !" . my/shell-command-region)
 		("] q" . next-error)
 		("[ q" . previous-error)
+		("C-w r" . evil-window-rotate-downwards)
 		("C-w V" . my/vsplit-then-move-right)
 		("C-w S" . my/split-then-move-down)))
 
