@@ -1376,6 +1376,7 @@
 ;;   :hook (after-init . solaire-global-mode))
 
 
+;; NOTE: sometimes I like this, sometimes I don't
 (use-package dimmer
   :config
   (setq dimmer-fraction 0.25)
