@@ -150,12 +150,26 @@
   (let ((command (buffer-substring point mark)))
 	(shell-command command)))
 
+(defun temp-c ()
+  (interactive)
+  (find-file "/home/jon/temp/temp.c")
+  (erase-buffer)
+  ;; (setq-local compile-command "gcc -Wall -Wextra -fpermissive -ggdb -O0 -o /home/jon/temp/temp-binary /home/jon/temp/temp.c && ./home/jon/temp/temp-binary")
+  (setq-local compile-command "gcc -Wall -Wextra -fpermissive -ggdb -O0 -o temp-binary temp.c && ./temp-binary")
+  (insert "#include <stdlib.h>\n")
+  (insert "#include <stdio.h>\n\n")
+  (insert "int main(int argc, char** argv)\n{\n")
+  (insert "\n\treturn 0;\n}")
+  (goto-line 6))
+
 ;; NOTE: unused atm
 (defun delete-compile-window-if-successful (buf desc)
   "Bury a compilation buffer if succeeded without warnings"
   (when (and (buffer-live-p buf) (string-match "finished" desc))
 	(delete-window (get-buffer-window buf))))
 ;; (add-hook 'compilation-finish-functions #'delete-compile-window-if-successful)
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -346,6 +360,14 @@
   (setq enable-recursive-minibuffers t)
   ;; crank up doc-view resolution so things dont look like ASS
   (setq doc-view-resolution 300)
+  ;; prefer treesitter modes
+  ;; NOTE: they kinda goofy rn
+  ;; (setq major-mode-remap-alist
+  ;; 		'((c-mode . c-ts-mode)
+  ;; 		  (c++-mode . c++-ts-mode)
+  ;; 		  (bash-mode . bash-ts-mode)))
+  (setq major-mode-remap-alist
+		'((csharp-mode . csharp-ts-mode)))
   :bind-keymap
   ("C-x h" . help-map)
   :bind
@@ -355,13 +377,11 @@
   ("C-c b" . my/ibuffer-toggle)
   ("C-c l" . toggle-linums))
 
-
 (use-package desktop
   :ensure nil
   :config
   ;; add desktops dir to desktop-read search path
   (add-to-list 'desktop-path "~/.emacs.d/desktops/"))
-
 
 (use-package compile
   :ensure nil
@@ -467,9 +487,9 @@
 		("<leader> l r" . eglot-rename)
 		("<leader> l q" . eglot-code-actions-quickfix)
 		("<leader> l a" . eglot-code-actions)
-		("<leader> l a" . eglot-code-actions)
 		;; ("<leader> l i" . eglot-inlay-hints-mode)
 		("<leader> l =" . eglot-format-buffer)
+		("<leader> l i" . eglot-find-implementation)
 		("<leader> l d" . my/momentary-diagnostics-at-point)
 		:map evil-visual-state-map
 		("<leader> l a" . eglot-code-actions)
@@ -477,7 +497,10 @@
   :hook
   (eglot-managed-mode . (lambda () (eglot-inlay-hints-mode 0))) ;; hints are ok as a treat
   (c-mode . eglot-ensure)
-  (c++-mode . eglot-ensure))
+  (c++-mode . eglot-ensure)
+  (c-ts-mode . eglot-ensure)
+  (csharp-ts-mode . eglot-ensure)
+  (c++-ts-mode . eglot-ensure))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -492,6 +515,32 @@
 
 (use-package c-mode
   :ensure nil
+  :bind
+  (:map evil-normal-state-map
+		("<leader> h p" . posix-man)))
+
+(use-package lisp-mode
+  :ensure nil
+  :hook
+  (lisp-mode . (lambda () (setq-local display-fill-column-indicator-column 100))))
+
+(use-package slime
+  :ensure t
+  :after evil
+  :init
+  (setq inferior-lisp-program "sbcl")
+  :hook
+  (lisp-mode . slime-mode)
+  :bind
+  ("<leader> x" . slime-eval-defun)
+  (:map evil-visual-state-map
+		("<leader> x" . slime-eval-region)))
+
+(use-package c-ts-mode
+  :ensure nil
+  :config
+  (setq c-ts-mode-indent-style "bsd")
+  (setq c-ts-mode-indent-offset 4)
   :bind
   (:map evil-normal-state-map
 		("<leader> h p" . posix-man)))
@@ -743,13 +792,24 @@
   ;; 	(message "auto-complete-mode disabled in current buffer!"))
   (setq company-idle-delay 0.00)
   (setq company-tooltip-idle-delay 0.00)
-  (global-company-mode))
+  (global-company-mode)
+  :hook
+  (lisp-mode . company-mode))
+
   ;; :hook
   ;; (prog-mode . company-mode)
   ;; (company-mode . disable-auto-complete-mode)
   ;; (lisp-mode . company-mode)
   ;; (c-mode . company-mode)
   ;; (c++-mode . company-mode))
+
+;; slime setup AFTER company mode
+;; (require 'slime)
+;; (setq inferior-lisp-program "sbcl")
+;; (add-hook 'lisp-mode 'slime-mode)
+;; (add-hook 'common-lisp-mode 'slime-mode)
+;; (add-hook 'slime-mode 'slime)
+;; (add-hook 'slime-mode 'company-mode)
 
 
 ;; (use-package auto-complete
@@ -773,6 +833,9 @@
   (yas-reload-all)
   :hook
   (c-mode . yas-minor-mode)
+  (c-ts-mode . yas-minor-mode)
+  (csharp-mode . yas-minor-mode)
+  (csharp-ts-mode . yas-minor-mode)
   (tex-mode . yas-minor-mode)
   (latex-mode . yas-minor-mode)
   (gdscript-mode . yas-minor-mode)
@@ -865,8 +928,12 @@
 	(sp-wrap-with-pair "\""))
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'emacs-lisp-mode "`" "'")
+  (sp-local-pair 'lisp-mode "'" nil :actions nil)
+  (sp-local-pair 'lisp-mode "`" nil :actions nil)
   (setq sp-highlight-pair-overlay nil)
   (smartparens-global-mode 1)
+  :hook
+  (lisp-mode . smartparens-mode)
   :bind
   ("C-c C-l" . sp-forward-sexp)
   ("C-c C-h" . sp-backward-sexp)
@@ -937,8 +1004,11 @@
 (use-package json-mode)
 
 
+; csharp setup
 (use-package csharp-mode
   :config
+  (setq c-ts-mode-indent-style "bsd")
+  (setq c-ts-mode-indent-offset 4)
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
 
@@ -1084,10 +1154,10 @@
 ;; (ido-mode 1)
 ;; (setq ido-everywhere t)
 (use-package vertico
-  ;; :straight (vertico
-  ;; 			 :type git
-  ;; 			 :host github
-  ;; 			 :repo "minad/vertico")
+  :straight (vertico
+			 :type git
+			 :host github
+			 :repo "minad/vertico")
   :after orderless
   ;; (evil-collection-vertico-setup)
   ;; :after 'evil-collection
@@ -1124,6 +1194,11 @@
 		("<return>" . vertico-directory-enter)
 		("<backspace>" . vertico-directory-delete-char)
 		("M-<backspace>" . vertico-directory-delete-word)))
+
+(use-package vertico-mouse
+  :after vertico
+  :ensure nil
+  :init (vertico-mouse-mode))
 
 
 ;; Optionally use the `orderless' completion style.
@@ -1193,10 +1268,14 @@
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
   ;; available in the *Completions* buffer, add it to the
   ;; `completion-list-mode-map'.
+  :straight (marginalia-mode
+			 :type git
+			 :host github
+			 :repo "minad/marginalia")
   :after vertico
   :bind (:map minibuffer-local-map
          ("M-S-a" . marginalia-cycle))
-  :commands (marginalia--orig-completion-metadata-get)
+  ;; :commands (marginalia--orig-completion-metadata-get)
   ;; The :init section is always executed.
   :init
   ;; Marginalia must be activated in the :init section of use-package such that
@@ -1377,13 +1456,13 @@
 
 
 ;; NOTE: sometimes I like this, sometimes I don't
-(use-package dimmer
-  :config
-  (setq dimmer-fraction 0.25)
-  (dimmer-configure-company-box)
-  (dimmer-configure-which-key)
-  (dimmer-configure-magit)
-  (dimmer-mode t))
+;; (use-package dimmer
+;;   :config
+;;   (setq dimmer-fraction 0.25)
+;;   (dimmer-configure-company-box)
+;;   (dimmer-configure-which-key)
+;;   (dimmer-configure-magit)
+;;   (dimmer-mode t))
 
 
 (use-package rainbow-mode
