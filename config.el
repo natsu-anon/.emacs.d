@@ -427,8 +427,8 @@
   (:map org-mode-map
 		("C-a C-o" . org-open-at-point)
 		("C-a C-h" . org-metaleft)
-		("C-a C-j" . org-metadown)
-		("C-a C-k" . org-metaup)
+		("C-a C-n" . org-metadown)
+		("C-a C-p" . org-metaup)
 		("C-a C-l" . org-metaright)
 		("C-a H" . org-shiftmetaleft)
 		("C-a J" . org-shiftmetadown)
@@ -593,8 +593,8 @@
         (ignore-errors (isearch-done t t)))
       (multi-occur (seq-filter #'buffer-file-name (buffer-list)) query)))
   :bind
-  ("C-j" . isearch-repeat-forward)
-  ("C-k" . isearch-repeat-backward)
+  ("C-n" . isearch-repeat-forward)
+  ("C-p" . isearch-repeat-backward)
   ("C-s o" . isearch-forward-symbol-at-point)
   ("C-s ." . isearch-forward-thing-at-point)
   ("C-s s" . isearch-forward)
@@ -606,8 +606,8 @@
 		("C-w" . isearch-yank-word)
 		("C-o" . my/occur-from-isearch)
 		("C-O" . my/multi-occur-from-isearch)
-		("C-j" . isearch-repeat-forward)
-		("C-k" . isearch-repeat-backward)))
+		("C-n" . isearch-repeat-forward)
+		("C-p" . isearch-repeat-backward)))
 
 
 ;; NOTE: also check out multi-occur it looks BASED
@@ -1177,8 +1177,8 @@
 		;; ("S-<backspace>" . vertico-directory-up)
 		;; ("M-<backspace>" . vertico-directory-delete-word)
 		("TAB" . vertico-insert)
-		("C-j" . vertico-next)
-		("C-k" . vertico-previous)
+		("C-n" . vertico-next)
+		("C-p" . vertico-previous)
 		("C-n" . vertico-next-group)
 		("C-p" . vertico-previous-group)
 		("C-S-j" . vertico-scroll-down)
