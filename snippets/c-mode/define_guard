@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: define-guard
+# key: @d
+# --
+#ifndef $1
+#define $1
+$0
+#endif /* End $1 */
