@@ -145,6 +145,11 @@
   (interactive "fkill relative file: ")
   (kill-new (f-relative file-name) t))
 
+(defun find-insert (&optional file-name)
+  "immediately insert FILE-NAME."
+  (interactive "fkill relative file: ")
+  (insert (f-relative file-name) t))
+
 (defun my/shell-command-region (&optional point mark)
   (interactive "r")
   (let ((command (buffer-substring point mark)))
@@ -341,6 +346,7 @@
   ;; this is just generally fucked on Windows
   (setq find-program "fd"
 		find-name-arg "")
+  (setq imenu-flatten 'group)
   (which-function-mode)
   (setq-default header-line-format
 				'((which-func-mode (" " which-func-format " "))))
@@ -1011,6 +1017,12 @@
   (setq c-ts-mode-indent-offset 4)
   (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-mode)))
 
+; graphviz dot setup
+(use-package graphviz-dot-mode
+  :ensure t
+  :config
+  (setq graphviz-dot-indent-width 4))
+
 
 (use-package ws-butler
   :diminish ws-butler-mode
@@ -1179,8 +1191,8 @@
 		("TAB" . vertico-insert)
 		("C-n" . vertico-next)
 		("C-p" . vertico-previous)
-		("C-n" . vertico-next-group)
-		("C-p" . vertico-previous-group)
+		("C-S-n" . vertico-next-group)
+		("C-S-p" . vertico-previous-group)
 		("C-S-j" . vertico-scroll-down)
 		("C-S-k" . vertico-scroll-up)))
 
