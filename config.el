@@ -381,6 +381,8 @@
   ;; 		  (bash-mode . bash-ts-mode)))
   (setq major-mode-remap-alist
 		'((csharp-mode . csharp-ts-mode)))
+  (setq treesit-auto-install-grammar 'always)
+  (setq treesit-enable-modes t)
   :bind-keymap
   ("C-x h" . help-map)
   :bind
@@ -552,8 +554,9 @@
 (use-package c-ts-mode
   :ensure nil
   :config
-  (setq c-ts-mode-indent-style "bsd")
+  (setq c-ts-mode-indent-style 'bsd)
   (setq c-ts-mode-indent-offset 4)
+  ;; (setq treesit--indent-verbose nil)
   :bind
   (:map evil-normal-state-map
 		("<leader> h p" . posix-man)))
@@ -696,6 +699,7 @@
   ("C-c f" . evil-show-files)
   (:map evil-normal-state-map
 		("<leader> x" . eval-last-sexp)
+		("<leader> X" . eval-replace)
 		("g K" . my/goto-eldoc)
 		("g c" . my/goto-compile-buffer)
 		("g h" . my/goto-help)
@@ -963,18 +967,17 @@
 		:map evil-normal-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
-		("<leader> )" . sp-wrap-round)
-		("<leader> }" . sp-wrap-curly)
-		("<leader> ]" . sp-wrap-square)
-		("<leader> [" . sp-unwrap-sexp)
+		("<leader> (" . sp-wrap-round)
+		("<leader> {" . sp-wrap-curly)
+		("<leader> [" . sp-wrap-square)
 		("<leader> ," . sp-unwrap-sexp)
 		:map evil-visual-state-map
 		("<leader> '" . sp-wrap-single-quote)
 		("<leader> \"" . sp-wrap-double-quote)
 		("<leader> (" . sp-wrap-round)
 		("<leader> {" . sp-wrap-curly)
-		("<leader> ]" . sp-wrap-square)
-		("<leader> ," . sp-unwrap-sexp)))
+		("<leader> [" . sp-wrap-square)
+		("<leader> ," . unwrap-sexp)))
 
 
 ;; EHHHHHHH
