@@ -145,6 +145,13 @@
   (interactive "fkill relative file: ")
   (kill-new (f-relative file-name) t))
 
+(defun eval-replace ()
+  "Evals the last sexp, deletes it, then inserts its result."
+  (interactive)
+  (let ((res (eval-last-sexp -1)))
+	(sp-delete-sexp)
+	(insert (format "%s" res))))
+
 (defun find-insert (&optional file-name)
   "immediately insert FILE-NAME."
   (interactive "fkill relative file: ")
