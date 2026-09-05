@@ -1,4 +1,4 @@
-;; EMACS CONFIG
+;; EMACS CONFIG  -*- lexical-binding: nil; -*-
 ; see `https://blog.aaronbieber.com/2015/05/24/fronmnent variable HOME, (at Users/name or wherever), create .emacs.d there
 ;; remember -- you _MUST_ run 'all-the-icons-install-fonts' AND 'nerd-icons-install-fonts' then install the fonts to get that working ;; NOTE now run `nerd-icons-install-fonts' then install the fonts to get that working
 ;; see 'https://www.emacswiki.org/emacs/BookMarks' for bookmark usage
