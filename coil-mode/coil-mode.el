@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil; -*-
+
 (define-minor-mode coil-mode
   "Coil mode enables the use of the coil program from within Emacs."
   :global t
