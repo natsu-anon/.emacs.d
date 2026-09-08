@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
  (defvar python-executable "python"
    "Path to python executable to use, defaults to 'python'")
 
