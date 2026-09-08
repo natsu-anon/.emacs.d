@@ -970,6 +970,9 @@
 		("<leader> (" . sp-wrap-round)
 		("<leader> {" . sp-wrap-curly)
 		("<leader> [" . sp-wrap-square)
+		("<leader> )" . sp-wrap-round)
+		("<leader> }" . sp-wrap-curly)
+		("<leader> ]" . sp-wrap-square)
 		("<leader> ," . sp-unwrap-sexp)
 		:map evil-visual-state-map
 		("<leader> '" . sp-wrap-single-quote)
@@ -977,6 +980,9 @@
 		("<leader> (" . sp-wrap-round)
 		("<leader> {" . sp-wrap-curly)
 		("<leader> [" . sp-wrap-square)
+		("<leader> )" . sp-wrap-round)
+		("<leader> }" . sp-wrap-curly)
+		("<leader> ]" . sp-wrap-square)
 		("<leader> ," . unwrap-sexp)))
 
 
